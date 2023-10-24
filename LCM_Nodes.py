@@ -1,55 +1,19 @@
-from tkinter import Y
-import torch
-from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageOps, ImageFilter
-import PIL
-import torch.nn.functional as F
-import cv2
-import os
-import torch
-import sys
+from PIL import ImageDraw, ImageOps, ImageFilter
 import json
-import hashlib
-import traceback
-import time
-import re
-import glob
+
 from PIL.PngImagePlugin import PngInfo
 import numpy as np
-import safetensors.torch
-import random
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy"))
-
-
-import comfy.diffusers_load
-import comfy.samplers
-import comfy.sample
-import comfy.sd
-import comfy.utils
-
-import comfy.clip_vision
-
-import comfy.model_management
-import importlib
-
 import folder_paths
-import latent_preview
-
-import math
-import struct
-
-from .lcm_pipeline_inpaint import LatentConsistencyModelPipeline_inpaint, LCMScheduler_X
+from .LCM.lcm_pipeline_inpaint import LatentConsistencyModelPipeline_inpaint, LCMScheduler_X
 from diffusers import AutoencoderKL, UNet2DConditionModel
 #from diffusers.pipelines.stable_diffusion.safety_checker import StableDiffusionSafetyChecker
 from transformers import CLIPTokenizer, CLIPTextModel, CLIPImageProcessor
 import os
 import torch
-from tqdm import tqdm
-from safetensors.torch import load_file
-from compel import Compel
-import argparse
-import random
 from PIL import Image
 import tomesd
+
+from comfy.cli_args import args
 
 
 class LCMLoader:
