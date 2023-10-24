@@ -2,7 +2,7 @@
 ComfyUI custom nodes for inpainting/outpainting using the new latent consistency model (LCM)
 
 # Inpaint
-![Screenshot from 2023-10-24 22-38-53](https://github.com/taabata/LCM_Inpaint-Outpaint_Comfy/assets/57796911/c81da663-c71e-4035-a7d7-e29294315054)
+<img src='https://github.com/taabata/LCM_Inpaint-Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-10-24%2022-38-53.png'>
 
 
 # Outpaint
