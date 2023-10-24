@@ -15,6 +15,11 @@ Clone into custom_nodes folder inside your ComfyUI directory
    ```
    git clone https://github.com/taabata/LCM_Inpaint-Outpaint_Comfy
    ```
+Install requirements after changing directory to LCM_Inpaint-Outpaint_Comfy folder
+
+```
+cd LCM_Inpaint-Outpaint_Comfy
+pip install -r requirements.txt
 
 Download the model in diffusers format from https://huggingface.co/SimianLuo/LCM_Dreamshaper_v7/tree/main and place it inside model/diffusers folder in your ComfyUI directory. (The name of the model folder should be "LCM_Dreamshaper_v7")
 
