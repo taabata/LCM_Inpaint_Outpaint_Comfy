@@ -35,8 +35,10 @@ class LCMLoader:
     def mainfunc(self,device):
         
         save_path = "./lcm_images"
-
-        model_id = folder_paths.get_folder_paths("diffusers")[0]+"/LCM_Dreamshaper_v7"
+        try:
+            model_id = folder_paths.get_folder_paths("diffusers")[0]+"/LCM_Dreamshaper_v7"
+        except:
+            model_id = folder_paths.get_folder_paths("diffusers")[0]+"\LCM_Dreamshaper_v7"
 
 
         # Initalize Diffusers Model:
