@@ -9,6 +9,15 @@ ComfyUI custom nodes for inpainting/outpainting using the new latent consistency
 <img src='https://github.com/taabata/LCM_Inpaint-Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-10-24%2022-42-53.png'>
 
 
+# Prompt Weighting
+
+Note: Requires CPU inference (select CPU in LCMLoader Node). (facing error that i dont know how to fix when using GPU)
+
+<img src='https://github.com/taabata/LCM_Inpaint-Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-10-26%2020-18-11.png'>
+
+
+# FreeU
+<img src='https://github.com/taabata/LCM_Inpaint-Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-10-26%2020-39-33.png'>
 
 # How to Use:
 Clone into custom_nodes folder inside your ComfyUI directory
