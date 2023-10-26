@@ -13,7 +13,10 @@ ComfyUI custom nodes for inpainting/outpainting using the new latent consistency
 
 Note: Requires CPU inference (select CPU in LCMLoader Node). (facing error that i dont know how to fix when using GPU)
 
+Add '+' for more effect and '-' for less effect. Adding more '+' or '-' increases the effects.
+
 <img src='https://github.com/taabata/LCM_Inpaint-Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-10-26%2020-18-11.png'>
+
 
 
 # FreeU
