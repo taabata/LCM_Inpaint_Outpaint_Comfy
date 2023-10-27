@@ -1,0 +1,717 @@
+from PIL import ImageDraw, ImageOps, ImageFilter
+import json
+
+from PIL.PngImagePlugin import PngInfo
+import numpy as np
+import folder_paths
+from .LCM.lcm_pipeline_inpaint import LatentConsistencyModelPipeline_inpaint, LCMScheduler_X
+from .LCM.lcm_pipeline_2 import LatentConsistencyModelPipeline_img2img
+from diffusers import AutoencoderKL, UNet2DConditionModel
+#from diffusers.pipelines.stable_diffusion.safety_checker import StableDiffusionSafetyChecker
+from transformers import CLIPTokenizer, CLIPTextModel, CLIPImageProcessor
+import os
+import torch
+from PIL import Image
+import tomesd
+import random
+from compel import Compel
+import tomesd
+from comfy.cli_args import args
+
+
+class LCMLoader_img2img:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "device": (["GPU", "CPU"],),
+                "tomesd_value": ("FLOAT", {
+                    "default": 0.6,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                })
+            }
+        }
+    RETURN_TYPES = ("class",)
+    FUNCTION = "mainfunc"
+
+    CATEGORY = "LCM_Nodes/nodes"
+
+    def mainfunc(self,device,tomesd_value):
+        
+        save_path = "./lcm_images"
+
+        try:
+            model_id = folder_paths.get_folder_paths("diffusers")[0]+"/LCM_Dreamshaper_v7"
+        except:
+            model_id = folder_paths.get_folder_paths("diffusers")[0]+"\LCM_Dreamshaper_v7"
+
+
+        # Initalize Diffusers Model:
+        vae = AutoencoderKL.from_pretrained(model_id, subfolder="vae")
+        text_encoder = CLIPTextModel.from_pretrained(model_id, subfolder="text_encoder")
+        tokenizer = CLIPTokenizer.from_pretrained(model_id, subfolder="tokenizer")
+        unet = UNet2DConditionModel.from_pretrained(model_id, subfolder="unet", device_map=None, low_cpu_mem_usage=False, local_files_only=True)
+        #safety_checker = StableDiffusionSafetyChecker.from_pretrained(model_id, subfolder="safety_checker")
+        feature_extractor = CLIPImageProcessor.from_pretrained(model_id, subfolder="feature_extractor")
+
+
+        # Initalize Scheduler:
+        scheduler = LCMScheduler_X(beta_start=0.00085, beta_end=0.0120, beta_schedule="scaled_linear", prediction_type="epsilon")
+
+        '''
+        # Replace the unet with LCM:
+        lcm_unet_ckpt = "./Downloads/LCM_Dreamshaper_v7_4k-prune-fp16.safetensors"
+        ckpt = load_file(lcm_unet_ckpt)
+        m, u = unet.load_state_dict(ckpt, strict=False)
+        if len(m) > 0:
+            print("missing keys:")
+            print(m)
+        if len(u) > 0:
+            print("unexpected keys:")
+            print(u)
+        '''
+
+        # LCM Pipeline:
+        pipe = LatentConsistencyModelPipeline_img2img(vae=vae, text_encoder=text_encoder, tokenizer=tokenizer, unet=unet, scheduler=scheduler, safety_checker=None, feature_extractor=feature_extractor)
+        tomesd.apply_patch(pipe, ratio=tomesd_value)
+        if device == "GPU":
+            pipe.enable_xformers_memory_efficient_attention()
+            pipe.enable_sequential_cpu_offload()
+        else:
+            pipe.to("cpu")
+        return (pipe,)
+
+
+class LCMLoader:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "device": (["GPU", "CPU"],)
+            }
+        }
+    RETURN_TYPES = ("class",)
+    FUNCTION = "mainfunc"
+
+    CATEGORY = "LCM_Nodes/nodes"
+
+    def mainfunc(self,device):
+        
+        save_path = "./lcm_images"
+
+        model_id = folder_paths.get_folder_paths("diffusers")[0]+"/LCM_Dreamshaper_v7"
+
+
+        # Initalize Diffusers Model:
+        vae = AutoencoderKL.from_pretrained(model_id, subfolder="vae")
+        text_encoder = CLIPTextModel.from_pretrained(model_id, subfolder="text_encoder")
+        tokenizer = CLIPTokenizer.from_pretrained(model_id, subfolder="tokenizer")
+        unet = UNet2DConditionModel.from_pretrained(model_id, subfolder="unet", device_map=None, low_cpu_mem_usage=False, local_files_only=True)
+        #safety_checker = StableDiffusionSafetyChecker.from_pretrained(model_id, subfolder="safety_checker")
+        feature_extractor = CLIPImageProcessor.from_pretrained(model_id, subfolder="feature_extractor")
+
+
+        # Initalize Scheduler:
+        scheduler = LCMScheduler_X(beta_start=0.00085, beta_end=0.0120, beta_schedule="scaled_linear", prediction_type="epsilon")
+
+        '''
+        # Replace the unet with LCM:
+        lcm_unet_ckpt = "./Downloads/LCM_Dreamshaper_v7_4k-prune-fp16.safetensors"
+        ckpt = load_file(lcm_unet_ckpt)
+        m, u = unet.load_state_dict(ckpt, strict=False)
+        if len(m) > 0:
+            print("missing keys:")
+            print(m)
+        if len(u) > 0:
+            print("unexpected keys:")
+            print(u)
+        '''
+
+        # LCM Pipeline:
+        pipe = LatentConsistencyModelPipeline_inpaint(vae=vae, text_encoder=text_encoder, tokenizer=tokenizer, unet=unet, scheduler=scheduler, safety_checker=None, feature_extractor=feature_extractor)
+        tomesd.apply_patch(pipe, ratio=0.6)
+        if device == "GPU":
+            pipe.enable_xformers_memory_efficient_attention()
+            pipe.enable_sequential_cpu_offload()
+        else:
+            pipe.to("cpu")
+        return (pipe,)
+
+class LCMGenerate:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "mode": (["Inpaint", "Outpaint"],),	
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                "text": ("STRING", {"default": '', "multiline": True}),
+                "steps": ("INT", {
+                    "default": 4,
+                    "min": 0,
+                    "max": 360,
+                    "step": 1,
+                }),
+                
+                "width": ("INT", {
+                    "default": 512,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 64,
+                }),
+                "height": ("INT", {
+                    "default": 512,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 64,
+                }),
+                "cfg": ("FLOAT", {
+                    "default": 8.0,
+                    "min": 0,
+                    "max": 30.0,
+                    "step": 0.5,
+                }),
+                "image": ("IMAGE", ),
+                "mask": ("IMAGE", ),
+                "original_image": ("IMAGE", ),
+                "outpaint_size": ("INT", {
+                    "default": 256,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 64,
+                }),
+                "outpaint_direction": (["left", "right","top","bottom"],),
+                "pipe":("class",),
+                "batch": ("INT", {
+                    "default": 1,
+                    "min": 1,
+                    "max": 100,
+                    "step": 1,
+                }),
+                "prompt_weighting":(["disable","enable"],),}
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "mainfunc"
+
+    CATEGORY = "LCM_Nodes/nodes"
+
+    def mainfunc(self, text: str,steps: int,width:int,height:int,cfg:float,seed: int,image,mask,original_image,outpaint_size,outpaint_direction,mode,pipe,batch,prompt_weighting):
+        '''
+        # Save Path:
+        save_path = "./lcm_images"
+
+        model_id = folder_paths.get_folder_paths("diffusers")[0]+"/LCM_Dreamshaper_v7"
+
+
+        # Initalize Diffusers Model:
+        vae = AutoencoderKL.from_pretrained(model_id, subfolder="vae")
+        text_encoder = CLIPTextModel.from_pretrained(model_id, subfolder="text_encoder")
+        tokenizer = CLIPTokenizer.from_pretrained(model_id, subfolder="tokenizer")
+        unet = UNet2DConditionModel.from_pretrained(model_id, subfolder="unet", device_map=None, low_cpu_mem_usage=False, local_files_only=True)
+        #safety_checker = StableDiffusionSafetyChecker.from_pretrained(model_id, subfolder="safety_checker")
+        feature_extractor = CLIPImageProcessor.from_pretrained(model_id, subfolder="feature_extractor")
+
+
+        # Initalize Scheduler:
+        scheduler = LCMScheduler_X(beta_start=0.00085, beta_end=0.0120, beta_schedule="scaled_linear", prediction_type="epsilon")
+
+        
+        # LCM Pipeline:
+        pipe = LatentConsistencyModelPipeline_inpaint(vae=vae, text_encoder=text_encoder, tokenizer=tokenizer, unet=unet, scheduler=scheduler, safety_checker=None, feature_extractor=feature_extractor)
+        tomesd.apply_patch(pipe, ratio=0.6)
+        #pipe = pipe.to("cuda")
+        print("###########: ",type(pipe))'''
+        
+        img = image[0].numpy()
+        img = img*255.0
+        image = Image.fromarray(np.uint8(img)).convert("RGB")
+        img = mask[0].numpy()
+        img = img*255.0
+        mask = Image.fromarray(np.uint8(img)).convert("RGB")
+
+        img = original_image[0].numpy()
+        img = img*255.0
+        original_image = Image.fromarray(np.uint8(img)).convert("RGB")
+        res = []
+        prompt = text
+        if prompt_weighting == "enable":
+            compel_proc = Compel(tokenizer=pipe.tokenizer, text_encoder=pipe.text_encoder)
+            prompt_embeds = compel_proc(prompt)
+            for i in range(0,batch):
+                seed = random.randint(0,1000000000000000)
+                torch.manual_seed(seed)
+            # Output Images:
+
+                images = pipe(prompt_embeds=prompt_embeds, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = 1.0, image=image, mask_image=mask).images
+        else:
+            for i in range(0,batch):
+                seed = random.randint(0,1000000000000000)
+                torch.manual_seed(seed)
+            # Output Images:
+
+                images = pipe(prompt=prompt, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = 1.0, image=image, mask_image=mask).images
+        
+        
+                res.append(images[0])
+        if mode == "Outpaint":
+            if outpaint_direction == "right":
+                newbg = Image.new("RGBA",(images[0].size[0]+outpaint_size,images[0].size[1]),(0,0,0))
+                newbg2 = Image.new("RGBA",(images[0].size[0]+outpaint_size,images[0].size[1]),(0,0,0))
+                newmaskbg = Image.new("RGBA",(images[0].size[0]+outpaint_size,images[0].size[1]),(0,0,0))
+                newmaskbg.paste(mask,(outpaint_size,0))
+                newbg.paste(original_image,(0,0))
+                newbg2.paste(images[0],(outpaint_size,0))
+                newmaskbg =newmaskbg.convert('L')
+                newmaskbg = ImageOps.invert(newmaskbg)
+                image = Image.composite(newbg, newbg2, newmaskbg)
+            elif outpaint_direction == "left":
+                newbg = Image.new("RGBA",(images[0].size[0]+outpaint_size,images[0].size[1]),(0,0,0))
+                newbg2 = Image.new("RGBA",(images[0].size[0]+outpaint_size,images[0].size[1]),(0,0,0))
+                newmaskbg = Image.new("RGBA",(images[0].size[0]+outpaint_size,images[0].size[1]),(0,0,0))
+                newmaskbg.paste(mask,(0,0))
+                newbg.paste(original_image,(outpaint_size,0))
+                newbg2.paste(images[0],(0,0))
+                newmaskbg =newmaskbg.convert('L')
+                newmaskbg = ImageOps.invert(newmaskbg)
+                image = Image.composite(newbg, newbg2, newmaskbg)
+            elif outpaint_direction =="top":
+                newbg = Image.new("RGBA",(images[0].size[0],images[0].size[1]+outpaint_size),(0,0,0))
+                newbg2 = Image.new("RGBA",(images[0].size[0],images[0].size[1]+outpaint_size),(0,0,0))
+                newmaskbg = Image.new("RGBA",(images[0].size[0],images[0].size[1]+outpaint_size),(0,0,0))
+                newmaskbg.paste(mask,(0,0))
+                newbg.paste(original_image,(0,outpaint_size))
+                newbg2.paste(images[0],(0,0))
+                newmaskbg =newmaskbg.convert('L')
+                newmaskbg = ImageOps.invert(newmaskbg)
+                image = Image.composite(newbg, newbg2, newmaskbg)
+            elif outpaint_direction == "bottom":
+                newbg = Image.new("RGBA",(images[0].size[0],images[0].size[1]+outpaint_size),(0,0,0))
+                newbg2 = Image.new("RGBA",(images[0].size[0],images[0].size[1]+outpaint_size),(0,0,0))
+                newmaskbg = Image.new("RGBA",(images[0].size[0],images[0].size[1]+outpaint_size),(0,0,0))
+                newmaskbg.paste(mask,(0,outpaint_size))
+                newbg.paste(original_image,(0,0))
+                newbg2.paste(images[0],(0,outpaint_size))
+                newmaskbg =newmaskbg.convert('L')
+                newmaskbg = ImageOps.invert(newmaskbg)
+                image = Image.composite(newbg, newbg2, newmaskbg)
+        else:
+            newres = []
+            for i in range(0,1):
+                image = res[0]
+                image = np.array(image).astype(np.float32) / 255.0
+                image = torch.from_numpy(image)[None,]
+                newres.append(image)
+            return (res,)
+        seed = random.randint(0,1000000000000000)
+        torch.manual_seed(seed)
+    # Output Images:
+        if mode == "Outpaint":
+            newres = []
+            if outpaint_direction == "left":
+                mask = Image.new("RGB", (image.size[0],image.size[1]), (0,0,0))
+                draw = ImageDraw.Draw(mask)
+                draw.rectangle((outpaint_size-30,0,outpaint_size+30,res[0].size[1]-outpaint_size), fill=(255,255,255))
+                mask_blur = mask.filter(ImageFilter.GaussianBlur(10))
+                masknew = mask_blur
+            elif outpaint_direction == "right":
+                mask = Image.new("RGB", (image.size[0],image.size[1]), (0,0,0))
+                draw = ImageDraw.Draw(mask)
+                draw.rectangle((res[0].size[1]-outpaint_size-30,0,res[0].size[1]-outpaint_size+30,res[0].size[1]-outpaint_size), fill=(255,255,255))
+                mask_blur = mask.filter(ImageFilter.GaussianBlur(10))
+                masknew = mask_blur
+            elif outpaint_direction == "top":
+                mask = Image.new("RGB", (image.size[0],image.size[1]), (0,0,0))
+                draw = ImageDraw.Draw(mask)
+                draw.rectangle((0,outpaint_size-30,res[0].size[1]-outpaint_size,outpaint_size+30), fill=(255,255,255))
+                mask_blur = mask.filter(ImageFilter.GaussianBlur(10))
+                masknew = mask_blur
+            elif outpaint_direction == "bottom":
+                mask = Image.new("RGB", (image.size[0],image.size[1]), (0,0,0))
+                draw = ImageDraw.Draw(mask)
+                draw.rectangle((0,res[0].size[1]-outpaint_size-30,res[0].size[0]-outpaint_size,res[0].size[1]-outpaint_size+30), fill=(255,255,255))
+                mask_blur = mask.filter(ImageFilter.GaussianBlur(10))
+                masknew = mask_blur
+            image = image.convert("RGB")
+            images = pipe(prompt=prompt, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=image.size[0],height=image.size[1],strength = 1.0, image=image, mask_image=masknew).images
+            newres.append(images[0])
+            return (newres,)
+
+
+
+class LCMGenerate_img2img:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "mode": (["Inpaint", "Outpaint"],),	
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                "text": ("STRING", {"default": '', "multiline": True}),
+                "steps": ("INT", {
+                    "default": 4,
+                    "min": 0,
+                    "max": 360,
+                    "step": 1,
+                }),
+                
+                "width": ("INT", {
+                    "default": 512,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 64,
+                }),
+                "height": ("INT", {
+                    "default": 512,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 64,
+                }),
+                "cfg": ("FLOAT", {
+                    "default": 8.0,
+                    "min": 0,
+                    "max": 30.0,
+                    "step": 0.5,
+                }),
+                "image": ("IMAGE", ),
+                "outpaint_size": ("INT", {
+                    "default": 256,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 64,
+                }),
+                "outpaint_direction": (["left", "right","top","bottom"],),
+                "pipe":("class",),
+                "batch": ("INT", {
+                    "default": 1,
+                    "min": 1,
+                    "max": 100,
+                    "step": 1,
+                }),
+                "strength": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                "prompt_weighting":(["disable","enable"],),
+                "loopback":(["disable","enable"],),
+                "loopback_iterations":("INT", {
+                    "default": 4,
+                    "min": 1,
+                    "max": 5000,
+                    "step": 1,
+                })}
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "mainfunc"
+
+    CATEGORY = "LCM_Nodes/nodes"
+
+    def mainfunc(self, text: str,steps: int,width:int,height:int,cfg:float,seed: int,image,outpaint_size,outpaint_direction,mode,pipe,batch,strength,prompt_weighting,loopback,loopback_iterations):
+        '''
+        # Save Path:
+        save_path = "./lcm_images"
+
+        model_id = folder_paths.get_folder_paths("diffusers")[0]+"/LCM_Dreamshaper_v7"
+
+
+        # Initalize Diffusers Model:
+        vae = AutoencoderKL.from_pretrained(model_id, subfolder="vae")
+        text_encoder = CLIPTextModel.from_pretrained(model_id, subfolder="text_encoder")
+        tokenizer = CLIPTokenizer.from_pretrained(model_id, subfolder="tokenizer")
+        unet = UNet2DConditionModel.from_pretrained(model_id, subfolder="unet", device_map=None, low_cpu_mem_usage=False, local_files_only=True)
+        #safety_checker = StableDiffusionSafetyChecker.from_pretrained(model_id, subfolder="safety_checker")
+        feature_extractor = CLIPImageProcessor.from_pretrained(model_id, subfolder="feature_extractor")
+
+
+        # Initalize Scheduler:
+        scheduler = LCMScheduler_X(beta_start=0.00085, beta_end=0.0120, beta_schedule="scaled_linear", prediction_type="epsilon")
+
+        
+        # LCM Pipeline:
+        pipe = LatentConsistencyModelPipeline_inpaint(vae=vae, text_encoder=text_encoder, tokenizer=tokenizer, unet=unet, scheduler=scheduler, safety_checker=None, feature_extractor=feature_extractor)
+        tomesd.apply_patch(pipe, ratio=0.6)
+        #pipe = pipe.to("cuda")
+        print("###########: ",type(pipe))'''
+        
+        try:
+            img = image[0].numpy()
+            img = img*255.0
+            image = Image.fromarray(np.uint8(img))
+        except:
+            image=image
+        
+
+        
+        res = []
+        prompt = text
+        if prompt_weighting == "enable":
+
+            compel_proc = Compel(tokenizer=pipe.tokenizer, text_encoder=pipe.text_encoder)
+            prompt_embeds = compel_proc(prompt)
+            for i in range(0,batch):
+                seed = random.randint(0,1000000000000000)
+                torch.manual_seed(seed)
+            # Output Images:
+
+                images = pipe(prompt_embeds=prompt_embeds, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = strength, image=image).images
+                res.append(images[0])
+        else:
+            for i in range(0,batch):
+                seed = random.randint(0,1000000000000000)
+                torch.manual_seed(seed)
+            # Output Images:
+                images = pipe(prompt=prompt, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = strength, image=image).images
+                
+                res.append(images[0])
+                if loopback == "enable" and batch==1:
+                    for j in range(0,loopback_iterations):
+                        images = pipe(prompt=prompt, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = strength, image=images[0]).images
+                
+                        res.append(images[0])
+                
+        
+  
+        newres = []
+        for i in range(0,1):
+            image = res[0]
+            image = np.array(image).astype(np.float32) / 255.0
+            image = torch.from_numpy(image)[None,]
+            newres.append(image)
+            
+        return (res,)
+
+
+
+
+class LCM_outpaint_prep:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "direction": (["left", "right","top","bottom"],),
+                "size": ("INT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 64,
+                }
+                ),
+                "image": ("IMAGE", ),}
+        }
+    CATEGORY = "image"
+
+    RETURN_TYPES = ("IMAGE","IMAGE")
+    FUNCTION = "outpaint"
+    def outpaint(self,image, direction,size):
+        growth = 30
+        if direction == "right":
+            img = image[0].numpy()
+            img = img*255.0
+            image = Image.fromarray(np.uint8(img)).convert("RGB")
+            print(image.size)
+            w,h = image.size
+            bimage = Image.new("RGB", (w,h), (0,0,0))
+            image_crop = image.crop((size,0,image.size[0],image.size[1]))
+            bimage.paste(image_crop,(0,0))
+            image = bimage
+            mask = Image.new("RGB", (w,h), (0,0,0))
+            draw = ImageDraw.Draw(mask)
+            draw.rectangle((size-growth, 0, image.size[0],image.size[1]), fill=(255,255,255))
+            mask_blur = mask.filter(ImageFilter.GaussianBlur(10))
+            mask = mask_blur
+        elif direction == "left":
+            img = image[0].numpy()
+            img = img*255.0
+            image = Image.fromarray(np.uint8(img)).convert("RGB")
+            print(image.size)
+            w,h = image.size
+            bimage = Image.new("RGB", (w,h), (0,0,0))
+            image_crop = image.crop((0,0,image.size[0]-size,image.size[1]))
+            bimage.paste(image_crop,(size,0))
+            image = bimage
+            mask = Image.new("RGB", (w,h), (0,0,0))
+            draw = ImageDraw.Draw(mask)
+            draw.rectangle((0, 0, image.size[0]-size+growth,image.size[1]), fill=(255,255,255))
+            mask_blur = mask.filter(ImageFilter.GaussianBlur(10))
+            mask = mask_blur
+        elif direction == "top":
+            img = image[0].numpy()
+            img = img*255.0
+            image = Image.fromarray(np.uint8(img)).convert("RGB")
+            print(image.size)
+            w,h = image.size
+            bimage = Image.new("RGB", (w,h), (0,0,0))
+            image_crop = image.crop((0,0,image.size[0],image.size[1]-size))
+            bimage.paste(image_crop,(0,size))
+            image = bimage
+            mask = Image.new("RGB", (w,h), (0,0,0))
+            draw = ImageDraw.Draw(mask)
+            draw.rectangle((0, 0, image.size[0],image.size[1]-size+growth), fill=(255,255,255))
+            mask_blur = mask.filter(ImageFilter.GaussianBlur(10))
+            mask = mask_blur
+        elif direction == "bottom":
+            img = image[0].numpy()
+            img = img*255.0
+            image = Image.fromarray(np.uint8(img)).convert("RGB")
+            print(image.size)
+            w,h = image.size
+            bimage = Image.new("RGB", (w,h), (0,0,0))
+            image_crop = image.crop((0,size,image.size[0],image.size[1]))
+            bimage.paste(image_crop,(0,0))
+            image = bimage
+            mask = Image.new("RGB", (w,h), (0,0,0))
+            draw = ImageDraw.Draw(mask)
+            draw.rectangle((0, image.size[1]-size-growth, image.size[0],image.size[1]), fill=(255,255,255))
+            mask_blur = mask.filter(ImageFilter.GaussianBlur(10))
+            mask = mask_blur
+        image = np.array(image).astype(np.float32) / 255.0
+        image = torch.from_numpy(image)[None,]
+        mask = np.array(mask).astype(np.float32) / 255.0
+        mask = torch.from_numpy(mask)[None,]
+        return (image,mask)
+
+
+class FreeU_LCM:
+    @classmethod
+    def INPUT_TYPES(s):
+        input_dir = folder_paths.get_input_directory()
+        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+        return {"required":
+                    {"b1": ("FLOAT", {
+                    "default": 1.3,
+                    "min": 0.0,
+                    "max": 3.0,
+                    "step": 0.1,
+                    }),
+                    "b2": ("FLOAT", {
+                    "default": 1.4,
+                    "min": 0.0,
+                    "max": 3.0,
+                    "step": 0.1,
+                    }),
+                    "s1": ("FLOAT", {
+                    "default": 0.9,
+                    "min": 0.0,
+                    "max": 3.0,
+                    "step": 0.1,
+                    }),
+                    "s2": ("FLOAT", {
+                    "default": 0.2,
+                    "min": 0.0,
+                    "max": 3.0,
+                    "step": 0.1,
+                    }),
+                    "pipe":("class",)},
+                }
+
+    CATEGORY = "image"
+
+    RETURN_TYPES = ("class",)
+    FUNCTION = "load_image"
+    def load_image(self, b1,b2,s1,s2,pipe):
+        pipe.enable_freeu(s1=s1, s2=s2, b1=b1, b2=b2)
+        return (pipe,)
+
+
+
+
+
+class LoadImageNode_LCM:
+    @classmethod
+    def INPUT_TYPES(s):
+        input_dir = folder_paths.get_input_directory()
+        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+        return {"required":
+                    {"image": ("STRING", {"multiline": False})},
+                }
+
+    CATEGORY = "image"
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "load_image"
+    def load_image(self, image):
+        print(image)
+        i = Image.open(image)
+        i = ImageOps.exif_transpose(i)
+        image = i.convert("RGB")
+        image = np.array(image).astype(np.float32) / 255.0
+        image = torch.from_numpy(image)[None,]
+        return (image,)
+
+class SaveImage_LCM:
+    def __init__(self):
+        self.output_dir = folder_paths.get_output_directory()
+        self.type = "output"
+        self.prefix_append = ""
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": 
+                    {"images": ("IMAGE", ),
+                     "filename_prefix": ("STRING", {"default": "ComfyUI"})},
+                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+                }
+
+    RETURN_TYPES = ()
+    FUNCTION = "save_images"
+
+    OUTPUT_NODE = True
+
+    CATEGORY = "image"
+
+    def save_images(self, images, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None):
+        filename_prefix += self.prefix_append
+        full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(filename_prefix, self.output_dir, 512, 512)
+        results = list()
+        for image in images:
+            img = image
+            if not args.disable_metadata:
+                metadata = PngInfo()
+                if prompt is not None:
+                    metadata.add_text("prompt", json.dumps(prompt))
+                if extra_pnginfo is not None:
+                    for x in extra_pnginfo:
+                        metadata.add_text(x, json.dumps(extra_pnginfo[x]))
+
+            file = f"{filename}_{counter:05}_.png"
+            img.save(os.path.join(full_output_folder, file), pnginfo=metadata, compress_level=4)
+            
+            results.append({
+                "filename": file,
+                "subfolder": subfolder,
+                "type": self.type
+            })
+            counter += 1
+            
+        return { "ui": { "images": results } }
+
+
+
+NODE_CLASS_MAPPINGS = {
+    "LCMGenerate": LCMGenerate,
+    "LoadImageNode_LCM":LoadImageNode_LCM,
+    "SaveImage_LCM":SaveImage_LCM,
+    "LCM_outpaint_prep":LCM_outpaint_prep,
+    "LCMLoader":LCMLoader,
+    "LCMLoader_img2img":LCMLoader_img2img,
+    "LCMGenerate_img2img": LCMGenerate_img2img,
+    "FreeU_LCM":FreeU_LCM
+}
