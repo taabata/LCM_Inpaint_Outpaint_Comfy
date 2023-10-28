@@ -49,6 +49,7 @@ Load the workflow by choosing the .json file for inpainting or outpainting.
 # Credits
 
 nagolinc's img2img script
+
 patrickvonplaten's StableDiffusionReferencePipeline
 
 
