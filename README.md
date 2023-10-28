@@ -22,6 +22,11 @@ Add '+' for more effect and '-' for less effect. Adding more '+' or '-' increase
 # FreeU
 <img src='https://github.com/taabata/LCM_Inpaint-Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-10-26%2020-39-33.png'>
 
+
+# ReferenceOnly
+<img src='https://github.com/taabata/LCM_Inpaint-Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-10-29%2000-09-32.png'>
+
+
 # How to Use:
 Clone into custom_nodes folder inside your ComfyUI directory
    ```
