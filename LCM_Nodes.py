@@ -6,6 +6,7 @@ import numpy as np
 import folder_paths
 from .LCM.lcm_pipeline_inpaint import LatentConsistencyModelPipeline_inpaint, LCMScheduler_X
 from .LCM.lcm_pipeline_2 import LatentConsistencyModelPipeline_img2img
+from .LCM.LCM_reference_pipeline import LatentConsistencyModelPipeline_reference
 from diffusers import AutoencoderKL, UNet2DConditionModel
 #from diffusers.pipelines.stable_diffusion.safety_checker import StableDiffusionSafetyChecker
 from transformers import CLIPTokenizer, CLIPTextModel, CLIPImageProcessor
@@ -85,6 +86,74 @@ class LCMLoader_img2img:
         else:
             pipe.to("cpu")
         return (pipe,)
+
+class LCMLoader_ReferenceOnly:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "device": (["GPU", "CPU"],),
+                "tomesd_value": ("FLOAT", {
+                    "default": 0.6,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                })
+            }
+        }
+    RETURN_TYPES = ("class",)
+    FUNCTION = "mainfunc"
+
+    CATEGORY = "LCM_Nodes/nodes"
+
+    def mainfunc(self,device,tomesd_value):
+        
+        save_path = "./lcm_images"
+
+        try:
+            model_id = folder_paths.get_folder_paths("diffusers")[0]+"/LCM_Dreamshaper_v7"
+        except:
+            model_id = folder_paths.get_folder_paths("diffusers")[0]+"\LCM_Dreamshaper_v7"
+
+
+        # Initalize Diffusers Model:
+        vae = AutoencoderKL.from_pretrained(model_id, subfolder="vae")
+        text_encoder = CLIPTextModel.from_pretrained(model_id, subfolder="text_encoder")
+        tokenizer = CLIPTokenizer.from_pretrained(model_id, subfolder="tokenizer")
+        unet = UNet2DConditionModel.from_pretrained(model_id, subfolder="unet", device_map=None, low_cpu_mem_usage=False, local_files_only=True)
+        #safety_checker = StableDiffusionSafetyChecker.from_pretrained(model_id, subfolder="safety_checker")
+        feature_extractor = CLIPImageProcessor.from_pretrained(model_id, subfolder="feature_extractor")
+
+
+        # Initalize Scheduler:
+        scheduler = LCMScheduler_X(beta_start=0.00085, beta_end=0.0120, beta_schedule="scaled_linear", prediction_type="epsilon")
+
+        '''
+        # Replace the unet with LCM:
+        lcm_unet_ckpt = "./Downloads/LCM_Dreamshaper_v7_4k-prune-fp16.safetensors"
+        ckpt = load_file(lcm_unet_ckpt)
+        m, u = unet.load_state_dict(ckpt, strict=False)
+        if len(m) > 0:
+            print("missing keys:")
+            print(m)
+        if len(u) > 0:
+            print("unexpected keys:")
+            print(u)
+        '''
+
+        # LCM Pipeline:
+        pipe = LatentConsistencyModelPipeline_reference(vae=vae, text_encoder=text_encoder, tokenizer=tokenizer, unet=unet, scheduler=scheduler, safety_checker=None, feature_extractor=feature_extractor)
+        tomesd.apply_patch(pipe, ratio=tomesd_value)
+        if device == "GPU":
+            pipe.enable_xformers_memory_efficient_attention()
+            pipe.enable_sequential_cpu_offload()
+        else:
+            pipe.to("cpu")
+        return (pipe,)
+
 
 
 class LCMLoader:
@@ -349,7 +418,132 @@ class LCMGenerate:
             newres.append(images[0])
             return (newres,)
 
+class LCMGenerate_ReferenceOnly:
+    def __init__(self):
+        pass
 
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                "text": ("STRING", {"default": '', "multiline": True}),
+                "steps": ("INT", {
+                    "default": 4,
+                    "min": 0,
+                    "max": 360,
+                    "step": 1,
+                }),
+                
+                "width": ("INT", {
+                    "default": 512,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 64,
+                }),
+                "height": ("INT", {
+                    "default": 512,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 64,
+                }),
+                "cfg": ("FLOAT", {
+                    "default": 8.0,
+                    "min": 0,
+                    "max": 30.0,
+                    "step": 0.5,
+                }),
+                "image": ("IMAGE", ),
+                "reference_image": ("IMAGE", ),
+                
+                "pipe":("class",),
+                "batch": ("INT", {
+                    "default": 1,
+                    "min": 1,
+                    "max": 100,
+                    "step": 1,
+                }),
+                "style_fidelity": ("FLOAT", {
+                    "default": 0.5,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                "prompt_weighting":(["disable","enable"],),
+                }
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "mainfunc"
+
+    CATEGORY = "LCM_Nodes/nodes"
+
+    def mainfunc(self, text: str,steps: int,width:int,height:int,cfg:float,seed: int,image,reference_image,pipe,batch,prompt_weighting,style_fidelity):
+        '''
+        # Save Path:
+        save_path = "./lcm_images"
+
+        model_id = folder_paths.get_folder_paths("diffusers")[0]+"/LCM_Dreamshaper_v7"
+
+
+        # Initalize Diffusers Model:
+        vae = AutoencoderKL.from_pretrained(model_id, subfolder="vae")
+        text_encoder = CLIPTextModel.from_pretrained(model_id, subfolder="text_encoder")
+        tokenizer = CLIPTokenizer.from_pretrained(model_id, subfolder="tokenizer")
+        unet = UNet2DConditionModel.from_pretrained(model_id, subfolder="unet", device_map=None, low_cpu_mem_usage=False, local_files_only=True)
+        #safety_checker = StableDiffusionSafetyChecker.from_pretrained(model_id, subfolder="safety_checker")
+        feature_extractor = CLIPImageProcessor.from_pretrained(model_id, subfolder="feature_extractor")
+
+
+        # Initalize Scheduler:
+        scheduler = LCMScheduler_X(beta_start=0.00085, beta_end=0.0120, beta_schedule="scaled_linear", prediction_type="epsilon")
+
+        
+        # LCM Pipeline:
+        pipe = LatentConsistencyModelPipeline_inpaint(vae=vae, text_encoder=text_encoder, tokenizer=tokenizer, unet=unet, scheduler=scheduler, safety_checker=None, feature_extractor=feature_extractor)
+        tomesd.apply_patch(pipe, ratio=0.6)
+        #pipe = pipe.to("cuda")
+        print("###########: ",type(pipe))'''
+        
+        try:
+            img = image[0].numpy()
+            img = img*255.0
+            image = Image.fromarray(np.uint8(img))
+            img = reference_image[0].numpy()
+            img = img*255.0
+            reference_image = Image.fromarray(np.uint8(img))
+        except:
+            image=image
+        
+
+        
+        res = []
+        prompt = text
+        if prompt_weighting == "enable":
+
+            compel_proc = Compel(tokenizer=pipe.tokenizer, text_encoder=pipe.text_encoder)
+            prompt_embeds = compel_proc(prompt)
+            for i in range(0,batch):
+                seed = random.randint(0,1000000000000000)
+                torch.manual_seed(seed)
+            # Output Images:
+
+                images = pipe(prompt_embeds=prompt_embeds, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = 1, image=image,ref_image=reference_image,style_fidelity=style_fidelity).images
+                res.append(images[0])
+
+        else:
+            for i in range(0,batch):
+                seed = random.randint(0,1000000000000000)
+                torch.manual_seed(seed)
+            # Output Images:
+                images = pipe(prompt=prompt, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = 1, image=image,ref_image=reference_image,style_fidelity=style_fidelity).images
+                
+                res.append(images[0])
+
+            
+            
+        return (res,)
 
 class LCMGenerate_img2img:
     def __init__(self):
@@ -715,5 +909,7 @@ NODE_CLASS_MAPPINGS = {
     "LCMLoader":LCMLoader,
     "LCMLoader_img2img":LCMLoader_img2img,
     "LCMGenerate_img2img": LCMGenerate_img2img,
-    "FreeU_LCM":FreeU_LCM
+    "FreeU_LCM":FreeU_LCM,
+    "LCMGenerate_ReferenceOnly":LCMGenerate_ReferenceOnly,
+    "LCMLoader_ReferenceOnly": LCMLoader_ReferenceOnly
 }
