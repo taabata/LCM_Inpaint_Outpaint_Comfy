@@ -37,6 +37,7 @@ Install requirements after changing directory to LCM_Inpaint-Outpaint_Comfy fold
 ```
 cd LCM_Inpaint-Outpaint_Comfy
 pip install -r requirements.txt
+```
 
 Download the model in diffusers format from https://huggingface.co/SimianLuo/LCM_Dreamshaper_v7/tree/main and place it inside model/diffusers folder in your ComfyUI directory. (The name of the model folder should be "LCM_Dreamshaper_v7")
 
@@ -44,6 +45,10 @@ Load the workflow by choosing the .json file for inpainting or outpainting.
 
 
 
+
 # Credits
-Done by refering to nagolinc's img2img script and the diffuser's inpaint pipeline
+
+nagolinc's img2img script
+patrickvonplaten's StableDiffusionReferencePipeline
+
 
