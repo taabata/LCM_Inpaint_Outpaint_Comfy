@@ -1,6 +1,6 @@
 {
-  "last_node_id": 32,
-  "last_link_id": 61,
+  "last_node_id": 31,
+  "last_link_id": 58,
   "nodes": [
     {
       "id": 20,
@@ -28,6 +28,48 @@
       }
     },
     {
+      "id": 4,
+      "type": "LoadImage",
+      "pos": [
+        199,
+        338
+      ],
+      "size": {
+        "0": 315,
+        "1": 314
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            36,
+            51,
+            55
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "ComfyUI_00002_.png",
+        "image"
+      ]
+    },
+    {
       "id": 29,
       "type": "LCMLoader",
       "pos": [
@@ -39,7 +81,7 @@
         "1": 58
       },
       "flags": {},
-      "order": 0,
+      "order": 1,
       "mode": 0,
       "outputs": [
         {
@@ -60,68 +102,24 @@
       ]
     },
     {
-      "id": 4,
-      "type": "LoadImage",
+      "id": 30,
+      "type": "LCM_outpaint_prep",
       "pos": [
-        199,
-        338
+        494,
+        122
       ],
       "size": {
         "0": 315,
-        "1": 314
-      },
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            36,
-            51,
-            58
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": [
-            59
-          ],
-          "shape": 3,
-          "slot_index": 1
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "clipspace/clipspace-mask-317153.5.png [input]",
-        "image"
-      ]
-    },
-    {
-      "id": 31,
-      "type": "MaskToImage",
-      "pos": [
-        585,
-        438
-      ],
-      "size": {
-        "0": 210,
-        "1": 26
+        "1": 102
       },
       "flags": {},
       "order": 3,
       "mode": 0,
       "inputs": [
         {
-          "name": "mask",
-          "type": "MASK",
-          "link": 59
+          "name": "image",
+          "type": "IMAGE",
+          "link": 55
         }
       ],
       "outputs": [
@@ -129,27 +127,40 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            60
+            56
           ],
           "shape": 3,
           "slot_index": 0
+        },
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            57
+          ],
+          "shape": 3,
+          "slot_index": 1
         }
       ],
       "properties": {
-        "Node name for S&R": "MaskToImage"
-      }
+        "Node name for S&R": "LCM_outpaint_prep"
+      },
+      "widgets_values": [
+        "top",
+        256
+      ]
     },
     {
-      "id": 32,
+      "id": 31,
       "type": "SaveImage_LCM",
       "pos": [
-        1471.729054260254,
-        672.6590402221681
+        1444,
+        599
       ],
-      "size": {
-        "0": 315,
-        "1": 58
-      },
+      "size": [
+        315,
+        270
+      ],
       "flags": {},
       "order": 5,
       "mode": 0,
@@ -157,7 +168,7 @@
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 61
+          "link": 58
         }
       ],
       "properties": {
@@ -185,12 +196,12 @@
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 58
+          "link": 56
         },
         {
           "name": "mask",
           "type": "IMAGE",
-          "link": 60
+          "link": 57
         },
         {
           "name": "original_image",
@@ -208,7 +219,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            61
+            58
           ],
           "shape": 3,
           "slot_index": 0
@@ -218,10 +229,10 @@
         "Node name for S&R": "LCMGenerate"
       },
       "widgets_values": [
-        "Inpaint",
-        88586132157671,
+        "Outpaint",
+        961536319671480,
         "randomize",
-        "a bottle filled with the universe",
+        "purple sky",
         8,
         512,
         512,
@@ -259,34 +270,34 @@
       "class"
     ],
     [
+      55,
+      4,
+      0,
+      30,
+      0,
+      "IMAGE"
+    ],
+    [
+      56,
+      30,
+      0,
+      28,
+      0,
+      "IMAGE"
+    ],
+    [
+      57,
+      30,
+      1,
+      28,
+      1,
+      "IMAGE"
+    ],
+    [
       58,
-      4,
-      0,
       28,
       0,
-      "IMAGE"
-    ],
-    [
-      59,
-      4,
-      1,
       31,
-      0,
-      "MASK"
-    ],
-    [
-      60,
-      31,
-      0,
-      28,
-      1,
-      "IMAGE"
-    ],
-    [
-      61,
-      28,
-      0,
-      32,
       0,
       "IMAGE"
     ]
