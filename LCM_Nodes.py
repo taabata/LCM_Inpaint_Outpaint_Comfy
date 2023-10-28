@@ -470,6 +470,12 @@ class LCMGenerate_ReferenceOnly:
                     "max": 1.0,
                     "step": 0.1,
                 }),
+                "strength": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
                 "prompt_weighting":(["disable","enable"],),
                 }
         }
@@ -479,7 +485,7 @@ class LCMGenerate_ReferenceOnly:
 
     CATEGORY = "LCM_Nodes/nodes"
 
-    def mainfunc(self, text: str,steps: int,width:int,height:int,cfg:float,seed: int,image,reference_image,pipe,batch,prompt_weighting,style_fidelity):
+    def mainfunc(self, text: str,steps: int,width:int,height:int,cfg:float,seed: int,image,strength,reference_image,pipe,batch,prompt_weighting,style_fidelity):
         '''
         # Save Path:
         save_path = "./lcm_images"
@@ -529,7 +535,7 @@ class LCMGenerate_ReferenceOnly:
                 torch.manual_seed(seed)
             # Output Images:
 
-                images = pipe(prompt_embeds=prompt_embeds, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = 1, image=image,ref_image=reference_image,style_fidelity=style_fidelity).images
+                images = pipe(prompt_embeds=prompt_embeds, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = strength, image=image,ref_image=reference_image,style_fidelity=style_fidelity).images
                 res.append(images[0])
 
         else:
@@ -537,14 +543,13 @@ class LCMGenerate_ReferenceOnly:
                 seed = random.randint(0,1000000000000000)
                 torch.manual_seed(seed)
             # Output Images:
-                images = pipe(prompt=prompt, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = 1, image=image,ref_image=reference_image,style_fidelity=style_fidelity).images
+                images = pipe(prompt=prompt, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = strength, image=image,ref_image=reference_image,style_fidelity=style_fidelity).images
                 
                 res.append(images[0])
 
             
             
         return (res,)
-
 class LCMGenerate_img2img:
     def __init__(self):
         pass
