@@ -27,6 +27,22 @@ Add '+' for more effect and '-' for less effect. Adding more '+' or '-' increase
 <img src='https://github.com/taabata/LCM_Inpaint-Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-10-29%2000-09-32.png'>
 
 
+# Style Transfer
+<img src='https://github.com/taabata/LCM_Inpaint-Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-10-29%2020-08-52.png'>
+
+
+# Image Variations
+<img src='https://github.com/taabata/LCM_Inpaint-Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-10-29%2002-33-23.png'>
+
+
+# Promptless Outpainting
+<img src='https://github.com/taabata/LCM_Inpaint-Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-10-29%2003-32-29.png'>
+
+
+# Image Blending
+<img src='https://github.com/taabata/LCM_Inpaint-Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-10-29%2022-46-43.png'>
+
+
 # How to Use:
 Clone into custom_nodes folder inside your ComfyUI directory
    ```
