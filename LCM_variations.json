@@ -1,0 +1,204 @@
+{
+  "last_node_id": 6,
+  "last_link_id": 12,
+  "nodes": [
+    {
+      "id": 5,
+      "type": "SaveImage_LCM",
+      "pos": [
+        694,
+        -76
+      ],
+      "size": {
+        "0": 315,
+        "1": 270
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 11
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage_LCM"
+      },
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [
+        -396,
+        -80
+      ],
+      "size": {
+        "0": 315,
+        "1": 314
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            8,
+            12
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "A_portrait_of_Mr._Bean_depicted_as_a_medieval_king_on_throne_close_up_shot_Dieselpunk_grimy_steel_oil_50s_mechanised_punk_cousin_of_steamp_-n_6_-i_-s_150_-S_3494841270_ts-1660154971_idx-1.png",
+        "image"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "LCMGenerate_ReferenceOnly",
+      "pos": [
+        116,
+        -98
+      ],
+      "size": {
+        "0": 400,
+        "1": 356
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 8
+        },
+        {
+          "name": "reference_image",
+          "type": "IMAGE",
+          "link": 12
+        },
+        {
+          "name": "pipe",
+          "type": "class",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            11
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMGenerate_ReferenceOnly"
+      },
+      "widgets_values": [
+        260564963984473,
+        "randomize",
+        "",
+        4,
+        512,
+        512,
+        8,
+        1,
+        1,
+        0.7000000000000001,
+        "disable"
+      ]
+    },
+    {
+      "id": 1,
+      "type": "LCMLoader_ReferenceOnly",
+      "pos": [
+        -402,
+        412
+      ],
+      "size": {
+        "0": 315,
+        "1": 82
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "class",
+          "type": "class",
+          "links": [
+            10
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMLoader_ReferenceOnly"
+      },
+      "widgets_values": [
+        "GPU",
+        0.6
+      ]
+    }
+  ],
+  "links": [
+    [
+      8,
+      3,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      10,
+      1,
+      0,
+      6,
+      2,
+      "class"
+    ],
+    [
+      11,
+      6,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      12,
+      3,
+      0,
+      6,
+      1,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}
