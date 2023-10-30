@@ -30,6 +30,7 @@ class LCMLoader_img2img:
         return {
             "required": {
                 "device": (["GPU", "CPU"],),
+                "model_path": ("STRING", {"default": '', "multiline": False}),
                 "tomesd_value": ("FLOAT", {
                     "default": 0.6,
                     "min": 0.0,
@@ -43,14 +44,16 @@ class LCMLoader_img2img:
 
     CATEGORY = "LCM_Nodes/nodes"
 
-    def mainfunc(self,device,tomesd_value):
+    def mainfunc(self,device,tomesd_value,model_path):
         
         save_path = "./lcm_images"
-
-        try:
-            model_id = folder_paths.get_folder_paths("diffusers")[0]+"/LCM_Dreamshaper_v7"
-        except:
-            model_id = folder_paths.get_folder_paths("diffusers")[0]+"\LCM_Dreamshaper_v7"
+        if model_path != "":
+            model_id = model_path
+        else:
+            try:
+                model_id = folder_paths.get_folder_paths("diffusers")[0]+"/LCM_Dreamshaper_v7"
+            except:
+                model_id = folder_paths.get_folder_paths("diffusers")[0]+"\LCM_Dreamshaper_v7"
 
 
         # Initalize Diffusers Model:
@@ -98,6 +101,7 @@ class LCMLoader_ReferenceOnly:
         return {
             "required": {
                 "device": (["GPU", "CPU"],),
+                "model_path": ("STRING", {"default": '', "multiline": False}),
                 "tomesd_value": ("FLOAT", {
                     "default": 0.6,
                     "min": 0.0,
@@ -111,14 +115,18 @@ class LCMLoader_ReferenceOnly:
 
     CATEGORY = "LCM_Nodes/nodes"
 
-    def mainfunc(self,device,tomesd_value):
+    def mainfunc(self,device,tomesd_value,model_path):
         
         save_path = "./lcm_images"
 
-        try:
-            model_id = folder_paths.get_folder_paths("diffusers")[0]+"/LCM_Dreamshaper_v7"
-        except:
-            model_id = folder_paths.get_folder_paths("diffusers")[0]+"\LCM_Dreamshaper_v7"
+        if model_path != "":
+            model_id = model_path
+        else:
+            try:
+                model_id = folder_paths.get_folder_paths("diffusers")[0]+"/LCM_Dreamshaper_v7"
+            except:
+                model_id = folder_paths.get_folder_paths("diffusers")[0]+"\LCM_Dreamshaper_v7"
+
 
 
         # Initalize Diffusers Model:
@@ -166,6 +174,7 @@ class LCMLoader_RefInpaint:
         return {
             "required": {
                 "device": (["GPU", "CPU"],),
+                "model_path": ("STRING", {"default": '', "multiline": False}),
                 "tomesd_value": ("FLOAT", {
                     "default": 0.6,
                     "min": 0.0,
@@ -179,14 +188,18 @@ class LCMLoader_RefInpaint:
 
     CATEGORY = "LCM_Nodes/nodes"
 
-    def mainfunc(self,device,tomesd_value):
+    def mainfunc(self,device,tomesd_value,model_path):
         
         save_path = "./lcm_images"
 
-        try:
-            model_id = folder_paths.get_folder_paths("diffusers")[0]+"/LCM_Dreamshaper_v7"
-        except:
-            model_id = folder_paths.get_folder_paths("diffusers")[0]+"\LCM_Dreamshaper_v7"
+        if model_path != "":
+            model_id = model_path
+        else:
+            try:
+                model_id = folder_paths.get_folder_paths("diffusers")[0]+"/LCM_Dreamshaper_v7"
+            except:
+                model_id = folder_paths.get_folder_paths("diffusers")[0]+"\LCM_Dreamshaper_v7"
+
 
 
         # Initalize Diffusers Model:
@@ -233,7 +246,14 @@ class LCMLoader:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "device": (["GPU", "CPU"],)
+                "device": (["GPU", "CPU"],),
+                "model_path": ("STRING", {"default": '', "multiline": False}),
+                "tomesd_value": ("FLOAT", {
+                    "default": 0.6,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                })
             }
         }
     RETURN_TYPES = ("class",)
@@ -241,11 +261,18 @@ class LCMLoader:
 
     CATEGORY = "LCM_Nodes/nodes"
 
-    def mainfunc(self,device):
+    def mainfunc(self,device,tomesd_value,model_path):
         
         save_path = "./lcm_images"
 
-        model_id = folder_paths.get_folder_paths("diffusers")[0]+"/LCM_Dreamshaper_v7"
+        if model_path != "":
+            model_id = model_path
+        else:
+            try:
+                model_id = folder_paths.get_folder_paths("diffusers")[0]+"/LCM_Dreamshaper_v7"
+            except:
+                model_id = folder_paths.get_folder_paths("diffusers")[0]+"\LCM_Dreamshaper_v7"
+
 
 
         # Initalize Diffusers Model:
@@ -275,14 +302,13 @@ class LCMLoader:
 
         # LCM Pipeline:
         pipe = LatentConsistencyModelPipeline_inpaint(vae=vae, text_encoder=text_encoder, tokenizer=tokenizer, unet=unet, scheduler=scheduler, safety_checker=None, feature_extractor=feature_extractor)
-        tomesd.apply_patch(pipe, ratio=0.6)
+        tomesd.apply_patch(pipe, ratio=tomesd_value)
         if device == "GPU":
             pipe.enable_xformers_memory_efficient_attention()
             pipe.enable_sequential_cpu_offload()
         else:
             pipe.to("cpu")
         return (pipe,)
-
 class LCMGenerate:
     def __init__(self):
         pass
