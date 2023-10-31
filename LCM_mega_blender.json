@@ -1,0 +1,2459 @@
+{
+  "last_node_id": 63,
+  "last_link_id": 108,
+  "nodes": [
+    {
+      "id": 6,
+      "type": "LCMGenerate_ReferenceOnly",
+      "pos": [
+        65,
+        -363
+      ],
+      "size": {
+        "0": 400,
+        "1": 356
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 63
+        },
+        {
+          "name": "reference_image",
+          "type": "IMAGE",
+          "link": 64
+        },
+        {
+          "name": "pipe",
+          "type": "class",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            11,
+            30
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMGenerate_ReferenceOnly"
+      },
+      "widgets_values": [
+        228199244388654,
+        "randomize",
+        "",
+        1,
+        512,
+        512,
+        8,
+        1,
+        0.30000000000000004,
+        0.5,
+        "disable"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "LCMGenerate_ReferenceOnly",
+      "pos": [
+        72,
+        103
+      ],
+      "size": {
+        "0": 400,
+        "1": 356
+      },
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 65
+        },
+        {
+          "name": "reference_image",
+          "type": "IMAGE",
+          "link": 66
+        },
+        {
+          "name": "pipe",
+          "type": "class",
+          "link": 29
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            26,
+            31
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMGenerate_ReferenceOnly"
+      },
+      "widgets_values": [
+        618121318178343,
+        "randomize",
+        "",
+        1,
+        512,
+        512,
+        8,
+        1,
+        0.30000000000000004,
+        0.5,
+        "disable"
+      ]
+    },
+    {
+      "id": 16,
+      "type": "ImageOutputToComfyNodes",
+      "pos": [
+        639,
+        69
+      ],
+      "size": {
+        "0": 210,
+        "1": 26
+      },
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            34
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageOutputToComfyNodes"
+      }
+    },
+    {
+      "id": 5,
+      "type": "SaveImage_LCM",
+      "pos": [
+        644,
+        -547
+      ],
+      "size": {
+        "0": 315,
+        "1": 270
+      },
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 11
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage_LCM"
+      },
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "SaveImage_LCM",
+      "pos": [
+        644,
+        242
+      ],
+      "size": {
+        "0": 315,
+        "1": 270
+      },
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 26
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage_LCM"
+      },
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 20,
+      "type": "LCMGenerate_ReferenceOnly",
+      "pos": [
+        90,
+        1380
+      ],
+      "size": {
+        "0": 400,
+        "1": 356.0000305175781
+      },
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 70
+        },
+        {
+          "name": "reference_image",
+          "type": "IMAGE",
+          "link": 69
+        },
+        {
+          "name": "pipe",
+          "type": "class",
+          "link": 45
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            37,
+            39
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMGenerate_ReferenceOnly"
+      },
+      "widgets_values": [
+        978751425812732,
+        "randomize",
+        "",
+        1,
+        512,
+        512,
+        8,
+        1,
+        0.30000000000000004,
+        0.5,
+        "disable"
+      ]
+    },
+    {
+      "id": 21,
+      "type": "SaveImage_LCM",
+      "pos": [
+        660,
+        1520
+      ],
+      "size": {
+        "0": 315,
+        "1": 270
+      },
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 37
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage_LCM"
+      },
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 18,
+      "type": "SaveImage_LCM",
+      "pos": [
+        660,
+        730
+      ],
+      "size": {
+        "0": 315,
+        "1": 270
+      },
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 36
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage_LCM"
+      },
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 19,
+      "type": "LCMGenerate_ReferenceOnly",
+      "pos": [
+        80,
+        920
+      ],
+      "size": {
+        "0": 400,
+        "1": 356.0000305175781
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 68
+        },
+        {
+          "name": "reference_image",
+          "type": "IMAGE",
+          "link": 67
+        },
+        {
+          "name": "pipe",
+          "type": "class",
+          "link": 44
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            36,
+            38
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMGenerate_ReferenceOnly"
+      },
+      "widgets_values": [
+        800933942456106,
+        "randomize",
+        "",
+        1,
+        512,
+        512,
+        8,
+        1,
+        0.30000000000000004,
+        0.5,
+        "disable"
+      ]
+    },
+    {
+      "id": 27,
+      "type": "SaveImage_LCM",
+      "pos": [
+        1610,
+        1250
+      ],
+      "size": {
+        "0": 315,
+        "1": 270
+      },
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 47
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage_LCM"
+      },
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 15,
+      "type": "ImageOutputToComfyNodes",
+      "pos": [
+        654,
+        -36
+      ],
+      "size": {
+        "0": 210,
+        "1": 26
+      },
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            33
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageOutputToComfyNodes"
+      }
+    },
+    {
+      "id": 22,
+      "type": "ImageOutputToComfyNodes",
+      "pos": [
+        670,
+        1240
+      ],
+      "size": {
+        "0": 210,
+        "1": 26
+      },
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 38
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            50
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageOutputToComfyNodes"
+      }
+    },
+    {
+      "id": 23,
+      "type": "ImageOutputToComfyNodes",
+      "pos": [
+        660,
+        1350
+      ],
+      "size": {
+        "0": 210,
+        "1": 26
+      },
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 39
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            51
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageOutputToComfyNodes"
+      }
+    },
+    {
+      "id": 17,
+      "type": "SaveImage_LCM",
+      "pos": [
+        1610,
+        -497
+      ],
+      "size": {
+        "0": 315,
+        "1": 270
+      },
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 35
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage_LCM"
+      },
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 14,
+      "type": "LCMGenerate_ReferenceOnly",
+      "pos": [
+        1032.0847503906243,
+        -137.22037771484395
+      ],
+      "size": {
+        "0": 400,
+        "1": 356
+      },
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 33
+        },
+        {
+          "name": "reference_image",
+          "type": "IMAGE",
+          "link": 34
+        },
+        {
+          "name": "pipe",
+          "type": "class",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            35,
+            53
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMGenerate_ReferenceOnly"
+      },
+      "widgets_values": [
+        189497208183253,
+        "randomize",
+        "",
+        1,
+        512,
+        512,
+        8,
+        1,
+        0.30000000000000004,
+        0.5,
+        "disable"
+      ]
+    },
+    {
+      "id": 30,
+      "type": "ImageOutputToComfyNodes",
+      "pos": [
+        1590,
+        420
+      ],
+      "size": {
+        "0": 210,
+        "1": 26
+      },
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 53
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            54
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageOutputToComfyNodes"
+      }
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        -950,
+        70
+      ],
+      "size": {
+        "0": 315,
+        "1": 314
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            58
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "00014-2691827640-A humanoid robot (colored green_1.5), in a clean white room, unreal engine, blender (1).png",
+        "image"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "LoadImage",
+      "pos": [
+        -950,
+        450
+      ],
+      "size": {
+        "0": 315,
+        "1": 314
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            59
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "00023-741401078-A portrait of [mr incredible_(sks malsof_0.3)_3] from the incredibles movie, (classical disney_1.2).png",
+        "image"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "LoadImage",
+      "pos": [
+        -950,
+        820
+      ],
+      "size": {
+        "0": 315,
+        "1": 314
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            61
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "00028-774549936-a drawing of an old man with a beard and mustache, by Hristofor Žefarović, reddit, pop surrealism, wearing wizard hats, digitall.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [
+        -952,
+        -303
+      ],
+      "size": {
+        "0": 315,
+        "1": 314
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            62
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "0e00b7ea-5bac-4e77-bd07-3f3e955296f5 (1).png",
+        "image"
+      ]
+    },
+    {
+      "id": 26,
+      "type": "LCMGenerate_ReferenceOnly",
+      "pos": [
+        1040,
+        1110
+      ],
+      "size": {
+        "0": 400,
+        "1": 356.0000305175781
+      },
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 51
+        },
+        {
+          "name": "reference_image",
+          "type": "IMAGE",
+          "link": 50
+        },
+        {
+          "name": "pipe",
+          "type": "class",
+          "link": 52
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            47,
+            49
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMGenerate_ReferenceOnly"
+      },
+      "widgets_values": [
+        711046052816448,
+        "randomize",
+        "",
+        1,
+        512,
+        512,
+        8,
+        1,
+        0.30000000000000004,
+        0.5,
+        "disable"
+      ]
+    },
+    {
+      "id": 29,
+      "type": "ImageOutputToComfyNodes",
+      "pos": [
+        1595,
+        562
+      ],
+      "size": {
+        "0": 210,
+        "1": 26
+      },
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 49
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            55
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageOutputToComfyNodes"
+      }
+    },
+    {
+      "id": 1,
+      "type": "LCMLoader_ReferenceOnly",
+      "pos": [
+        -401,
+        -495
+      ],
+      "size": {
+        "0": 315,
+        "1": 106
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "class",
+          "type": "class",
+          "links": [
+            10,
+            29,
+            32,
+            44,
+            45,
+            52,
+            56,
+            79
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMLoader_ReferenceOnly"
+      },
+      "widgets_values": [
+        "GPU",
+        "",
+        0.6000000000000001
+      ]
+    },
+    {
+      "id": 37,
+      "type": "ImageOutputToComfyNodes",
+      "pos": [
+        2991,
+        1027
+      ],
+      "size": {
+        "0": 210,
+        "1": 26
+      },
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 75
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            76,
+            77
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageOutputToComfyNodes"
+      }
+    },
+    {
+      "id": 43,
+      "type": "ImageOutputToComfyNodes",
+      "pos": [
+        2971.6898290533845,
+        1432.0800899546327
+      ],
+      "size": {
+        "0": 210,
+        "1": 26
+      },
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageOutputToComfyNodes"
+      }
+    },
+    {
+      "id": 51,
+      "type": "ImageOutputToComfyNodes",
+      "pos": [
+        2980,
+        1960
+      ],
+      "size": {
+        "0": 210,
+        "1": 26
+      },
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageOutputToComfyNodes"
+      }
+    },
+    {
+      "id": 44,
+      "type": "ImageOutputToComfyNodes",
+      "pos": [
+        2971.6898290533845,
+        1432.0800899546327
+      ],
+      "size": {
+        "0": 210,
+        "1": 26
+      },
+      "flags": {},
+      "order": 37,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 81
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            82,
+            88
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageOutputToComfyNodes"
+      }
+    },
+    {
+      "id": 58,
+      "type": "ImageOutputToComfyNodes",
+      "pos": [
+        2990,
+        2840
+      ],
+      "size": {
+        "0": 210,
+        "1": 26
+      },
+      "flags": {},
+      "order": 46,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 94
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            108
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageOutputToComfyNodes"
+      }
+    },
+    {
+      "id": 40,
+      "type": "Reroute",
+      "pos": [
+        1750,
+        1002
+      ],
+      "size": [
+        75,
+        26
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "",
+          "type": "*",
+          "link": 79
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "class",
+          "links": [
+            80,
+            89,
+            90,
+            95
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "showOutputText": false,
+        "horizontal": false
+      }
+    },
+    {
+      "id": 52,
+      "type": "ImageOutputToComfyNodes",
+      "pos": [
+        2980,
+        1960
+      ],
+      "size": {
+        "0": 210,
+        "1": 26
+      },
+      "flags": {},
+      "order": 40,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 86
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            85,
+            96
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageOutputToComfyNodes"
+      }
+    },
+    {
+      "id": 48,
+      "type": "ImageOutputToComfyNodes",
+      "pos": [
+        2990,
+        2410
+      ],
+      "size": {
+        "0": 210,
+        "1": 26
+      },
+      "flags": {},
+      "order": 43,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 84
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            83,
+            97
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageOutputToComfyNodes"
+      }
+    },
+    {
+      "id": 31,
+      "type": "ImageShuffle",
+      "pos": [
+        -450,
+        469
+      ],
+      "size": {
+        "0": 315,
+        "1": 142
+      },
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_1",
+          "type": "IMAGE",
+          "link": 62
+        },
+        {
+          "name": "image_2",
+          "type": "IMAGE",
+          "link": 58
+        },
+        {
+          "name": "image_3",
+          "type": "IMAGE",
+          "link": 59
+        },
+        {
+          "name": "image_4",
+          "type": "IMAGE",
+          "link": 61
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            63,
+            67,
+            71,
+            78
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            64,
+            68,
+            72,
+            87
+          ],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            65,
+            69,
+            73,
+            104
+          ],
+          "shape": 3,
+          "slot_index": 2
+        },
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            66,
+            70,
+            74,
+            106
+          ],
+          "shape": 3,
+          "slot_index": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageShuffle"
+      },
+      "widgets_values": [
+        256850411316349,
+        "randomize"
+      ]
+    },
+    {
+      "id": 62,
+      "type": "Reroute",
+      "pos": [
+        1878,
+        2518
+      ],
+      "size": [
+        75,
+        26
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "",
+          "type": "*",
+          "link": 106
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "IMAGE",
+          "links": [
+            107
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "showOutputText": false,
+        "horizontal": false
+      }
+    },
+    {
+      "id": 39,
+      "type": "PreviewImage",
+      "pos": [
+        3596,
+        1125
+      ],
+      "size": {
+        "0": 210,
+        "1": 246
+      },
+      "flags": {},
+      "order": 36,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 77
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 61,
+      "type": "Reroute",
+      "pos": [
+        1937,
+        2050
+      ],
+      "size": [
+        75,
+        26
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "",
+          "type": "*",
+          "link": 104
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "IMAGE",
+          "links": [
+            105
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "showOutputText": false,
+        "horizontal": false
+      }
+    },
+    {
+      "id": 25,
+      "type": "LCMGenerate_ReferenceOnly",
+      "pos": [
+        2312,
+        549
+      ],
+      "size": {
+        "0": 400,
+        "1": 356.0000305175781
+      },
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 54
+        },
+        {
+          "name": "reference_image",
+          "type": "IMAGE",
+          "link": 55
+        },
+        {
+          "name": "pipe",
+          "type": "class",
+          "link": 56
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            75
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMGenerate_ReferenceOnly"
+      },
+      "widgets_values": [
+        119300300428338,
+        "randomize",
+        "",
+        1,
+        512,
+        512,
+        8,
+        1,
+        0.30000000000000004,
+        0.7000000000000001,
+        "disable"
+      ]
+    },
+    {
+      "id": 45,
+      "type": "LCMGenerate_ReferenceOnly",
+      "pos": [
+        2310,
+        2220
+      ],
+      "size": {
+        "0": 400,
+        "1": 356.0000305175781
+      },
+      "flags": {},
+      "order": 42,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 96
+        },
+        {
+          "name": "reference_image",
+          "type": "IMAGE",
+          "link": 105
+        },
+        {
+          "name": "pipe",
+          "type": "class",
+          "link": 90
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            84
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMGenerate_ReferenceOnly"
+      },
+      "widgets_values": [
+        109417945969653,
+        "randomize",
+        "",
+        2,
+        512,
+        512,
+        8,
+        1,
+        0.2,
+        0.6000000000000001,
+        "disable"
+      ]
+    },
+    {
+      "id": 49,
+      "type": "LCMGenerate_ReferenceOnly",
+      "pos": [
+        2310,
+        1720
+      ],
+      "size": {
+        "0": 400,
+        "1": 356.0000305175781
+      },
+      "flags": {},
+      "order": 39,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 88
+        },
+        {
+          "name": "reference_image",
+          "type": "IMAGE",
+          "link": 87
+        },
+        {
+          "name": "pipe",
+          "type": "class",
+          "link": 89
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            86
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMGenerate_ReferenceOnly"
+      },
+      "widgets_values": [
+        866140657649176,
+        "randomize",
+        "",
+        2,
+        512,
+        512,
+        8,
+        1,
+        0.2,
+        0.6000000000000001,
+        "disable"
+      ]
+    },
+    {
+      "id": 36,
+      "type": "LCMGenerate_ReferenceOnly",
+      "pos": [
+        2300,
+        1197
+      ],
+      "size": {
+        "0": 400,
+        "1": 356.0000305175781
+      },
+      "flags": {},
+      "order": 35,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 76
+        },
+        {
+          "name": "reference_image",
+          "type": "IMAGE",
+          "link": 78
+        },
+        {
+          "name": "pipe",
+          "type": "class",
+          "link": 80
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            81
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMGenerate_ReferenceOnly"
+      },
+      "widgets_values": [
+        260267623180384,
+        "randomize",
+        "",
+        2,
+        512,
+        512,
+        8,
+        1,
+        0.2,
+        0.6000000000000001,
+        "disable"
+      ]
+    },
+    {
+      "id": 56,
+      "type": "LCMGenerate_ReferenceOnly",
+      "pos": [
+        2310,
+        2650
+      ],
+      "size": {
+        "0": 400,
+        "1": 356.0000305175781
+      },
+      "flags": {},
+      "order": 45,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 97
+        },
+        {
+          "name": "reference_image",
+          "type": "IMAGE",
+          "link": 107
+        },
+        {
+          "name": "pipe",
+          "type": "class",
+          "link": 95
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            94
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMGenerate_ReferenceOnly"
+      },
+      "widgets_values": [
+        843583015917737,
+        "randomize",
+        "",
+        2,
+        512,
+        512,
+        8,
+        1,
+        0.2,
+        0.6000000000000001,
+        "disable"
+      ]
+    },
+    {
+      "id": 42,
+      "type": "PreviewImage",
+      "pos": [
+        3435,
+        -353
+      ],
+      "size": {
+        "0": 210,
+        "1": 246
+      },
+      "flags": {},
+      "order": 38,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 82
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 34,
+      "type": "PreviewImage",
+      "pos": [
+        3015,
+        -350
+      ],
+      "size": {
+        "0": 210,
+        "1": 246
+      },
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 72
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 35,
+      "type": "PreviewImage",
+      "pos": [
+        3010,
+        -55
+      ],
+      "size": {
+        "0": 210,
+        "1": 246
+      },
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 74
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 32,
+      "type": "PreviewImage",
+      "pos": [
+        2788,
+        -350
+      ],
+      "size": {
+        "0": 210,
+        "1": 246
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 71
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 33,
+      "type": "PreviewImage",
+      "pos": [
+        2787,
+        -50
+      ],
+      "size": {
+        "0": 210,
+        "1": 246
+      },
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 73
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 50,
+      "type": "PreviewImage",
+      "pos": [
+        3656,
+        -358
+      ],
+      "size": {
+        "0": 210,
+        "1": 246
+      },
+      "flags": {},
+      "order": 41,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 85
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 46,
+      "type": "PreviewImage",
+      "pos": [
+        3880,
+        -360
+      ],
+      "size": {
+        "0": 210,
+        "1": 246
+      },
+      "flags": {},
+      "order": 44,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 83
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 63,
+      "type": "SaveImage",
+      "pos": [
+        4107,
+        -367
+      ],
+      "size": {
+        "0": 609.8848266601562,
+        "1": 613.1549072265625
+      },
+      "flags": {},
+      "order": 47,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 108
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    }
+  ],
+  "links": [
+    [
+      10,
+      1,
+      0,
+      6,
+      2,
+      "class"
+    ],
+    [
+      11,
+      6,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      26,
+      12,
+      0,
+      13,
+      0,
+      "IMAGE"
+    ],
+    [
+      29,
+      1,
+      0,
+      12,
+      2,
+      "class"
+    ],
+    [
+      30,
+      6,
+      0,
+      15,
+      0,
+      "IMAGE"
+    ],
+    [
+      31,
+      12,
+      0,
+      16,
+      0,
+      "IMAGE"
+    ],
+    [
+      32,
+      1,
+      0,
+      14,
+      2,
+      "class"
+    ],
+    [
+      33,
+      15,
+      0,
+      14,
+      0,
+      "IMAGE"
+    ],
+    [
+      34,
+      16,
+      0,
+      14,
+      1,
+      "IMAGE"
+    ],
+    [
+      35,
+      14,
+      0,
+      17,
+      0,
+      "IMAGE"
+    ],
+    [
+      36,
+      19,
+      0,
+      18,
+      0,
+      "IMAGE"
+    ],
+    [
+      37,
+      20,
+      0,
+      21,
+      0,
+      "IMAGE"
+    ],
+    [
+      38,
+      19,
+      0,
+      22,
+      0,
+      "IMAGE"
+    ],
+    [
+      39,
+      20,
+      0,
+      23,
+      0,
+      "IMAGE"
+    ],
+    [
+      44,
+      1,
+      0,
+      19,
+      2,
+      "class"
+    ],
+    [
+      45,
+      1,
+      0,
+      20,
+      2,
+      "class"
+    ],
+    [
+      47,
+      26,
+      0,
+      27,
+      0,
+      "IMAGE"
+    ],
+    [
+      49,
+      26,
+      0,
+      29,
+      0,
+      "IMAGE"
+    ],
+    [
+      50,
+      22,
+      0,
+      26,
+      1,
+      "IMAGE"
+    ],
+    [
+      51,
+      23,
+      0,
+      26,
+      0,
+      "IMAGE"
+    ],
+    [
+      52,
+      1,
+      0,
+      26,
+      2,
+      "class"
+    ],
+    [
+      53,
+      14,
+      0,
+      30,
+      0,
+      "IMAGE"
+    ],
+    [
+      54,
+      30,
+      0,
+      25,
+      0,
+      "IMAGE"
+    ],
+    [
+      55,
+      29,
+      0,
+      25,
+      1,
+      "IMAGE"
+    ],
+    [
+      56,
+      1,
+      0,
+      25,
+      2,
+      "class"
+    ],
+    [
+      58,
+      2,
+      0,
+      31,
+      1,
+      "IMAGE"
+    ],
+    [
+      59,
+      10,
+      0,
+      31,
+      2,
+      "IMAGE"
+    ],
+    [
+      61,
+      11,
+      0,
+      31,
+      3,
+      "IMAGE"
+    ],
+    [
+      62,
+      3,
+      0,
+      31,
+      0,
+      "IMAGE"
+    ],
+    [
+      63,
+      31,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      64,
+      31,
+      1,
+      6,
+      1,
+      "IMAGE"
+    ],
+    [
+      65,
+      31,
+      2,
+      12,
+      0,
+      "IMAGE"
+    ],
+    [
+      66,
+      31,
+      3,
+      12,
+      1,
+      "IMAGE"
+    ],
+    [
+      67,
+      31,
+      0,
+      19,
+      1,
+      "IMAGE"
+    ],
+    [
+      68,
+      31,
+      1,
+      19,
+      0,
+      "IMAGE"
+    ],
+    [
+      69,
+      31,
+      2,
+      20,
+      1,
+      "IMAGE"
+    ],
+    [
+      70,
+      31,
+      3,
+      20,
+      0,
+      "IMAGE"
+    ],
+    [
+      71,
+      31,
+      0,
+      32,
+      0,
+      "IMAGE"
+    ],
+    [
+      72,
+      31,
+      1,
+      34,
+      0,
+      "IMAGE"
+    ],
+    [
+      73,
+      31,
+      2,
+      33,
+      0,
+      "IMAGE"
+    ],
+    [
+      74,
+      31,
+      3,
+      35,
+      0,
+      "IMAGE"
+    ],
+    [
+      75,
+      25,
+      0,
+      37,
+      0,
+      "IMAGE"
+    ],
+    [
+      76,
+      37,
+      0,
+      36,
+      0,
+      "IMAGE"
+    ],
+    [
+      77,
+      37,
+      0,
+      39,
+      0,
+      "IMAGE"
+    ],
+    [
+      78,
+      31,
+      0,
+      36,
+      1,
+      "IMAGE"
+    ],
+    [
+      79,
+      1,
+      0,
+      40,
+      0,
+      "*"
+    ],
+    [
+      80,
+      40,
+      0,
+      36,
+      2,
+      "class"
+    ],
+    [
+      81,
+      36,
+      0,
+      44,
+      0,
+      "IMAGE"
+    ],
+    [
+      82,
+      44,
+      0,
+      42,
+      0,
+      "IMAGE"
+    ],
+    [
+      83,
+      48,
+      0,
+      46,
+      0,
+      "IMAGE"
+    ],
+    [
+      84,
+      45,
+      0,
+      48,
+      0,
+      "IMAGE"
+    ],
+    [
+      85,
+      52,
+      0,
+      50,
+      0,
+      "IMAGE"
+    ],
+    [
+      86,
+      49,
+      0,
+      52,
+      0,
+      "IMAGE"
+    ],
+    [
+      87,
+      31,
+      1,
+      49,
+      1,
+      "IMAGE"
+    ],
+    [
+      88,
+      44,
+      0,
+      49,
+      0,
+      "IMAGE"
+    ],
+    [
+      89,
+      40,
+      0,
+      49,
+      2,
+      "class"
+    ],
+    [
+      90,
+      40,
+      0,
+      45,
+      2,
+      "class"
+    ],
+    [
+      94,
+      56,
+      0,
+      58,
+      0,
+      "IMAGE"
+    ],
+    [
+      95,
+      40,
+      0,
+      56,
+      2,
+      "class"
+    ],
+    [
+      96,
+      52,
+      0,
+      45,
+      0,
+      "IMAGE"
+    ],
+    [
+      97,
+      48,
+      0,
+      56,
+      0,
+      "IMAGE"
+    ],
+    [
+      104,
+      31,
+      2,
+      61,
+      0,
+      "*"
+    ],
+    [
+      105,
+      61,
+      0,
+      45,
+      1,
+      "IMAGE"
+    ],
+    [
+      106,
+      31,
+      3,
+      62,
+      0,
+      "*"
+    ],
+    [
+      107,
+      62,
+      0,
+      56,
+      1,
+      "IMAGE"
+    ],
+    [
+      108,
+      58,
+      0,
+      63,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}
