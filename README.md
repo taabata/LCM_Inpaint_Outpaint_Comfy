@@ -46,8 +46,8 @@ Add '+' for more effect and '-' for less effect. Adding more '+' or '-' increase
 
 
 
-for t2iadapter, should place the models in 'ComfyUI/models/controlnet/t2i_adapter_canny> (change canny with the name of the model)
-for controlnet, should place the models in 'ComfyUI/models/controlnet/cn_canny> (change canny with the name of the model)
+for t2iadapter, should place the models in 'ComfyUI/models/controlnet/t2i_adapter_canny' (change canny with the name of the model)
+for controlnet, should place the models in 'ComfyUI/models/controlnet/cn_canny' (change canny with the name of the model)
 
 
 
