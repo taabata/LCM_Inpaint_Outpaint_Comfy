@@ -74,4 +74,5 @@ nagolinc's img2img script
 
 patrickvonplaten's StableDiffusionReferencePipeline
 
+Michael Poutre https://github.com/M1kep T2IAdapters
 
