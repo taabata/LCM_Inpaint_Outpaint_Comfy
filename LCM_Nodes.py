@@ -37,7 +37,7 @@ class LCMLoader_controlnet:
                     "max": 1.0,
                     "step": 0.1,
                 }),
-                "mode":(["canny","depth","inpaint"],)
+                "mode":([i for i in os.listdir(folder_paths.get_folder_paths("controlnet")[0]) if os.path.isdir(folder_paths.get_folder_paths("controlnet")[0]+f"/{i}") ],)
             }
         }
     RETURN_TYPES = ("class",)
@@ -69,9 +69,9 @@ class LCMLoader_controlnet:
         # Initalize Scheduler:
         scheduler = LCMScheduler_X(beta_start=0.00085, beta_end=0.0120, beta_schedule="scaled_linear", prediction_type="epsilon")
         try:
-            mpath = folder_paths.get_folder_paths("controlnet")[0]+f"/cn_{mode}"
+            mpath = folder_paths.get_folder_paths("controlnet")[0]+f"/{mode}"
         except:
-            mpath = folder_paths.get_folder_paths("controlnet")[0]+f"\cn_{mode}"
+            mpath = folder_paths.get_folder_paths("controlnet")[0]+f"\{mode}"
         controlnet = ControlNetModel.from_pretrained(mpath)
 
         '''
