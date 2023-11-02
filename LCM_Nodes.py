@@ -8,7 +8,8 @@ from .LCM.lcm_pipeline_inpaint import LatentConsistencyModelPipeline_inpaint, LC
 from .LCM.lcm_pipeline_2 import LatentConsistencyModelPipeline_img2img
 from .LCM.LCM_reference_pipeline import LatentConsistencyModelPipeline_reference
 from .LCM.LCM_refinpaint_pipeline import LatentConsistencyModelPipeline_refinpaint
-from diffusers import AutoencoderKL, UNet2DConditionModel
+from .LCM.pipeline_cn import LatentConsistencyModelPipeline_controlnet
+from diffusers import AutoencoderKL, UNet2DConditionModel, T2IAdapter, ControlNetModel
 #from diffusers.pipelines.stable_diffusion.safety_checker import StableDiffusionSafetyChecker
 from transformers import CLIPTokenizer, CLIPTextModel, CLIPImageProcessor
 import os
@@ -19,6 +20,82 @@ import random
 from compel import Compel
 import tomesd
 from comfy.cli_args import args
+
+class LCMLoader_controlnet:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "device": (["GPU", "CPU"],),
+                "model_path": ("STRING", {"default": '', "multiline": False}),
+                "tomesd_value": ("FLOAT", {
+                    "default": 0.6,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                "mode":(["canny","depth","inpaint"],)
+            }
+        }
+    RETURN_TYPES = ("class",)
+    FUNCTION = "mainfunc"
+
+    CATEGORY = "LCM_Nodes/nodes"
+
+    def mainfunc(self,device,tomesd_value,model_path,mode):
+        
+        save_path = "./lcm_images"
+        if model_path != "":
+            model_id = model_path
+        else:
+            try:
+                model_id = folder_paths.get_folder_paths("diffusers")[0]+"/LCM_Dreamshaper_v7"
+            except:
+                model_id = folder_paths.get_folder_paths("diffusers")[0]+"\LCM_Dreamshaper_v7"
+
+
+        # Initalize Diffusers Model:
+        vae = AutoencoderKL.from_pretrained(model_id, subfolder="vae")
+        text_encoder = CLIPTextModel.from_pretrained(model_id, subfolder="text_encoder")
+        tokenizer = CLIPTokenizer.from_pretrained(model_id, subfolder="tokenizer")
+        unet = UNet2DConditionModel.from_pretrained(model_id, subfolder="unet", device_map=None, low_cpu_mem_usage=False, local_files_only=True)
+        #safety_checker = StableDiffusionSafetyChecker.from_pretrained(model_id, subfolder="safety_checker")
+        feature_extractor = CLIPImageProcessor.from_pretrained(model_id, subfolder="feature_extractor")
+
+
+        # Initalize Scheduler:
+        scheduler = LCMScheduler_X(beta_start=0.00085, beta_end=0.0120, beta_schedule="scaled_linear", prediction_type="epsilon")
+        try:
+            mpath = folder_paths.get_folder_paths("controlnet")[0]+f"/cn_{mode}"
+        except:
+            mpath = folder_paths.get_folder_paths("controlnet")[0]+f"\cn_{mode}"
+        controlnet = ControlNetModel.from_pretrained(mpath)
+
+        '''
+        # Replace the unet with LCM:
+        lcm_unet_ckpt = "./Downloads/LCM_Dreamshaper_v7_4k-prune-fp16.safetensors"
+        ckpt = load_file(lcm_unet_ckpt)
+        m, u = unet.load_state_dict(ckpt, strict=False)
+        if len(m) > 0:
+            print("missing keys:")
+            print(m)
+        if len(u) > 0:
+            print("unexpected keys:")
+            print(u)
+        '''
+
+        # LCM Pipeline:
+        pipe = LatentConsistencyModelPipeline_controlnet(vae=vae, text_encoder=text_encoder, tokenizer=tokenizer, unet=unet, scheduler=scheduler, safety_checker=None, feature_extractor=feature_extractor,controlnet=controlnet)
+        tomesd.apply_patch(pipe, ratio=tomesd_value)
+        if device == "GPU":
+            pipe.enable_xformers_memory_efficient_attention()
+            pipe.enable_sequential_cpu_offload()
+        else:
+            pipe.to("cpu")
+        return (pipe,)
 
 
 class LCMLoader_img2img:
@@ -309,6 +386,34 @@ class LCMLoader:
         else:
             pipe.to("cpu")
         return (pipe,)
+
+
+
+class LCMT2IAdapter:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "T2Iadapter": (["canny","depth","openpose"],)                
+            }
+        }
+    RETURN_TYPES = ("class",)
+    FUNCTION = "mainfunc"
+
+    CATEGORY = "LCM_Nodes/nodes"
+
+    def mainfunc(self,T2Iadapter):  
+        try:
+            model_id = folder_paths.get_folder_paths("controlnet")[0]+f"/t2i_adapter_{T2Iadapter}"
+        except:
+            model_id = folder_paths.get_folder_paths("controlnet")[0]+f"\t2i_adapter_{T2Iadapter}"
+        self.adapter = adapter = T2IAdapter.from_pretrained(model_id)
+        self.adapter = self.adapter.to(torch.device('cuda'))        
+        return (adapter,)
+
 class LCMGenerate:
     def __init__(self):
         pass
@@ -371,7 +476,15 @@ class LCMGenerate:
                     "step": 0.1,
                 }),
                 "Reference_Only":(["disable","enable"],),
-                "oupaint_quality":(["higher","lower"],)}
+                "oupaint_quality":(["higher","lower"],),
+                "adapter_image": ("IMAGE", ),
+                "adapter_weight": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                "adapter":("class",)}
         }
 
     RETURN_TYPES = ("IMAGE",)
@@ -379,7 +492,7 @@ class LCMGenerate:
 
     CATEGORY = "LCM_Nodes/nodes"
 
-    def mainfunc(self, text: str,steps: int,width:int,height:int,cfg:float,seed: int,image,mask,original_image,outpaint_size,outpaint_direction,mode,pipe,batch,prompt_weighting,style_fidelity,reference_image,Reference_Only,oupaint_quality):
+    def mainfunc(self, text: str,steps: int,width:int,height:int,cfg:float,seed: int,image,mask,original_image,outpaint_size,outpaint_direction,mode,pipe,batch,prompt_weighting,style_fidelity,reference_image,Reference_Only,oupaint_quality,adapter_image, adapter_weight,adapter):
         '''
         # Save Path:
         save_path = "./lcm_images"
@@ -415,6 +528,9 @@ class LCMGenerate:
         img = reference_image[0].numpy()
         img = img*255.0
         reference_image = Image.fromarray(np.uint8(img)).convert("RGB")
+        img = adapter_image[0].numpy()
+        img = img*255.0
+        adapter_image = Image.fromarray(np.uint8(img))
 
         img = original_image[0].numpy()
         img = img*255.0
@@ -598,7 +714,15 @@ class LCMGenerate_img2img:
                     "min": 1,
                     "max": 5000,
                     "step": 1,
-                })}
+                }),
+                "adapter_image": ("IMAGE", ),
+                "adapter_weight": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                "adapter":("class",)}
         }
 
     RETURN_TYPES = ("IMAGE",)
@@ -606,7 +730,7 @@ class LCMGenerate_img2img:
 
     CATEGORY = "LCM_Nodes/nodes"
 
-    def mainfunc(self, text: str,steps: int,width:int,height:int,cfg:float,seed: int,image,outpaint_size,outpaint_direction,mode,pipe,batch,strength,prompt_weighting,loopback,loopback_iterations):
+    def mainfunc(self, text: str,steps: int,width:int,height:int,cfg:float,seed: int,image,outpaint_size,outpaint_direction,mode,pipe,batch,strength,prompt_weighting,loopback,loopback_iterations,adapter_image, adapter_weight,adapter):
         '''
         # Save Path:
         save_path = "./lcm_images"
@@ -637,11 +761,13 @@ class LCMGenerate_img2img:
             img = image[0].numpy()
             img = img*255.0
             image = Image.fromarray(np.uint8(img))
+            img = adapter_image[0].numpy()
+            img = img*255.0
+            adapter_image = Image.fromarray(np.uint8(img))
         except:
             image=image
         
-
-        
+               
         res = []
         prompt = text
         if prompt_weighting == "enable":
@@ -653,11 +779,11 @@ class LCMGenerate_img2img:
                 torch.manual_seed(seed)
             # Output Images:
 
-                images = pipe(prompt_embeds=prompt_embeds, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = strength, image=image).images
+                images = pipe(adapter_weight=adapter_weight,adapter_img=adapter_image,adapter=adapter,prompt_embeds=prompt_embeds, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = strength, image=image).images
                 res.append(images[0])
                 if loopback == "enable" and batch==1:
                     for j in range(0,loopback_iterations):
-                        images = pipe(prompt_embeds=prompt_embeds, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = strength, image=images[0]).images
+                        images = pipe(adapter_weight=adapter_weight,adapter_img=adapter_image,adapter=adapter,prompt_embeds=prompt_embeds, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = strength, image=images[0]).images
                 
                         res.append(images[0])
         else:
@@ -665,12 +791,12 @@ class LCMGenerate_img2img:
                 seed = random.randint(0,1000000000000000)
                 torch.manual_seed(seed)
             # Output Images:
-                images = pipe(prompt=prompt, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = strength, image=image).images
+                images = pipe(adapter_weight=adapter_weight,adapter_img=adapter_image,adapter=adapter,prompt=prompt, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = strength, image=image).images
                 
                 res.append(images[0])
                 if loopback == "enable" and batch==1:
                     for j in range(0,loopback_iterations):
-                        images = pipe(prompt=prompt, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = strength, image=images[0]).images
+                        images = pipe(adapter_weight=adapter_weight,adapter_img=adapter_image,adapter=adapter,prompt=prompt, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = strength, image=images[0]).images
                         try:
                             image = np.array(images[0]).astype(np.float32) / 255.0
                             image = torch.from_numpy(image)[None,]
@@ -688,6 +814,176 @@ class LCMGenerate_img2img:
             newres.append(image)
             
         return (res,)
+
+
+
+class LCMGenerate_img2img_controlnet:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "mode": (["Inpaint", "Outpaint"],),	
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                "text": ("STRING", {"default": '', "multiline": True}),
+                "steps": ("INT", {
+                    "default": 4,
+                    "min": 0,
+                    "max": 360,
+                    "step": 1,
+                }),
+                
+                "width": ("INT", {
+                    "default": 512,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 64,
+                }),
+                "height": ("INT", {
+                    "default": 512,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 64,
+                }),
+                "cfg": ("FLOAT", {
+                    "default": 8.0,
+                    "min": 0,
+                    "max": 30.0,
+                    "step": 0.5,
+                }),
+                "image": ("IMAGE", ),
+                "outpaint_size": ("INT", {
+                    "default": 256,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 64,
+                }),
+                "outpaint_direction": (["left", "right","top","bottom"],),
+                "pipe":("class",),
+                "batch": ("INT", {
+                    "default": 1,
+                    "min": 1,
+                    "max": 100,
+                    "step": 1,
+                }),
+                "strength": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                "prompt_weighting":(["disable","enable"],),
+                "loopback":(["disable","enable"],),
+                "loopback_iterations":("INT", {
+                    "default": 4,
+                    "min": 1,
+                    "max": 5000,
+                    "step": 1,
+                }),
+                "control_image": ("IMAGE", ),
+                "control_weight": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                })}
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "mainfunc"
+
+    CATEGORY = "LCM_Nodes/nodes"
+
+    def mainfunc(self, text: str,steps: int,width:int,height:int,cfg:float,seed: int,image,outpaint_size,outpaint_direction,mode,pipe,batch,strength,prompt_weighting,loopback,loopback_iterations, control_image, control_weight):
+        '''
+        # Save Path:
+        save_path = "./lcm_images"
+
+        model_id = folder_paths.get_folder_paths("diffusers")[0]+"/LCM_Dreamshaper_v7"
+
+
+        # Initalize Diffusers Model:
+        vae = AutoencoderKL.from_pretrained(model_id, subfolder="vae")
+        text_encoder = CLIPTextModel.from_pretrained(model_id, subfolder="text_encoder")
+        tokenizer = CLIPTokenizer.from_pretrained(model_id, subfolder="tokenizer")
+        unet = UNet2DConditionModel.from_pretrained(model_id, subfolder="unet", device_map=None, low_cpu_mem_usage=False, local_files_only=True)
+        #safety_checker = StableDiffusionSafetyChecker.from_pretrained(model_id, subfolder="safety_checker")
+        feature_extractor = CLIPImageProcessor.from_pretrained(model_id, subfolder="feature_extractor")
+
+
+        # Initalize Scheduler:
+        scheduler = LCMScheduler_X(beta_start=0.00085, beta_end=0.0120, beta_schedule="scaled_linear", prediction_type="epsilon")
+
+        
+        # LCM Pipeline:
+        pipe = LatentConsistencyModelPipeline_inpaint(vae=vae, text_encoder=text_encoder, tokenizer=tokenizer, unet=unet, scheduler=scheduler, safety_checker=None, feature_extractor=feature_extractor)
+        tomesd.apply_patch(pipe, ratio=0.6)
+        #pipe = pipe.to("cuda")
+        print("###########: ",type(pipe))'''
+        
+        try:
+            img = image[0].numpy()
+            img = img*255.0
+            image = Image.fromarray(np.uint8(img))
+            img = control_image[0].numpy()
+            img = img*255.0
+            control_image = Image.fromarray(np.uint8(img))
+        except:
+            image=image
+        
+        
+        
+        res = []
+        prompt = text
+        if prompt_weighting == "enable":
+
+            compel_proc = Compel(tokenizer=pipe.tokenizer, text_encoder=pipe.text_encoder)
+            prompt_embeds = compel_proc(prompt)
+            for i in range(0,batch):
+                seed = random.randint(0,1000000000000000)
+                torch.manual_seed(seed)
+            # Output Images:
+
+                images = pipe(adapter_weight=adapter_weight,adapter_img=adapter_image,adapter=adapter,prompt_embeds=prompt_embeds, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = strength, image=image).images
+                res.append(images[0])
+                if loopback == "enable" and batch==1:
+                    for j in range(0,loopback_iterations):
+                        images = pipe(adapter_weight=adapter_weight,adapter_img=adapter_image,adapter=adapter,prompt_embeds=prompt_embeds, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = strength, image=images[0]).images
+                
+                        res.append(images[0])
+        else:
+            for i in range(0,batch):
+                seed = random.randint(0,1000000000000000)
+                torch.manual_seed(seed)
+            # Output Images:
+                images = pipe(controlnet_conditioning_scale=control_weight,control_image=control_image,prompt=prompt, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = strength, image=image).images
+                
+                res.append(images[0])
+                if loopback == "enable" and batch==1:
+                    for j in range(0,loopback_iterations):
+                        images = pipe(adapter_weight=adapter_weight,adapter_img=adapter_image,adapter=adapter,prompt=prompt, num_images_per_prompt=1, num_inference_steps=steps, guidance_scale=cfg, lcm_origin_steps=50,width=width,height=height,strength = strength, image=images[0]).images
+                        try:
+                            image = np.array(images[0]).astype(np.float32) / 255.0
+                            image = torch.from_numpy(image)[None,]
+                            res.append(image)
+                        except:
+                            res.append(images[0])
+                
+        
+  
+        newres = []
+        for i in range(0,1):
+            image = res[0]
+            image = np.array(image).astype(np.float32) / 255.0
+            image = torch.from_numpy(image)[None,]
+            newres.append(image)
+            
+        return (res,)
+
+
+
 
 class LCMGenerate_ReferenceOnly:
     def __init__(self):
@@ -739,15 +1035,23 @@ class LCMGenerate_ReferenceOnly:
                     "default": 0.5,
                     "min": 0.0,
                     "max": 1.0,
-                    "step": 0.1,
+                    "step": 0.01,
                 }),
                 "strength": ("FLOAT", {
                     "default": 1.0,
                     "min": 0.0,
                     "max": 1.0,
-                    "step": 0.1,
+                    "step": 0.01,
                 }),
                 "prompt_weighting":(["disable","enable"],),
+                "adapter_image": ("IMAGE", ),
+                "adapter_weight": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                "adapter":("class",)
                 }
         }
 
@@ -756,7 +1060,7 @@ class LCMGenerate_ReferenceOnly:
 
     CATEGORY = "LCM_Nodes/nodes"
 
-    def mainfunc(self, text: str,steps: int,width:int,height:int,cfg:float,seed: int,image,strength,reference_image,pipe,batch,prompt_weighting,style_fidelity):
+    def mainfunc(self, text: str,steps: int,width:int,height:int,cfg:float,seed: int,image,strength,reference_image,pipe,batch,prompt_weighting,style_fidelity,adapter_image, adapter_weight,adapter):
         '''
         # Save Path:
         save_path = "./lcm_images"
@@ -790,6 +1094,9 @@ class LCMGenerate_ReferenceOnly:
             img = reference_image[0].numpy()
             img = img*255.0
             reference_image = Image.fromarray(np.uint8(img))
+            img = adapter_image[0].numpy()
+            img = img*255.0
+            adapter_image = Image.fromarray(np.uint8(img))
         except:
             image=image
         
@@ -1089,5 +1396,8 @@ NODE_CLASS_MAPPINGS = {
     "LCMLoader_ReferenceOnly": LCMLoader_ReferenceOnly,
     "LCMLoader_RefInpaint":LCMLoader_RefInpaint,
     "ImageOutputToComfyNodes":ImageOutputToComfyNodes,
-    "ImageShuffle":ImageShuffle
+    "ImageShuffle":ImageShuffle,
+    "LCMT2IAdapter":LCMT2IAdapter,
+    "LCMLoader_controlnet":LCMLoader_controlnet,
+    "LCMGenerate_img2img_controlnet":LCMGenerate_img2img_controlnet
 }
