@@ -44,7 +44,9 @@ Add '+' for more effect and '-' for less effect. Adding more '+' or '-' increase
 
 # ControlNet/T2I Adapter
 
+T2IAdapter thanks to Michael Poutre https://github.com/M1kep 
 
+Place model folders inside 'ComfyUI/models/controlnet'
 
 
 # How to Use:
