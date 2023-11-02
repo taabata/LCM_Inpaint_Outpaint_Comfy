@@ -37,7 +37,7 @@ class LCMLoader_controlnet:
                     "max": 1.0,
                     "step": 0.1,
                 }),
-                "mode":([i for i in os.listdir(folder_paths.get_folder_paths("controlnet")[0]) if os.path.isdir(folder_paths.get_folder_paths("controlnet")[0]+f"/{i}") ],)
+                "mode":([i for i in os.listdir(folder_paths.get_folder_paths("controlnet")[0]) if os.path.isdir(folder_paths.get_folder_paths("controlnet")[0]+f"/{i}") or  os.path.isdir(folder_paths.get_folder_paths("controlnet")[0]+f"\{i}")],)
             }
         }
     RETURN_TYPES = ("class",)
