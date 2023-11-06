@@ -43,12 +43,14 @@ Add '+' for more effect and '-' for less effect. Adding more '+' or '-' increase
 <img src='https://github.com/taabata/LCM_Inpaint-Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-10-29%2022-46-43.png'>
 
 # ControlNet/T2I Adapter
+<img src='https://github.com/taabata/LCM_Inpaint_Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-11-02%2023-41-10.png'>
 
 T2IAdapter thanks to Michael Poutre https://github.com/M1kep 
 
 Place model folders inside 'ComfyUI/models/controlnet'
 
 # IP Adapter
+<img src='https://github.com/taabata/LCM_Inpaint_Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-11-06%2020-37-20.png'>
 
 Place model folders inside 'ComfyUI/models/controlnet'
 
