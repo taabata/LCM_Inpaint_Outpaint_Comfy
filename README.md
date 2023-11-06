@@ -48,6 +48,10 @@ T2IAdapter thanks to Michael Poutre https://github.com/M1kep
 
 Place model folders inside 'ComfyUI/models/controlnet'
 
+# IP Adapter
+
+Place model folders inside 'ComfyUI/models/controlnet'
+
 
 # How to Use:
 Clone into custom_nodes folder inside your ComfyUI directory
