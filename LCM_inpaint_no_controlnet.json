@@ -1,0 +1,317 @@
+{
+  "last_node_id": 36,
+  "last_link_id": 73,
+  "nodes": [
+    {
+      "id": 20,
+      "type": "PreviewImage",
+      "pos": [
+        1424,
+        232
+      ],
+      "size": {
+        "0": 210,
+        "1": 246
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 36
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 29,
+      "type": "LCMLoader",
+      "pos": [
+        234,
+        721
+      ],
+      "size": {
+        "0": 210,
+        "1": 106
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "class",
+          "type": "class",
+          "links": [
+            65
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMLoader"
+      },
+      "widgets_values": [
+        "GPU",
+        "",
+        0.6
+      ]
+    },
+    {
+      "id": 32,
+      "type": "SaveImage_LCM",
+      "pos": [
+        1471.729054260254,
+        672.6590402221681
+      ],
+      "size": [
+        315,
+        270.0000171661377
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 67
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage_LCM"
+      },
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 36,
+      "type": "MaskToImage",
+      "pos": [
+        577,
+        465
+      ],
+      "size": {
+        "0": 210,
+        "1": 26
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 70
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            72
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MaskToImage"
+      }
+    },
+    {
+      "id": 34,
+      "type": "LCMGenerate",
+      "pos": [
+        875,
+        351
+      ],
+      "size": {
+        "0": 400,
+        "1": 492
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 73
+        },
+        {
+          "name": "mask",
+          "type": "IMAGE",
+          "link": 72
+        },
+        {
+          "name": "original_image",
+          "type": "IMAGE",
+          "link": 64
+        },
+        {
+          "name": "pipe",
+          "type": "class",
+          "link": 65
+        },
+        {
+          "name": "reference_image",
+          "type": "IMAGE",
+          "link": 66
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            67
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMGenerate"
+      },
+      "widgets_values": [
+        "Outpaint",
+        443089072676522,
+        "randomize",
+        "purple sky, clouds",
+        2,
+        512,
+        512,
+        8,
+        256,
+        "left",
+        1,
+        "disable",
+        0.5,
+        "disable",
+        "higher"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "LoadImage",
+      "pos": [
+        199,
+        338
+      ],
+      "size": {
+        "0": 315,
+        "1": 314
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            36,
+            64,
+            66,
+            73
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            70
+          ],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "clipspace/clipspace-mask-317153.5.png [input]",
+        "image"
+      ]
+    }
+  ],
+  "links": [
+    [
+      36,
+      4,
+      0,
+      20,
+      0,
+      "IMAGE"
+    ],
+    [
+      64,
+      4,
+      0,
+      34,
+      2,
+      "IMAGE"
+    ],
+    [
+      65,
+      29,
+      0,
+      34,
+      3,
+      "class"
+    ],
+    [
+      66,
+      4,
+      0,
+      34,
+      4,
+      "IMAGE"
+    ],
+    [
+      67,
+      34,
+      0,
+      32,
+      0,
+      "IMAGE"
+    ],
+    [
+      70,
+      4,
+      1,
+      36,
+      0,
+      "MASK"
+    ],
+    [
+      72,
+      36,
+      0,
+      34,
+      1,
+      "IMAGE"
+    ],
+    [
+      73,
+      4,
+      0,
+      34,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}
