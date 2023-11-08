@@ -42,7 +42,7 @@
         "1": 314
       },
       "flags": {},
-      "order": 1,
+      "order": 0,
       "mode": 0,
       "outputs": [
         {
@@ -71,6 +71,41 @@
       ]
     },
     {
+      "id": 1,
+      "type": "LCMLoader_ReferenceOnly",
+      "pos": [
+        -402,
+        412
+      ],
+      "size": {
+        "0": 315,
+        "1": 130
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "class",
+          "type": "class",
+          "links": [
+            10
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMLoader_ReferenceOnly"
+      },
+      "widgets_values": [
+        "GPU",
+        "",
+        0.6,
+        "cn_canny"
+      ]
+    },
+    {
       "id": 6,
       "type": "LCMGenerate_ReferenceOnly",
       "pos": [
@@ -79,7 +114,7 @@
       ],
       "size": {
         "0": 400,
-        "1": 356
+        "1": 400
       },
       "flags": {},
       "order": 2,
@@ -99,6 +134,11 @@
           "name": "pipe",
           "type": "class",
           "link": 10
+        },
+        {
+          "name": "control_image",
+          "type": "IMAGE",
+          "link": null
         }
       ],
       "outputs": [
@@ -126,40 +166,8 @@
         1,
         1,
         0.7000000000000001,
-        "disable"
-      ]
-    },
-    {
-      "id": 1,
-      "type": "LCMLoader_ReferenceOnly",
-      "pos": [
-        -402,
-        412
-      ],
-      "size": {
-        "0": 315,
-        "1": 82
-      },
-      "flags": {},
-      "order": 0,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "class",
-          "type": "class",
-          "links": [
-            10
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LCMLoader_ReferenceOnly"
-      },
-      "widgets_values": [
-        "GPU",
-        0.6
+        "disable",
+        0
       ]
     }
   ],
