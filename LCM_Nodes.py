@@ -24,11 +24,6 @@ import random
 from compel import Compel
 import tomesd
 from .IPA.ip_adapter import IPAdapter, IPAdapterPlus
-from .rival.ddim_inversion import Inversion, load_512
-from diffusers.models.attention import Attention as CrossAttention
-from .rival.sd_pipeline_img import RIVALStableDiffusionPipeline
-from .rival.attention_forward import new_forward
-from .rival.lcm_scheduler import LCMScheduler
 from icecream import ic
 import utils
 import types
