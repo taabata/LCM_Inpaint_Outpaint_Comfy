@@ -1,6 +1,6 @@
 {
-  "last_node_id": 28,
-  "last_link_id": 41,
+  "last_node_id": 29,
+  "last_link_id": 45,
   "nodes": [
     {
       "id": 15,
@@ -14,7 +14,7 @@
         "1": 270.0000305175781
       },
       "flags": {},
-      "order": 4,
+      "order": 5,
       "mode": 0,
       "inputs": [
         {
@@ -42,7 +42,7 @@
         "1": 270.0000305175781
       },
       "flags": {},
-      "order": 5,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
@@ -67,7 +67,7 @@
       ],
       "size": {
         "0": 315,
-        "1": 82
+        "1": 106
       },
       "flags": {},
       "order": 0,
@@ -89,103 +89,8 @@
       },
       "widgets_values": [
         "CPU",
-        0.6000000000000001
-      ]
-    },
-    {
-      "id": 19,
-      "type": "LoadImage",
-      "pos": [
-        154,
-        21
-      ],
-      "size": {
-        "0": 315,
-        "1": 314
-      },
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            36,
-            40
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "ComfyUI_00187_.png",
-        "image"
-      ]
-    },
-    {
-      "id": 27,
-      "type": "LCMGenerate_img2img",
-      "pos": [
-        632,
-        531
-      ],
-      "size": {
-        "0": 400,
-        "1": 384.0000305175781
-      },
-      "flags": {},
-      "order": 3,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 40
-        },
-        {
-          "name": "pipe",
-          "type": "class",
-          "link": 39
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            41
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LCMGenerate_img2img"
-      },
-      "widgets_values": [
-        "Inpaint",
-        1111111,
-        "fixed",
-        "a hybrid between a buffalo and a lion, photo",
-        4,
-        512,
-        512,
-        8,
-        256,
-        "left",
-        1,
-        1,
-        "enable"
+        "",
+        0.6
       ]
     },
     {
@@ -197,10 +102,10 @@
       ],
       "size": {
         "0": 400,
-        "1": 384
+        "1": 496
       },
       "flags": {},
-      "order": 2,
+      "order": 3,
       "mode": 0,
       "inputs": [
         {
@@ -212,6 +117,16 @@
           "name": "pipe",
           "type": "class",
           "link": 37
+        },
+        {
+          "name": "adapter_image",
+          "type": "IMAGE",
+          "link": 44
+        },
+        {
+          "name": "adapter",
+          "type": "class",
+          "link": 43
         }
       ],
       "outputs": [
@@ -241,7 +156,154 @@
         "left",
         1,
         1,
-        "enable"
+        "enable",
+        "disable",
+        1,
+        0
+      ]
+    },
+    {
+      "id": 27,
+      "type": "LCMGenerate_img2img",
+      "pos": [
+        622,
+        627
+      ],
+      "size": {
+        "0": 400,
+        "1": 496
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 40
+        },
+        {
+          "name": "pipe",
+          "type": "class",
+          "link": 39
+        },
+        {
+          "name": "adapter_image",
+          "type": "IMAGE",
+          "link": 45
+        },
+        {
+          "name": "adapter",
+          "type": "class",
+          "link": 42
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            41
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMGenerate_img2img"
+      },
+      "widgets_values": [
+        "Inpaint",
+        1111111,
+        "fixed",
+        "a hybrid between a buffalo and a lion, photo",
+        4,
+        512,
+        512,
+        8,
+        256,
+        "left",
+        1,
+        1,
+        "enable",
+        "disable",
+        4,
+        0
+      ]
+    },
+    {
+      "id": 29,
+      "type": "LCMT2IAdapter",
+      "pos": [
+        171,
+        659
+      ],
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "class",
+          "type": "class",
+          "links": [
+            42,
+            43
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMT2IAdapter"
+      },
+      "widgets_values": [
+        "t2i_adapter_canny"
+      ]
+    },
+    {
+      "id": 19,
+      "type": "LoadImage",
+      "pos": [
+        154,
+        21
+      ],
+      "size": {
+        "0": 315,
+        "1": 314
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            36,
+            40,
+            44,
+            45
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "ComfyUI_00187_.png",
+        "image"
       ]
     }
   ],
@@ -292,6 +354,38 @@
       0,
       28,
       0,
+      "IMAGE"
+    ],
+    [
+      42,
+      29,
+      0,
+      27,
+      3,
+      "class"
+    ],
+    [
+      43,
+      29,
+      0,
+      26,
+      3,
+      "class"
+    ],
+    [
+      44,
+      19,
+      0,
+      26,
+      2,
+      "IMAGE"
+    ],
+    [
+      45,
+      19,
+      0,
+      27,
+      2,
       "IMAGE"
     ]
   ],
