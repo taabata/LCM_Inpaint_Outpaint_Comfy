@@ -3,72 +3,6 @@
   "last_link_id": 13,
   "nodes": [
     {
-      "id": 3,
-      "type": "LCMLoader_ReferenceOnly",
-      "pos": [
-        20,
-        547
-      ],
-      "size": {
-        "0": 315,
-        "1": 82
-      },
-      "flags": {},
-      "order": 0,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "class",
-          "type": "class",
-          "links": [
-            7
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LCMLoader_ReferenceOnly"
-      },
-      "widgets_values": [
-        "GPU",
-        0.6
-      ]
-    },
-    {
-      "id": 8,
-      "type": "LCMLoader_img2img",
-      "pos": [
-        -11,
-        944
-      ],
-      "size": {
-        "0": 315,
-        "1": 82
-      },
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "class",
-          "type": "class",
-          "links": [
-            11
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LCMLoader_img2img"
-      },
-      "widgets_values": [
-        "GPU",
-        0.6
-      ]
-    },
-    {
       "id": 1,
       "type": "LoadImage",
       "pos": [
@@ -174,7 +108,7 @@
       ],
       "size": {
         "0": 400,
-        "1": 356
+        "1": 400
       },
       "flags": {},
       "order": 3,
@@ -194,6 +128,11 @@
           "name": "pipe",
           "type": "class",
           "link": 7
+        },
+        {
+          "name": "control_image",
+          "type": "IMAGE",
+          "link": null
         }
       ],
       "outputs": [
@@ -221,7 +160,8 @@
         1,
         1,
         1,
-        "disable"
+        "disable",
+        1
       ]
     },
     {
@@ -233,7 +173,7 @@
       ],
       "size": {
         "0": 400,
-        "1": 432
+        "1": 496
       },
       "flags": {},
       "order": 4,
@@ -248,6 +188,16 @@
           "name": "pipe",
           "type": "class",
           "link": 11
+        },
+        {
+          "name": "adapter_image",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "adapter",
+          "type": "class",
+          "link": null
         }
       ],
       "outputs": [
@@ -279,7 +229,77 @@
         1,
         "disable",
         "disable",
-        4
+        4,
+        1
+      ]
+    },
+    {
+      "id": 3,
+      "type": "LCMLoader_ReferenceOnly",
+      "pos": [
+        20,
+        547
+      ],
+      "size": {
+        "0": 315,
+        "1": 130
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "class",
+          "type": "class",
+          "links": [
+            7
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMLoader_ReferenceOnly"
+      },
+      "widgets_values": [
+        "GPU",
+        "",
+        0.6,
+        "cn_canny"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "LCMLoader_img2img",
+      "pos": [
+        -11,
+        944
+      ],
+      "size": {
+        "0": 315,
+        "1": 106
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "class",
+          "type": "class",
+          "links": [
+            11
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMLoader_img2img"
+      },
+      "widgets_values": [
+        "GPU",
+        "",
+        0.6
       ]
     }
   ],
