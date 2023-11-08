@@ -1,7 +1,35 @@
 {
-  "last_node_id": 25,
-  "last_link_id": 35,
+  "last_node_id": 26,
+  "last_link_id": 37,
   "nodes": [
+    {
+      "id": 15,
+      "type": "SaveImage_LCM",
+      "pos": [
+        1028,
+        72
+      ],
+      "size": {
+        "0": 315,
+        "1": 270.0000305175781
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 14
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "SaveImage_LCM"
+      },
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
     {
       "id": 13,
       "type": "LCMLoader_img2img",
@@ -11,7 +39,7 @@
       ],
       "size": {
         "0": 315,
-        "1": 82
+        "1": 106
       },
       "flags": {},
       "order": 0,
@@ -32,7 +60,40 @@
       },
       "widgets_values": [
         "GPU",
+        "",
         0.6
+      ]
+    },
+    {
+      "id": 26,
+      "type": "LCMT2IAdapter",
+      "pos": [
+        9,
+        608
+      ],
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "class",
+          "type": "class",
+          "links": [
+            36
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMT2IAdapter"
+      },
+      "widgets_values": [
+        "t2i_adapter_canny"
       ]
     },
     {
@@ -47,14 +108,15 @@
         "1": 314
       },
       "flags": {},
-      "order": 1,
+      "order": 2,
       "mode": 0,
       "outputs": [
         {
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            35
+            35,
+            37
           ],
           "shape": 3,
           "slot_index": 0
@@ -75,34 +137,6 @@
       ]
     },
     {
-      "id": 15,
-      "type": "SaveImage_LCM",
-      "pos": [
-        1028,
-        72
-      ],
-      "size": {
-        "0": 315,
-        "1": 270.0000305175781
-      },
-      "flags": {},
-      "order": 3,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 14
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "SaveImage_LCM"
-      },
-      "widgets_values": [
-        "ComfyUI"
-      ]
-    },
-    {
       "id": 14,
       "type": "LCMGenerate_img2img",
       "pos": [
@@ -111,10 +145,10 @@
       ],
       "size": {
         "0": 400,
-        "1": 432
+        "1": 496
       },
       "flags": {},
-      "order": 2,
+      "order": 3,
       "mode": 0,
       "inputs": [
         {
@@ -126,6 +160,16 @@
           "name": "pipe",
           "type": "class",
           "link": 12
+        },
+        {
+          "name": "adapter_image",
+          "type": "IMAGE",
+          "link": 37
+        },
+        {
+          "name": "adapter",
+          "type": "class",
+          "link": 36
         }
       ],
       "outputs": [
@@ -157,7 +201,8 @@
         0.30000000000000004,
         "disable",
         "enable",
-        2
+        2,
+        0
       ]
     }
   ],
@@ -184,6 +229,22 @@
       0,
       14,
       0,
+      "IMAGE"
+    ],
+    [
+      36,
+      26,
+      0,
+      14,
+      3,
+      "class"
+    ],
+    [
+      37,
+      19,
+      0,
+      14,
+      2,
       "IMAGE"
     ]
   ],
