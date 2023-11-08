@@ -1,6 +1,6 @@
 {
   "last_node_id": 6,
-  "last_link_id": 11,
+  "last_link_id": 12,
   "nodes": [
     {
       "id": 2,
@@ -70,40 +70,6 @@
       ]
     },
     {
-      "id": 1,
-      "type": "LCMLoader_ReferenceOnly",
-      "pos": [
-        -391,
-        495
-      ],
-      "size": {
-        "0": 315,
-        "1": 106
-      },
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "class",
-          "type": "class",
-          "links": [
-            10
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LCMLoader_ReferenceOnly"
-      },
-      "widgets_values": [
-        "GPU",
-        0.6,
-        0.6
-      ]
-    },
-    {
       "id": 3,
       "type": "LoadImage",
       "pos": [
@@ -122,7 +88,8 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            8
+            8,
+            12
           ],
           "shape": 3,
           "slot_index": 0
@@ -143,6 +110,41 @@
       ]
     },
     {
+      "id": 1,
+      "type": "LCMLoader_ReferenceOnly",
+      "pos": [
+        -391,
+        495
+      ],
+      "size": {
+        "0": 315,
+        "1": 130
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "class",
+          "type": "class",
+          "links": [
+            10
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMLoader_ReferenceOnly"
+      },
+      "widgets_values": [
+        "GPU",
+        "",
+        0.6,
+        "cn_canny"
+      ]
+    },
+    {
       "id": 6,
       "type": "LCMGenerate_ReferenceOnly",
       "pos": [
@@ -151,7 +153,7 @@
       ],
       "size": {
         "0": 400,
-        "1": 356
+        "1": 400
       },
       "flags": {},
       "order": 3,
@@ -171,6 +173,11 @@
           "name": "pipe",
           "type": "class",
           "link": 10
+        },
+        {
+          "name": "control_image",
+          "type": "IMAGE",
+          "link": 12
         }
       ],
       "outputs": [
@@ -198,7 +205,8 @@
         1,
         0.30000000000000004,
         0.30000000000000004,
-        "disable"
+        "disable",
+        0
       ]
     }
   ],
@@ -233,6 +241,14 @@
       0,
       5,
       0,
+      "IMAGE"
+    ],
+    [
+      12,
+      3,
+      0,
+      6,
+      3,
       "IMAGE"
     ]
   ],
