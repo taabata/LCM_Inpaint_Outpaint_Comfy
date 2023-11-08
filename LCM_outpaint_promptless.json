@@ -9,10 +9,10 @@
         579,
         -496
       ],
-      "size": [
-        315,
-        270
-      ],
+      "size": {
+        "0": 315,
+        "1": 270
+      },
       "flags": {},
       "order": 4,
       "mode": 0,
@@ -86,10 +86,10 @@
         -427,
         -345
       ],
-      "size": [
-        315,
-        314
-      ],
+      "size": {
+        "0": 315,
+        "1": 314
+      },
       "flags": {},
       "order": 0,
       "mode": 0,
@@ -118,39 +118,6 @@
       "widgets_values": [
         "IPAdapter_00004_ (4).png",
         "image"
-      ]
-    },
-    {
-      "id": 2,
-      "type": "LCMLoader_RefInpaint",
-      "pos": [
-        -420,
-        48
-      ],
-      "size": {
-        "0": 315,
-        "1": 82
-      },
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "class",
-          "type": "class",
-          "links": [
-            6
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LCMLoader_RefInpaint"
-      },
-      "widgets_values": [
-        "GPU",
-        0.6
       ]
     },
     {
@@ -224,6 +191,40 @@
         0.5,
         "enable",
         "higher"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "LCMLoader_RefInpaint",
+      "pos": [
+        -420,
+        48
+      ],
+      "size": {
+        "0": 315,
+        "1": 106
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "class",
+          "type": "class",
+          "links": [
+            6
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMLoader_RefInpaint"
+      },
+      "widgets_values": [
+        "GPU",
+        "",
+        0.6
       ]
     }
   ],
