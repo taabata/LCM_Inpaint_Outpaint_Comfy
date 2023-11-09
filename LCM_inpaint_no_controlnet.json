@@ -181,7 +181,7 @@
         "Node name for S&R": "LCMGenerate"
       },
       "widgets_values": [
-        "Outpaint",
+        "Inpaint",
         443089072676522,
         "randomize",
         "purple sky, clouds",
