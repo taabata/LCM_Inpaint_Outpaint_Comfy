@@ -55,6 +55,19 @@ Place model folders inside 'ComfyUI/models/controlnet'
 Place model folders inside 'ComfyUI/models/controlnet'
 
 
+# Canvas Inpaint/Outpaint/img2img
+<img src='https://github.com/taabata/LCM_Inpaint_Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-11-12%2023-43-32.png'>
+
+In your Terminal/cmd at the directory where your ComfyUI folder is:
+
+```
+cd ComfyUI/custom_nodes/LCM_Inpaint_Outpaint_Comfy/CanvasTool
+
+python setup.py
+
+```
+
+
 # How to Use:
 Clone into custom_nodes folder inside your ComfyUI directory
    ```
