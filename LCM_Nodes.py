@@ -1976,6 +1976,13 @@ class SaveImage_LCM:
 
             file = f"{filename}_{counter:05}_.png"
             img.save(os.path.join(full_output_folder, file), pnginfo=metadata, compress_level=4)
+            data = {
+                "lastimage":str(os.path.join(full_output_folder, file))
+            }
+            json_object = json.dumps(data, indent=4)
+            with open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasTool/lastimage.json", "w") as outfile:
+                outfile.write(json_object)
+            
             
             results.append({
                 "filename": file,
@@ -1985,6 +1992,77 @@ class SaveImage_LCM:
             counter += 1
             
         return { "ui": { "images": results } }
+
+
+class OutpaintCanvasTool:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": 
+                    {
+                        "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),                      
+                    }
+                }
+
+    RETURN_TYPES = ("IMAGE","IMAGE","IMAGE")
+    FUNCTION = "canvasopen"
+    def canvasopen(self,seed):
+        bg = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasTool/image.png")
+        i = ImageOps.exif_transpose(bg)
+        image = i.convert("RGB")
+        image = np.array(image).astype(np.float32) / 255.0
+        bg = torch.from_numpy(image)[None,]
+        bg2 = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasTool/mask.png")
+        i = ImageOps.exif_transpose(bg2)
+        image = i.convert("RGB")
+        image = np.array(image).astype(np.float32) / 255.0
+        bg2 = torch.from_numpy(image)[None,]
+        ref = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasTool/cropped.png")
+        i = ImageOps.exif_transpose(ref)
+        image = i.convert("RGB")
+        image = np.array(image).astype(np.float32) / 255.0
+        ref = torch.from_numpy(image)[None,]
+        
+        return (bg,bg2,ref)
+
+class stitch:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": 
+                    {
+                        "image":("IMAGE",),
+                                            
+                    }
+                }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "canvasopen"
+    def canvasopen(self,image):
+        img = image[0].numpy()
+        img = img*255.0
+        image = Image.fromarray(np.uint8(img)).convert("RGBA")
+        with open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasTool/data.json","r") as json_file:
+            savedata = json.load(json_file)["savedata"]
+        bg = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasTool/out.png").convert("RGBA")
+        msksmall = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasTool/mask.png").convert("L")
+        cropped = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasTool/image.png").convert("RGBA")
+        width = int(savedata["additionaldims"]["right"]) + int(savedata["additionaldims"]["left"]) + bg.size[0]
+        height = int(savedata["additionaldims"]["top"]) + int(savedata["additionaldims"]["bottom"]) + bg.size[1]
+        new = Image.new("RGBA",(width,height),(0,0,0,0))
+        lft = 0
+        tp = 0
+        image = Image.composite(image, cropped, msksmall)
+        if savedata["additionaldims"]["left"]>0:
+            lft = int(savedata["additionaldims"]["left"])
+
+        if savedata["additionaldims"]["top"]>0:
+            tp = int(savedata["additionaldims"]["top"])
+        new.paste(bg,(lft,tp))
+        lft = int(savedata["crpdims"]["left"])
+        tp = int(savedata["crpdims"]["top"])
+        new.paste(image,(lft,tp))
+        res = []
+        res.append(new)
+        return (res,)
 
 
 
@@ -2010,6 +2088,7 @@ NODE_CLASS_MAPPINGS = {
     "LCMGenerate_inpaintv2":LCMGenerate_inpaintv2,
     "LCMLoader_controlnet_inpaint":LCMLoader_controlnet_inpaint,
     "LCM_IPAdapter_inpaint":LCM_IPAdapter_inpaint,
-    "LCMGenerate_inpaintv3":LCMGenerate_inpaintv3
-    
+    "LCMGenerate_inpaintv3":LCMGenerate_inpaintv3,
+    "OutpaintCanvasTool":OutpaintCanvasTool,
+    "stitch":stitch
 }
