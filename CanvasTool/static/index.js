@@ -1,5 +1,6 @@
 var mousex = 0;
 var mousey = 0;
+var lockflag = false;
 var prevmousex = 0;
 var prevmousey = 0;
 var clickflag = false;
@@ -10,6 +11,9 @@ var crptp = 0;
 var crprght = 0;
 var crpbtm = 0;
 var eraseflag = false;
+var drawenableflag = false;
+var eraseenableflag = false;
+var drawflag = false;
 var savedata = {
     "crpdims": {
         "left":0,
@@ -23,7 +27,6 @@ var savedata = {
         "right":0,
         "bottom":0
     },
-    "imgpos": ["25%","25%"],
     "boxsz":512,
     "ff":10,
     "pxlsarray":""
@@ -39,64 +42,194 @@ var imagedims = {
 
 
 window.onload = function(){
+    document.getElementById("erasersize").value = 10;
+    document.getElementById("ff").value = 10;
+    document.getElementById("selectorsize").value = 256;
+    prepare();
+    //copied from https://jsfiddle.net/4N6D9/1/
+    document.getElementById("openimg").onchange =function(e) {
+        var file, img;
+    
+    
+        if ((file = this.files[0])) {
+            img = new Image();
+            img.onload = function() {
+                document.getElementById("sourceimg").width = this.width;
+                document.getElementById("sourceimg").height = this.height;
+                document.getElementById("source").width = this.width;
+                document.getElementById("source").height = this.height;
+                var canvas = document.getElementById("source");
+                var ctx = canvas.getContext("2d");
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                var img = document.getElementById("sourceimg");
+                ctx.drawImage(img, 0, 0);
+                imgData = ctx.getImageData(0, 0, canvas.width,canvas.height);
+                data = imgData.data;
+                pxls = [];
+                for (let i = 0; i < data.length; i += 4) {
+                    var pixel = [];
+                    pixel.push(data[i]);
+                    pixel.push(data[i+1]);
+                    pixel.push(data[i+2]);
+                    pixel.push(data[i+3]);
+                    pxls.push(pixel);
+                }
+                var pxlsarray = [[]];
+                for(i = 0;i<pxls.length;i++){
+                    pxlsarray[pxlsarray.length-1].push(pxls[i]);
+                    if(i<pxls.length-2){
+                        if((i+1)%canvas.width==0 && i>canvas.width-10){
+                            pxlsarray.push([]);
+                        }
+                    }
+                    
+                }
+                savedata["pxlsarray"] = pxlsarray;
+                console.log(savedata["pxlsarray"]);
+            };
+            img.src = URL.createObjectURL(file);
+            document.getElementById("sourceimg").src = URL.createObjectURL(file);
+            document.getElementById("uploadcontainer").remove();
+            
+    
+    
+        }
+        
+    
+    }
+
+}
+
+function prepare(){
+    fetch('http://localhost:5000/prepare'
+    ).then(function (response) {
+        responseClone = response.clone(); // 2
+        return response.json();
+    })
+    .then(data => {
+        if(data["exist"]!="yes"){
+            document.getElementById("sourceimg").src = "";
+            document.getElementById("uploadcontainer").style.height = "100%";
+            document.getElementById("uploadcontainer").style.visibility = "visible";
+            document.getElementById("uploadcontainer").style.opacity = 1;
+        }
+        else{
+            document.getElementById("uploadcontainer").style.visibility = "hidden";
+            resetimg();
+        }
+    });
+}
+
+
+function resetimg(){
     var canvas = document.getElementById("source");
     var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     var img = document.getElementById("sourceimg");
     ctx.drawImage(img, 0, 0);
-    document.getElementById("selector").style.left = "50%";
-    document.getElementById("selector").style.top = "50%";
-    
-    
-    //preparestuff();
-    //alert("hello");
 }
 
 function ffupdate(){
     savedata["ff"] = document.getElementById("ff").value;
 }
-
 function draw(){
-    var erasersize = parseInt(document.getElementById("erasersize").value);
-    if(erasersize==null || erasersize==undefined ){
-        erasersize = 30;
-    }
     var c = document.getElementById("source");
-    var ctx = c.getContext("2d");    
-    var imgData = ctx.getImageData(Math.floor(mousex)-parseInt(document.getElementById('source').getBoundingClientRect()["left"]), Math.floor(mousey)-parseInt(document.getElementById('source').getBoundingClientRect()["top"]), erasersize,erasersize);
-    var data = imgData.data;
-    var pxls = [];
-    for (let i = 0; i < data.length; i += 4) {
-        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-        data[i] = avg; // red
-        data[i + 1] = avg; // green
-        data[i + 2] = avg; // blue
-        data[i + 3] = 0; // alpha
+    var ctx = c.getContext("2d");  
+    var erasersize = 30
+    try{
+        erasersize = parseInt(document.getElementById("erasersize").value);
     }
-    ctx.putImageData(imgData, (Math.floor(mousex)-parseInt(document.getElementById('source').getBoundingClientRect()["left"]))-(erasersize/2), (Math.floor(mousey)-parseInt(document.getElementById('source').getBoundingClientRect()["top"]))-(erasersize/2));
-    
-    imgData = ctx.getImageData(0, 0, c.width,c.height);
-    data = imgData.data;
-    pxls = [];
-    for (let i = 0; i < data.length; i += 4) {
-        var pixel = [];
-        pixel.push(data[i]);
-        pixel.push(data[i+1]);
-        pixel.push(data[i+2]);
-        pixel.push(data[i+3]);
-        pxls.push(pixel);
-    }
-    console.log(pxls);
-    var pxlsarray = [[]];
-    for(i = 0;i<pxls.length;i++){
-        pxlsarray[pxlsarray.length-1].push(pxls[i]);
-        if(i<pxls.length-2){
-            if((i+1)%c.width==0 && i>c.width-10){
-                pxlsarray.push([]);
-            }
+    catch(err){
+        console.log(err);
+    }        
+    if(eraseenableflag){
+        
+        var imgData = ctx.getImageData(Math.floor(mousex)-parseInt(document.getElementById('source').getBoundingClientRect()["left"]), Math.floor(mousey)-parseInt(document.getElementById('source').getBoundingClientRect()["top"]), erasersize,erasersize);
+        var data = imgData.data;
+        var pxls = [];
+        for (let i = 0; i < data.length; i += 4) {
+            const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+            data[i] = avg; // red
+            data[i + 1] = avg; // green
+            data[i + 2] = avg; // blue
+            data[i + 3] = 0; // alpha
         }
+        ctx.putImageData(imgData, (Math.floor(mousex)-parseInt(document.getElementById('source').getBoundingClientRect()["left"]))-(erasersize/2), (Math.floor(mousey)-parseInt(document.getElementById('source').getBoundingClientRect()["top"]))-(erasersize/2));
+    }
+    else if(drawenableflag){
+        ctx.fillStyle = document.getElementById("clr").value+parseInt(document.getElementById("inprange").value).toString(16);
+        ctx.fillRect((Math.floor(mousex)-parseInt(document.getElementById('source').getBoundingClientRect()["left"]))-(erasersize/2), (Math.floor(mousey)-parseInt(document.getElementById('source').getBoundingClientRect()["top"]))-(erasersize/2),erasersize/2,erasersize/2);
         
     }
-    savedata["pxlsarray"] = pxlsarray;
+    else{
+        imgData = ctx.getImageData(0, 0, c.width,c.height);
+        data = imgData.data;
+        pxls = [];
+        for (let i = 0; i < data.length; i += 4) {
+            var pixel = [];
+            pixel.push(data[i]);
+            pixel.push(data[i+1]);
+            pixel.push(data[i+2]);
+            pixel.push(data[i+3]);
+            pxls.push(pixel);
+        }
+        var pxlsarray = [[]];
+        for(i = 0;i<pxls.length;i++){
+            pxlsarray[pxlsarray.length-1].push(pxls[i]);
+            if(i<pxls.length-2){
+                if((i+1)%c.width==0 && i>c.width-10){
+                    pxlsarray.push([]);
+                }
+            }
+            
+        }
+        savedata["pxlsarray"] = pxlsarray;
+    }
+        
+    
+}
+function drawenable(){
+    if(drawflag){
+        drawenableflag = !drawenableflag;
+    }
+    else{
+        eraseenableflag = !eraseenableflag;
+    }
+}
+
+
+function changesize(e){
+    if(drawflag || eraseflag){
+        if(e.deltaY < 0){
+            document.getElementById("erasersize").value = parseInt(document.getElementById("erasersize").value) + 1;
+        }
+        else{
+            if(parseInt(document.getElementById("erasersize").value)-1>0){
+                document.getElementById("erasersize").value = parseInt(document.getElementById("erasersize").value) - 1;
+            }
+        }
+    }
+    else if(!moveimgenableflag){
+        if(e.deltaY < 0){
+            if(!lockflag){
+                document.getElementById("selectorsize").value = parseInt(document.getElementById("selectorsize").value) + 64;
+                changeselectorsize();
+            }
+            else if(lockflag && parseInt(document.getElementById("selectorsize").value)+64<= parseInt(document.getElementById("source").width) && parseInt(document.getElementById("selectorsize").value)+64<= parseInt(document.getElementById("source").height)){
+                document.getElementById("selector").style.left = parseFloat(document.getElementById("source").style.left) + Math.floor(selectorsize/2)+"px";
+                document.getElementById("selector").style.top = parseFloat(document.getElementById("source").style.top) + Math.floor(selectorsize/2)+"px";
+                document.getElementById("selectorsize").value = parseInt(document.getElementById("selectorsize").value) + 64;
+                changeselectorsize();
+                
+            } 
+        }
+        else{
+            if(parseInt(document.getElementById("selectorsize").value)-64>0){
+                document.getElementById("selectorsize").value = parseInt(document.getElementById("selectorsize").value) - 64;
+                changeselectorsize();
+            }
+        }
+    }
 }
 
 function erasemodeon(){
@@ -107,31 +240,34 @@ function erasemodeon(){
         eraseflag = !eraseflag
     }
     else{
-        document.getElementById("selector").style.visibility = "hidden";
-        document.getElementById("moveimglistner").style.visibility = "hidden";
-        document.getElementById("eraseon").style.backgroundColor = "rgb(20, 20, 20)";
-        eraseflag = !eraseflag
+        if(drawflag==false && moveimgenableflag==false){
+            document.getElementById("selector").style.visibility = "hidden";
+            document.getElementById("moveimglistner").style.visibility = "hidden";
+            document.getElementById("eraseon").style.backgroundColor = "rgb(20, 20, 20)";
+            eraseflag = !eraseflag
+        }
+    }
+}
+
+function drawmodeon(){
+    if(drawflag){
+        document.getElementById("selector").style.visibility = "visible";
+        document.getElementById("moveimglistner").style.visibility = "visible";
+        document.getElementById("drawon").style.backgroundColor = "gray";
+        drawflag = !drawflag
+    }
+    else{
+        if(eraseflag==false && moveimgenableflag==false){
+            document.getElementById("selector").style.visibility = "hidden";
+            document.getElementById("moveimglistner").style.visibility = "hidden";
+            document.getElementById("drawon").style.backgroundColor = "rgb(20, 20, 20)";
+            drawflag = !drawflag
+        }
     }
 }
 
 
 
-
-function preparestuff(){
-    fetch('http://localhost:5000/prepare')
-    .then(response => response.text())
-    .then(data => {
-        data = JSON.parse(data);
-        document.getElementById("source").style.left = data["imgpos"][0];
-        document.getElementById("source").style.top = data["imgpos"][1];
-        savedata["imgpos"][0] = data["imgpos"][0];
-        savedata["imgpos"][1] = data["imgpos"][1];
-        selectorsize = parseInt(data["boxsz"]);    
-        savedata["boxsz"] = parseInt(data["boxsz"]);  
-    });
-    
-}
-console.log("here");
 
 function saved(savedata){
     var responseClone; // 1
@@ -164,23 +300,42 @@ function mousecoordinates(event){
     mousex = event.clientX;
     mousey = event.clientY;
     
+    
 }
 function selector(){
     var selec = document.getElementById("selector");
     selec.style.left = Math.floor(mousex)+"px";
     selec.style.top = Math.floor(mousey)+"px";
-    if((parseFloat(document.getElementById("selector").style.left)-(selectorsize/2))<0){
-        selec.style.left = selectorsize/2+"px";
+    if(lockflag==false){
+        if((parseFloat(document.getElementById("selector").style.left)-(selectorsize/2))<0){
+            selec.style.left = Math.floor(selectorsize/2)+"px";
+        }
+        if((parseFloat(document.getElementById('selector').getBoundingClientRect()["right"])-(selectorsize/2))>parseInt(screen.availWidth)){
+            selec.style.left = parseInt(screen.availWidth)-selectorsize+"px";
+        }
+        if((parseFloat(document.getElementById("selector").style.top)-(selectorsize/2))<0){
+            selec.style.top = Math.floor(selectorsize/2)+"px";
+        }
+        if((parseFloat(document.getElementById('selector').getBoundingClientRect()["bottom"])-(selectorsize/2))>parseInt(screen.availHeight)){
+            selec.style.bottom = parseInt(screen.availHeight)-selectorsize+"px";
+        }
     }
-    if((parseFloat(document.getElementById('selector').getBoundingClientRect()["right"])-(selectorsize/2))>parseInt(screen.availWidth)){
-        selec.style.left = parseInt(screen.availWidth)-selectorsize+"px";
+    else{
+        if((parseFloat(document.getElementById("selector").style.left)-(selectorsize/2))<parseFloat(document.getElementById("source").style.left)){
+            selec.style.left = parseFloat(document.getElementById("source").style.left) + Math.floor(selectorsize/2)+1+"px";
+        }
+        if((parseFloat(document.getElementById('selector').getBoundingClientRect()["right"]))>parseFloat(document.getElementById('source').getBoundingClientRect()["right"])){
+            selec.style.left = parseFloat(document.getElementById("source").style.left)+parseFloat(document.getElementById("source").width) - Math.floor(selectorsize/2) +"px";
+        }
+        if((parseFloat(document.getElementById("selector").style.top)-(selectorsize/2))<parseFloat(document.getElementById("source").style.top)){
+            selec.style.top = parseFloat(document.getElementById("source").style.top) + Math.floor(selectorsize/2)+"px";
+        }
+        if((parseFloat(document.getElementById('selector').getBoundingClientRect()["bottom"]))>parseFloat(document.getElementById('source').getBoundingClientRect()["bottom"])){
+            selec.style.top = parseFloat(document.getElementById("source").style.top)+parseFloat(document.getElementById("source").height) - Math.floor(selectorsize/2)+"px";
+        }
+        
     }
-    if((parseFloat(document.getElementById("selector").style.top)-(selectorsize/2))<0){
-        selec.style.top = selectorsize/2+"px";
-    }
-    if((parseFloat(document.getElementById('selector').getBoundingClientRect()["bottom"])-(selectorsize/2))>parseInt(screen.availHeight)){
-        selec.style.bottom = parseInt(screen.availHeight)-selectorsize+"px";
-    }
+    
 }
 function imgmover(){
     var selec = document.getElementById("source");
@@ -285,6 +440,25 @@ function snapshot(){
     }
     
 }
+
+function lockbox(){
+    if(!lockflag){
+        document.getElementById("lockbox").style.backgroundColor = "rgb(20, 20, 20)";
+    }
+    else{
+        document.getElementById("lockbox").style.backgroundColor = "gray";
+    }
+    lockflag = !lockflag;
+}
+
+function grabselector(){
+    if(lockflag==false){
+        document.getElementById("selector").style.left = Math.floor(mousex)+"px";
+        document.getElementById("selector").style.top = Math.floor(mousey)+"px";
+    }
+    
+
+}
 function moveimgenable(){
     if(moveimgenableflag){
         document.getElementById("selector").style.visibility = "visible";
@@ -292,9 +466,11 @@ function moveimgenable(){
         moveimgenableflag = !moveimgenableflag
     }
     else{
-        document.getElementById("selector").style.visibility = "hidden";
-        document.getElementById("moveimg").style.backgroundColor = "rgb(20, 20, 20)";
-        moveimgenableflag = !moveimgenableflag
+        if(drawflag==false && eraseflag==false){
+            document.getElementById("selector").style.visibility = "hidden";
+            document.getElementById("moveimg").style.backgroundColor = "rgb(20, 20, 20)";
+            moveimgenableflag = !moveimgenableflag
+        }
     }
 }
 function moveimg(){    
@@ -316,33 +492,7 @@ function changeselectorsize(){
 }
 
 function savejson(){
-    console.log(savedata)
-    /*if(savedata["additionaldims"]["top"]<0){
-        savedata["additionaldims"]["top"] = savedata["additionaldims"]["top"]*-1;
-    }
-    if(savedata["additionaldims"]["left"]<0){
-        savedata["additionaldims"]["left"] = savedata["additionaldims"]["left"]*-1;
-    }
-    if(savedata["additionaldims"]["right"]<0){
-        savedata["additionaldims"]["right"] = savedata["additionaldims"]["right"]*-1;
-    }
-    if(savedata["additionaldims"]["bottom"]<0){
-        savedata["additionaldims"]["bottom"] = savedata["additionaldims"]["bottom"]*-1;
-    }
-
-    if(savedata["crpdims"]["left"]<0){
-        savedata["crpdims"]["left"] = savedata["crpdims"]["left"]*-1;
-    }
-    if(savedata["crpdims"]["top"]<0){
-        savedata["crpdims"]["top"] = savedata["crpdims"]["top"]*-1;
-    }
-    if(savedata["crpdims"]["right"]<0){
-        savedata["crpdims"]["right"] = savedata["crpdims"]["right"]*-1;
-    }
-    if(savedata["crpdims"]["bottom"]<0){
-        savedata["crpdims"]["bottom"] = savedata["crpdims"]["bottom"]*-1;
-    }*/
-
+    console.log(savedata);
     saved(savedata);
 }
 
