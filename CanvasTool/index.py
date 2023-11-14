@@ -7,7 +7,7 @@ try:
 except:
 	from signal import SIGABRT
 import json
-from tkinter import filedialog
+
 def stopprocess():
     pid = os.getpid()
     print(pid)
@@ -27,13 +27,12 @@ args = parser.parse_args()
 
 app = Flask(__name__)
 image = ""
-if args.same != "yes":
-    image = Image.open(filedialog.askopenfilename())
-else:
+if args.same == "yes":
     with open("./lastimage.json","r") as filename:
         image = Image.open(json.load(filename)["lastimage"])
-w = str(int(float(image.size[0])))
-h = str(int(float(image.size[1])))
+
+        w = str(int(float(image.size[0])))
+        h = str(int(float(image.size[1])))
 
 try:
     with open("./data.json","r") as filename:
@@ -51,15 +50,19 @@ try:
 except:
     pass
 bs = "256"
+if args.same == "yes":
+    buf = io.BytesIO()
+    image.save(buf, format='PNG')
+    byte_im = buf.getvalue()
+    byte_im = base64.b64encode(byte_im).decode('utf-8')
+    byte_im = f"data:image/png;base64,{byte_im}"
 
-buf = io.BytesIO()
-image.save(buf, format='PNG')
-byte_im = buf.getvalue()
-byte_im = base64.b64encode(byte_im).decode('utf-8')
-byte_im = f"data:image/png;base64,{byte_im}"
 @app.route("/")
 def index():
-    return render_template('index.html',byte_im=byte_im,w=w,h=h,bs=bs)
+    if args.same == "yes":
+        return render_template('index.html',byte_im=byte_im,w=w,h=h,bs=bs)
+    else:
+        return render_template('index.html',byte_im="",w="",h="",bs=bs)
 
 
 @app.route('/favicon.ico')
@@ -67,14 +70,11 @@ def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
+
+
 @app.route("/prepare",methods=['GET', 'POST','DELETE'])
-def prepare():
-    with open("data.json","r") as json_file:
-        d = json.load(json_file)
-        data = {"width":str(image.size[0]),"height":str(image.size[1]),"boxsz":str(d["boxsz"]),"imgpos":str(d["imgpos"])}
-    return data
-
-
+def prep():
+    return{"exist":args.same}
 
 @app.route("/savedata",methods=['GET', 'POST','DELETE'])
 def savedata():
@@ -125,6 +125,11 @@ def savedata():
     leftarr = []
     rightarr = []
     bottomarr = []
+
+    topleftarr = []
+    toprightarr = []
+    bottomleftarr = []
+    bottomrightarr = []
     whitepix = 0
     px = bg2.load()
     for i in range(0,bg2.size[0]):
@@ -143,6 +148,17 @@ def savedata():
 
                     if px[i-1,j][0] <255:
                         toparr.append([i,j])
+
+                    if px[i-1,j-1][0] <255:
+                        topleftarr.append([i,j])
+                    if px[i-1,j+1][0] <255:
+                        toprightarr.append([i,j])
+
+                    if px[i+1,j+1][0] <255:
+                        bottomrightarr.append([i,j])
+
+                    if px[i+1,j-1][0] <255:
+                        bottomleftarr.append([i,j])
 
             except:
                 continue
@@ -173,6 +189,36 @@ def savedata():
         for k in range(0,ff):
             try:
                 px[bottomarr[i][0]+k,bottomarr[i][1]] = (255,255,255)
+            except:
+                continue
+    
+
+
+    for i in range(0,len(topleftarr)):
+        for k in range(0,ff):
+            try:
+                px[topleftarr[i][0]-k,topleftarr[i][1]] = (255,255,255)
+            except:
+                continue
+
+    for i in range(0,len(toprightarr)):
+        for k in range(0,ff):
+            try:
+                px[toprightarr[i][0],toprightarr[i][1]-k] = (255,255,255)
+            except:
+                continue
+
+    for i in range(0,len(bottomleftarr)):
+        for k in range(0,ff):
+            try:
+                px[bottomleftarr[i][0],bottomleftarr[i][1]+k] = (255,255,255)
+            except:
+                continue
+
+    for i in range(0,len(bottomrightarr)):
+        for k in range(0,ff):
+            try:
+                px[bottomrightarr[i][0]+k,bottomrightarr[i][1]] = (255,255,255)
             except:
                 continue
         
