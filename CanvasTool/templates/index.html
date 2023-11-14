@@ -4,24 +4,35 @@
         <link rel="stylesheet" href="/static/index.css">
         
     </head>
-    <body onmousemove="mousecoordinates(event);">
+    <body onwheel="changesize(event);" onmousemove="mousecoordinates(event);">
         <script src="/static/index.js"></script>
         <div id="container" onmouseenter="reset();" style="width: 100%;height: 100%;">
             
-            <img id="sourceimg" src={{byte_im}} width={{w}} height={{h}} style="visibility: hidden;"/>
-            <canvas id="source" width={{w}} height={{h}} onclick="draw();" style="position: fixed;"></canvas>
-            <div id="moveimglistner" style="position: absolute; width: 100%;height: 100%;top: 0%;left: 0%;" onclick="moveimg();"></div>
-            <div id="selector" onmousemove="selector();" onclick="snapshot();" style="position: fixed;"></div>
+            <img id="sourceimg" src={{byte_im}} width={{w}} height={{h}} style="visibility: hidden;" style="position: fixed;"/>
+            <canvas id="source" width={{w}} height={{h}} onclick="drawenable();" onmousemove="draw();" ></canvas>
+            <div id="moveimglistner" style="position: absolute; width: 100%;height: 100%;top: 0%;left: 0%;" onclick="moveimg(); " onmousemove="grabselector();"></div>
+            <div id="selector" onmousemove="selector();" onclick="snapshot();"></div>
             <div id="settings">
                 <div id="moveimg" onclick="moveimgenable();"><p class="txt">Move Image</p></div>
-                <p id="label">Box Size: </p>
-                <input type="text" id="selectorsize" onchange="changeselectorsize();">
+                <p id="label" style="position: absolute;top: 30%;left: 34%;">Box Size: </p>
+                <input type="text" id="selectorsize" onchange="changeselectorsize();" size="4">
                 <div id="saveexit" onclick="savejson()"><p class="txt">Save and Exit</p></div>
                 <div id="eraseon" onclick="erasemodeon()"><p class="txt">Erase</p></div>
-                <p id="label2" style="position: absolute;top: 30%;left: 50%;">Fade Factor: </p>
-                <input id="ff" type="text" width="6" style="position: absolute;top: 40%;left: 55%;" onchange="ffupdate();">
-                <p id="label3" style="position: absolute;top: 30%;left: 70%;">Eraser Size: </p>
-                <input id="erasersize" type="text" width="6" style="position: absolute;top: 40%;left: 75%;">
+                <div id="drawon" onclick="drawmodeon()"><p class="txt">Draw</p></div>
+                <p id="label2" style="position: absolute;top: 30%;left: 43%;">Fade Factor: </p>
+                <input id="ff" type="text" size="4"  onchange="ffupdate();">
+                <p id="label3" style="position: absolute;top: 30%;left: 53%;">Eraser/Pencil Size: </p>
+                <input id="erasersize" type="text" size="4">
+                <input id="clr" type="color" size="3">
+                <input id="inprange" type="range" min="0" max="255" step="1">
+                <div id="lockbox" onclick="lockbox();"><p class="txt">Lock Box To Image</p></div>
+                <div id="resetimg" onclick="resetimg();"><p class="txt">Reset Image</p></div>
+            </div>
+            <div id="uploadcontainer">
+                <label for="openimg" class="uploadstyle">
+                    <p>Upload Image</p>
+                </label>
+                <input id="openimg" type="file">
             </div>
                 
                 
