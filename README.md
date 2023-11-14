@@ -56,7 +56,7 @@ Place model folders inside 'ComfyUI/models/controlnet'
 
 
 # Canvas Inpaint/Outpaint/img2img
-<img src='https://github.com/taabata/LCM_Inpaint_Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-11-12%2023-43-32.png'>
+<img src='https://github.com/taabata/LCM_Inpaint_Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-11-15%2002-51-12.png'>
 
 In your Terminal/cmd at the directory where your ComfyUI folder is:
 
