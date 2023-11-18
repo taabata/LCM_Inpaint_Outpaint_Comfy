@@ -105,7 +105,7 @@ def savedata():
     for i in range(0,croped2.size[0]):
         for j in range(0,croped2.size[1]):
             try:
-                if px[i,j][3] == 0:
+                if px[i,j][3] <255:
                     px[i,j] = (255,255,255,255)
                 else:
                     px[i,j] = (0,0,0,255)
@@ -197,28 +197,28 @@ def savedata():
     for i in range(0,len(topleftarr)):
         for k in range(0,ff):
             try:
-                px[topleftarr[i][0]-k,topleftarr[i][1]] = (255,255,255)
+                px[topleftarr[i][0]-k,topleftarr[i][1]-k] = (255,255,255)
             except:
                 continue
 
     for i in range(0,len(toprightarr)):
         for k in range(0,ff):
             try:
-                px[toprightarr[i][0],toprightarr[i][1]-k] = (255,255,255)
+                px[toprightarr[i][0]-k,toprightarr[i][1]+k] = (255,255,255)
             except:
                 continue
 
     for i in range(0,len(bottomleftarr)):
         for k in range(0,ff):
             try:
-                px[bottomleftarr[i][0],bottomleftarr[i][1]+k] = (255,255,255)
+                px[bottomleftarr[i][0]+k,bottomleftarr[i][1]-k] = (255,255,255)
             except:
                 continue
 
     for i in range(0,len(bottomrightarr)):
         for k in range(0,ff):
             try:
-                px[bottomrightarr[i][0]+k,bottomrightarr[i][1]] = (255,255,255)
+                px[bottomrightarr[i][0]+k,bottomrightarr[i][1]+k] = (255,255,255)
             except:
                 continue
         
@@ -239,7 +239,7 @@ def savedata():
         bg2 = bg2.resize((bg2.size[0]-ff*2,bg2.size[1]-ff*2))
         border.paste(bg2,(ff,ff))
         bg2 = border
-    bg2 = bg2.filter(ImageFilter.BoxBlur(ff))
+    bg2 = bg2.filter(ImageFilter.BoxBlur(ff-int(ff/2)))
     bg2.save("mask.png")
     width = int(float(savedata["additionaldims"]["left"])) + int(float(savedata["additionaldims"]["right"]))
     height = int(float(savedata["additionaldims"]["top"])) + int(float(savedata["additionaldims"]["bottom"]))
