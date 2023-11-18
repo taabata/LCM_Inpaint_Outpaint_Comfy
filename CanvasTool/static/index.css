@@ -4,7 +4,7 @@ html{
     background-repeat: no-repeat;
 }
 
-#settings{
+#settings,#settings2{
     width: 100%;
     height: 10%;
     background: linear-gradient(to bottom,rgb(44, 44, 44) 80%, rgb(36, 36, 36),transparent);
@@ -221,8 +221,55 @@ label p{
 
 #lockbox{
     position: absolute;
-    top: 50%;
+    top: 61%;
     left: 73%;
+    width: 10%;
+    height: 28%;
+    background-color: gray;
+    transform: translate(-50%,-50%);
+    font-weight: bolder;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+    cursor: pointer;
+}
+#lockbox p{
+    font-size: 15px;
+    top: 0%;
+}
+
+#lockbox:hover{
+    background-color: rgb(20, 20, 20);
+}
+#locktop, #lockleft, #lockright, #lockbottom{
+    position: absolute;
+    top: 40%;
+    width: 2.5%;
+    height: 30%;
+    background-color: gray;
+    transform: translate(-50%,-50%);
+    font-weight: bolder;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+    cursor: pointer;
+    font-size: 10px;
+    text-align: center;
+}
+#locktop{
+    left: 69.35%;
+}
+#lockleft{
+    left: 71.85%
+}
+#lockright{
+    left: 74.33%;
+}
+#lockbottom{
+    left: 76.8%;
+}
+#moveimg2{
+    position: absolute;
+    top: 50%;
+    left: 15%;
     width: 10%;
     height: 50%;
     background-color: gray;
@@ -232,7 +279,55 @@ label p{
     text-align: center;
     cursor: pointer;
 }
-
-#lockbox:hover{
+#moveimg2:hover{
     background-color: rgb(20, 20, 20);
+}
+#openimgadd{
+    position: fixed;
+    top: 50%;
+    left: 90%;
+}
+#settings2{
+    visibility: hidden;
+}
+.moveimgclass,#done,#moveimg1{
+    position: absolute;
+    top: 50%;
+    width: 10%;
+    height: 50%;
+    background-color: gray;
+    transform: translate(-50%,-50%);
+    font-weight: bolder;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+    cursor: pointer;
+    z-index: 1;
+}
+.moveimgclass:hover{
+    background-color: rgb(20, 20, 20);
+}
+#done{
+    left: 95%;
+}
+#moveimg1{
+    left: 5%;
+}
+#uploadanotherimg,#openimgadd{
+    position: absolute;
+    width: 2%;
+    height: 40%;
+    top: 30%;
+    left: 65%;
+    
+}
+#uploadanotherimg{
+    background-color: rgb(20, 20, 20);
+}
+#openimgadd{
+    opacity: 0;
+}
+.icontxt{
+    position: absolute;
+    top: -140%;
+    font-size: 50px;
 }
