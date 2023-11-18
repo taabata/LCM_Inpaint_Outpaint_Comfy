@@ -2064,6 +2064,7 @@ class stitch:
         res.append(new)
         return (res,)
 
+
 NODE_CLASS_MAPPINGS = {
     "LCMGenerate": LCMGenerate,
     "LoadImageNode_LCM":LoadImageNode_LCM,
