@@ -14,6 +14,12 @@ var eraseflag = false;
 var drawenableflag = false;
 var eraseenableflag = false;
 var drawflag = false;
+var ll = false;
+var lr = false;
+var lt = false;
+var lb = false;
+var comporder = [];
+var imagetomove = "";
 var savedata = {
     "crpdims": {
         "left":0,
@@ -96,6 +102,140 @@ window.onload = function(){
         }
         
     
+    }
+
+    document.getElementById("openimgadd").onchange =function(e) {
+        var file, img;
+        if ((file = this.files[0])) {
+            comporder = [];
+            document.getElementById("selector").style.visibility = "hidden";
+            var num = (document.getElementById("canvascontainer").children.length /2)+1;
+            num = String(num);
+            document.getElementById("settings2").style.visibility = "visible";
+            document.getElementById("openimgadd").remove();
+            var newel = document.createElement("input");
+            newel.id = "openimgadd";
+            newel.type = "file";
+            newel.onchange =function(e) {
+                var file, img;
+                if ((file = this.files[0])) {
+                    comporder = [];
+                    document.getElementById("selector").style.visibility = "hidden";
+                    var num = (document.getElementById("canvascontainer").children.length /2)+1;
+                    num = String(num);
+                    document.getElementById("settings2").style.visibility = "visible";
+                    var newel = document.createElement("div");
+                    newel.id = "moveimg"+num;
+                    newel.addEventListener("click",moveimgenable);
+                    newel.className = "moveimgclass txt";
+                    newel.style.left = 5+(num-1)*10+"%";
+                    var newelpar = document.createElement("p");            
+                    newelpar.innerHTML = "Move Image "+num;
+                    newelpar.className = "txt";
+                    newel.append(newelpar);
+                    document.getElementById("settings2").append(newel);
+                    newel = document.createElement("img");
+                    newel.id = "sourceimg"+num;
+                    newel.style.display = "none";
+                    document.getElementById("canvascontainer").append(newel);
+                    newel = document.createElement("canvas");
+                    newel.id = "source"+num;
+                    newel.style.position = "fixed";
+                    document.getElementById("canvascontainer").append(newel);
+                    img = new Image();
+                    img.onload = function() {
+                        document.getElementById("sourceimg"+num).width = this.width;
+                        document.getElementById("sourceimg"+num).height = this.height;
+                        document.getElementById("source"+num).width = this.width;
+                        document.getElementById("source"+num).height = this.height;
+                        var canvas = document.getElementById("source"+num);
+                        var ctx = canvas.getContext("2d");
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        var img = document.getElementById("sourceimg"+num);
+                        ctx.drawImage(img, 0, 0);
+                        imgData = ctx.getImageData(0, 0, canvas.width,canvas.height);
+                        data = imgData.data;
+                        pxls = [];
+                        for (let i = 0; i < data.length; i += 4) {
+                            var pixel = [];
+                            pixel.push(data[i]);
+                            pixel.push(data[i+1]);
+                            pixel.push(data[i+2]);
+                            pixel.push(data[i+3]);
+                            pxls.push(pixel);
+                        }
+                        var pxlsarray = [[]];
+                        for(i = 0;i<pxls.length;i++){
+                            pxlsarray[pxlsarray.length-1].push(pxls[i]);
+                            if(i<pxls.length-2){
+                                if((i+1)%canvas.width==0 && i>canvas.width-10){
+                                    pxlsarray.push([]);
+                                }
+                            }
+                            
+                        }
+                    };
+                    img.src = URL.createObjectURL(file);
+                    document.getElementById("sourceimg"+num).src = URL.createObjectURL(file);
+                }
+                
+            }
+            document.getElementById("settings2").append(newel);
+            var newel = document.createElement("div");
+            newel.id = "moveimg"+num;
+            newel.addEventListener("click",moveimgenable);
+            newel.className = "moveimgclass txt";
+            newel.style.left = 5+(num-1)*10+"%";
+            var newelpar = document.createElement("p");            
+            newelpar.innerHTML = "Move Image "+num;
+            newelpar.className = "txt";
+            newel.append(newelpar);
+            document.getElementById("settings2").append(newel);
+            newel = document.createElement("img");
+            newel.id = "sourceimg"+num;
+            newel.style.display = "none";
+            document.getElementById("canvascontainer").append(newel);
+            newel = document.createElement("canvas");
+            newel.id = "source"+num;
+            newel.style.position = "fixed";
+            document.getElementById("canvascontainer").append(newel);
+            img = new Image();
+            img.onload = function() {
+                document.getElementById("sourceimg"+num).width = this.width;
+                document.getElementById("sourceimg"+num).height = this.height;
+                document.getElementById("source"+num).width = this.width;
+                document.getElementById("source"+num).height = this.height;
+                var canvas = document.getElementById("source"+num);
+                var ctx = canvas.getContext("2d");
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                var img = document.getElementById("sourceimg"+num);
+                ctx.drawImage(img, 0, 0);
+                imgData = ctx.getImageData(0, 0, canvas.width,canvas.height);
+                data = imgData.data;
+                pxls = [];
+                for (let i = 0; i < data.length; i += 4) {
+                    var pixel = [];
+                    pixel.push(data[i]);
+                    pixel.push(data[i+1]);
+                    pixel.push(data[i+2]);
+                    pixel.push(data[i+3]);
+                    pxls.push(pixel);
+                }
+                var pxlsarray = [[]];
+                for(i = 0;i<pxls.length;i++){
+                    pxlsarray[pxlsarray.length-1].push(pxls[i]);
+                    if(i<pxls.length-2){
+                        if((i+1)%canvas.width==0 && i>canvas.width-10){
+                            pxlsarray.push([]);
+                        }
+                    }
+                    
+                }
+            };
+            img.src = URL.createObjectURL(file);
+            document.getElementById("sourceimg"+num).src = URL.createObjectURL(file);
+        }
+        
     }
 
 }
@@ -320,42 +460,52 @@ function selector(){
             selec.style.bottom = parseInt(screen.availHeight)-selectorsize+"px";
         }
     }
-    else{
+    
+    if(ll){
         if((parseFloat(document.getElementById("selector").style.left)-(selectorsize/2))<parseFloat(document.getElementById("source").style.left)){
             selec.style.left = parseFloat(document.getElementById("source").style.left) + Math.floor(selectorsize/2)+1+"px";
         }
+    }
+    if(lr){
         if((parseFloat(document.getElementById('selector').getBoundingClientRect()["right"]))>parseFloat(document.getElementById('source').getBoundingClientRect()["right"])){
             selec.style.left = parseFloat(document.getElementById("source").style.left)+parseFloat(document.getElementById("source").width) - Math.floor(selectorsize/2) +"px";
         }
+    }
+    if(lt){
         if((parseFloat(document.getElementById("selector").style.top)-(selectorsize/2))<parseFloat(document.getElementById("source").style.top)){
             selec.style.top = parseFloat(document.getElementById("source").style.top) + Math.floor(selectorsize/2)+"px";
         }
+    }
+    if(lb){
         if((parseFloat(document.getElementById('selector').getBoundingClientRect()["bottom"]))>parseFloat(document.getElementById('source').getBoundingClientRect()["bottom"])){
             selec.style.top = parseFloat(document.getElementById("source").style.top)+parseFloat(document.getElementById("source").height) - Math.floor(selectorsize/2)+"px";
         }
-        
     }
+        
+    
     
 }
+
+
 function imgmover(){
-    var selec = document.getElementById("source");
+    var selec = document.getElementById("source"+imagetomove);
+    console.log(selec.id);
     if(mousex>prevmousex){
-        selec.style.left = parseInt(document.getElementById('source').getBoundingClientRect()["left"])+10+"px";
+        selec.style.left = parseInt(selec.getBoundingClientRect()["left"])+10+"px";
     }
     else if(mousex<prevmousex){
-        selec.style.left = parseInt(document.getElementById('source').getBoundingClientRect()["left"])-10+"px";
+        selec.style.left = parseInt(selec.getBoundingClientRect()["left"])-10+"px";
     }
     if(mousey>prevmousey){
-        selec.style.top = parseInt(document.getElementById('source').getBoundingClientRect()["top"])+10+"px";
+        selec.style.top = parseInt(selec.getBoundingClientRect()["top"])+10+"px";
     }
     else if(mousey<prevmousey){
-        selec.style.top = parseInt(document.getElementById('source').getBoundingClientRect()["top"])-10+"px";
+        selec.style.top = parseInt(selec.getBoundingClientRect()["top"])-10+"px";
     }
 
     
 }
 function snapshot(){
-    console.log("hello");
     savedata = {
         "crpdims": {
             "left":0,
@@ -441,12 +591,72 @@ function snapshot(){
     
 }
 
+function lockleft(){
+    if(ll){
+        document.getElementById("lockleft").style.backgroundColor = "gray";
+    }
+    else{
+        document.getElementById("lockleft").style.backgroundColor = "rgb(20,20,20)";
+    }
+    if(!lockflag){
+        ll = !ll;
+    }
+}
+function lockright(){
+    if(lr){
+        document.getElementById("lockright").style.backgroundColor = "gray";
+    }
+    else{
+        document.getElementById("lockright").style.backgroundColor = "rgb(20,20,20)";
+    }
+    if(!lockflag){
+        lr = !lr;
+    }
+    
+}
+function locktop(){
+    if(lt){
+        document.getElementById("locktop").style.backgroundColor = "gray";
+    }
+    else{
+        document.getElementById("locktop").style.backgroundColor = "rgb(20,20,20)";
+    }
+    if(!lockflag){
+        lt = !lt;
+    }
+    
+}
+function lockbottom(){
+    if(lb){
+        document.getElementById("lockbottom").style.backgroundColor = "gray";
+    }
+    else{
+        document.getElementById("lockbottom").style.backgroundColor = "rgb(20,20,20)";
+    }
+    if(!lockflag){
+        lb = !lb;
+    }
+
+    
+}
 function lockbox(){
     if(!lockflag){
+        ll = true;
+        lr = true;
+        lt = true;
+        lb = true;
+        document.getElementById("lockleft").style.backgroundColor = "gray";
+        document.getElementById("lockright").style.backgroundColor = "gray";
+        document.getElementById("locktop").style.backgroundColor = "gray";
+        document.getElementById("lockbottom").style.backgroundColor = "gray";
         document.getElementById("lockbox").style.backgroundColor = "rgb(20, 20, 20)";
     }
     else{
         document.getElementById("lockbox").style.backgroundColor = "gray";
+        ll = false;
+        lr = false;
+        lt = false;
+        lb = false;
     }
     lockflag = !lockflag;
 }
@@ -459,19 +669,217 @@ function grabselector(){
     
 
 }
-function moveimgenable(){
+
+function moveimgenablefirst(){
     if(moveimgenableflag){
-        document.getElementById("selector").style.visibility = "visible";
-        document.getElementById("moveimg").style.backgroundColor = "gray";
+        document.getElementById("selector").style.visibility = "visible";        
+        document.getElementById("moveimg").style.backgroundColor = "gray";         
         moveimgenableflag = !moveimgenableflag
+        imagetomove = "";
     }
     else{
         if(drawflag==false && eraseflag==false){
             document.getElementById("selector").style.visibility = "hidden";
-            document.getElementById("moveimg").style.backgroundColor = "rgb(20, 20, 20)";
-            moveimgenableflag = !moveimgenableflag
+            document.getElementById("moveimg").style.backgroundColor = "rgb(20,20,20)";   
+            moveimgenableflag = !moveimgenableflag;
+            imagetomove = "";
         }
     }
+}
+function moveimgenable(t){
+    if(moveimgenableflag){
+        try{
+            document.getElementById(t.currentTarget.id).style.backgroundColor = "gray"; 
+        }
+        catch(error){
+            document.getElementById("moveimg1").style.backgroundColor = "gray";
+        }      
+        moveimgenableflag = !moveimgenableflag
+        imagetomove = "";
+    }
+    else{
+        if(drawflag==false && eraseflag==false){ 
+            try{
+                document.getElementById(t.currentTarget.id).style.backgroundColor = "rgb(20,20,20)";
+                document.getElementById("canvascontainer").appendChild(document.getElementById("source"+t.currentTarget.id.match(/\d+/)[0]));
+            }          
+            catch(error){
+                document.getElementById("moveimg1").style.backgroundColor = "rgb(20,20,20)";
+                document.getElementById("canvascontainer").appendChild(document.getElementById("source"));
+            }
+            
+            moveimgenableflag = !moveimgenableflag;
+            try{
+                imagetomove = String(t.currentTarget.id.match(/\d+/)[0]);
+                comporder.push(t.currentTarget.id.match(/\d+/)[0]);
+            }
+            catch(error){
+                imagetomove = "";
+                comporder.push("");
+            }
+        }
+    }
+}
+
+function compimage(){
+    var order = [""];
+    var coordinates = [[parseInt(document.getElementById('source').getBoundingClientRect()["left"]),parseInt(document.getElementById('source').getBoundingClientRect()["top"])]];
+    var num = document.getElementById("settings2").children.length - 3;
+    document.getElementById("openimgadd").remove();
+    var newel = document.createElement("input");
+    newel.id = "openimgadd";
+    newel.type = "file";
+    newel.onchange =function(e) {
+        var file, img;
+        if ((file = this.files[0])) {
+            comporder = [];
+            document.getElementById("selector").style.visibility = "hidden";
+            var num = (document.getElementById("canvascontainer").children.length /2)+1;
+            num = String(num);
+            document.getElementById("settings2").style.visibility = "visible";
+            var newel = document.createElement("div");
+            newel.id = "moveimg"+num;
+            newel.addEventListener("click",moveimgenable);
+            newel.className = "moveimgclass txt";
+            newel.style.left = 5+(num-1)*10+"%";
+            var newelpar = document.createElement("p");            
+            newelpar.innerHTML = "Move Image "+num;
+            newelpar.className = "txt";
+            newel.append(newelpar);
+            document.getElementById("settings2").append(newel);
+            newel = document.createElement("img");
+            newel.id = "sourceimg"+num;
+            newel.style.display = "none";
+            document.getElementById("canvascontainer").append(newel);
+            newel = document.createElement("canvas");
+            newel.id = "source"+num;
+            newel.style.position = "fixed";
+            document.getElementById("canvascontainer").append(newel);
+            img = new Image();
+            img.onload = function() {
+                document.getElementById("sourceimg"+num).width = this.width;
+                document.getElementById("sourceimg"+num).height = this.height;
+                document.getElementById("source"+num).width = this.width;
+                document.getElementById("source"+num).height = this.height;
+                var canvas = document.getElementById("source"+num);
+                var ctx = canvas.getContext("2d");
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                var img = document.getElementById("sourceimg"+num);
+                ctx.drawImage(img, 0, 0);
+                imgData = ctx.getImageData(0, 0, canvas.width,canvas.height);
+                data = imgData.data;
+                pxls = [];
+                for (let i = 0; i < data.length; i += 4) {
+                    var pixel = [];
+                    pixel.push(data[i]);
+                    pixel.push(data[i+1]);
+                    pixel.push(data[i+2]);
+                    pixel.push(data[i+3]);
+                    pxls.push(pixel);
+                }
+                var pxlsarray = [[]];
+                for(i = 0;i<pxls.length;i++){
+                    pxlsarray[pxlsarray.length-1].push(pxls[i]);
+                    if(i<pxls.length-2){
+                        if((i+1)%canvas.width==0 && i>canvas.width-10){
+                            pxlsarray.push([]);
+                        }
+                    }
+                    
+                }
+            };
+            img.src = URL.createObjectURL(file);
+            document.getElementById("sourceimg"+num).src = URL.createObjectURL(file);
+        }
+        
+    }
+    document.getElementById("settings").append(newel);
+    for(let i=1;i<num;i++){
+        order.push(String(i+1));
+    }
+    if(comporder.length>0){
+        comporder.reverse();
+        order.reverse();
+        for(let i=0;i<order.length;i++){
+            comporder.push(order[i]);
+        }
+        order = [];
+        for(let i=0;i<comporder.length;i++){
+            if(!order.includes(comporder[i])){
+                order.push(comporder[i]);
+            }
+        }
+        
+    }
+
+
+
+    var leftest = parseInt(document.getElementById('source').getBoundingClientRect()["left"]);
+    var topest = parseInt(document.getElementById('source').getBoundingClientRect()["top"]);
+    var rightest = parseInt(document.getElementById('source').getBoundingClientRect()["right"]);
+    var bottomest = parseInt(document.getElementById('source').getBoundingClientRect()["bottom"]);
+    for(let i =2;i<num+1;i++){
+        coordinates.push([parseInt(document.getElementById('source'+i).getBoundingClientRect()["left"]),parseInt(document.getElementById('source'+i).getBoundingClientRect()["top"])])
+        if(parseInt(document.getElementById('source'+i).getBoundingClientRect()["left"])<leftest){
+            leftest = parseInt(document.getElementById('source'+i).getBoundingClientRect()["left"])
+        }
+        if(parseInt(document.getElementById('source'+i).getBoundingClientRect()["top"])<topest){
+            topest = parseInt(document.getElementById('source'+i).getBoundingClientRect()["top"])
+        }
+        if(parseInt(document.getElementById('source'+i).getBoundingClientRect()["right"])>rightest){
+            rightest = parseInt(document.getElementById('source'+i).getBoundingClientRect()["right"])
+        }
+        if(parseInt(document.getElementById('source'+i).getBoundingClientRect()["bottom"])>bottomest){
+            bottomest = parseInt(document.getElementById('source'+i).getBoundingClientRect()["bottom"])
+        }
+    }
+    console.log(coordinates);
+    console.log(order);
+    var canvas = document.getElementById("source");
+    var ctx = canvas.getContext("2d");
+    canvas.width = rightest-leftest;
+    canvas.height = bottomest-topest;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    order.reverse();
+    for(let i = 0;i<order.length;i++){
+        if(order[i]==""){
+            var img = document.getElementById("sourceimg");
+            ctx.drawImage(img, coordinates[0][0]-leftest, coordinates[0][1]-topest);
+        }
+        else{
+            img = document.getElementById("sourceimg"+order[i]);
+            ctx.drawImage(img, coordinates[parseInt(order[i])-1][0]-leftest, coordinates[parseInt(order[i])-1][1]-topest);
+            document.getElementById("sourceimg"+order[i]).remove();
+            document.getElementById("source"+order[i]).remove();
+            document.getElementById("moveimg"+order[i]).remove();
+        }
+    }
+    document.getElementById("sourceimg").src = canvas.toDataURL();
+    imgData = ctx.getImageData(0, 0, canvas.width,canvas.height);
+    data = imgData.data;
+    pxls = [];
+    for (let i = 0; i < data.length; i += 4) {
+        var pixel = [];
+        pixel.push(data[i]);
+        pixel.push(data[i+1]);
+        pixel.push(data[i+2]);
+        pixel.push(data[i+3]);
+        pxls.push(pixel);
+    }
+    var pxlsarray = [[]];
+    for(i = 0;i<pxls.length;i++){
+        pxlsarray[pxlsarray.length-1].push(pxls[i]);
+        if(i<pxls.length-2){
+            if((i+1)%canvas.width==0 && i>canvas.width-10){
+                pxlsarray.push([]);
+            }
+        }
+        
+    }
+    savedata["pxlsarray"] = pxlsarray;
+    document.getElementById("settings2").style.visibility="hidden";
+    document.getElementById("selector").style.visibility = "visible";
+
 }
 function moveimg(){    
     if(clickflag && moveimgenableflag){
