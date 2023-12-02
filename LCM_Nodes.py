@@ -15,7 +15,7 @@ from .LCM.pipeline_cn_reference_img2img import LatentConsistencyModelPipeline_re
 from .LCM.LCM_lora_inpaint import LCM_inpaint_final
 from .LCM.LCM_lora_inpaint_ipadapter import LCM_lora_inpaint_ipadapter
 from .LCM.pipeline_cn import LatentConsistencyModelPipeline_controlnet
-from diffusers import AutoencoderKL, UNet2DConditionModel, T2IAdapter, ControlNetModel, StableDiffusionPipeline
+from diffusers import AutoPipelineForImage2Image,AutoencoderKL, UNet2DConditionModel, T2IAdapter, ControlNetModel, StableDiffusionPipeline, AutoencoderTiny, DiffusionPipeline, LCMScheduler, AutoPipelineForInpainting, StableDiffusionControlNetPipeline, StableDiffusionControlNetInpaintPipeline
 from diffusers.utils import get_class_from_dynamic_module
 from transformers import CLIPTokenizer, CLIPTextModel, CLIPImageProcessor
 import os
