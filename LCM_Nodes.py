@@ -1982,7 +1982,7 @@ class SaveImage_LCM:
                 "lastimage":str(os.path.join(full_output_folder, file))
             }
             json_object = json.dumps(data, indent=4)
-            with open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasTool/lastimage.json", "w") as outfile:
+            with open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/lastimage.json", "w") as outfile:
                 outfile.write(json_object)
             
             
@@ -2008,17 +2008,17 @@ class OutpaintCanvasTool:
     RETURN_TYPES = ("IMAGE","IMAGE","IMAGE")
     FUNCTION = "canvasopen"
     def canvasopen(self,seed):
-        bg = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasTool/image.png")
+        bg = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/image.png")
         i = ImageOps.exif_transpose(bg)
         image = i.convert("RGB")
         image = np.array(image).astype(np.float32) / 255.0
         bg = torch.from_numpy(image)[None,]
-        bg2 = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasTool/mask.png")
+        bg2 = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/mask.png")
         i = ImageOps.exif_transpose(bg2)
         image = i.convert("RGB")
         image = np.array(image).astype(np.float32) / 255.0
         bg2 = torch.from_numpy(image)[None,]
-        ref = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasTool/cropped.png")
+        ref = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/cropped.png")
         i = ImageOps.exif_transpose(ref)
         image = i.convert("RGB")
         image = np.array(image).astype(np.float32) / 255.0
@@ -2042,11 +2042,11 @@ class stitch:
         img = image[0].numpy()
         img = img*255.0
         image = Image.fromarray(np.uint8(img)).convert("RGBA")
-        with open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasTool/data.json","r") as json_file:
+        with open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/data.json","r") as json_file:
             savedata = json.load(json_file)["savedata"]
-        bg = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasTool/out.png").convert("RGBA")
-        msksmall = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasTool/mask.png").convert("L")
-        cropped = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasTool/image.png").convert("RGBA")
+        bg = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/out.png").convert("RGBA")
+        msksmall = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/mask.png").convert("L")
+        cropped = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/image.png").convert("RGBA")
         width = int(savedata["additionaldims"]["right"]) + int(savedata["additionaldims"]["left"]) + bg.size[0]
         height = int(savedata["additionaldims"]["top"]) + int(savedata["additionaldims"]["bottom"]) + bg.size[1]
         new = Image.new("RGBA",(width,height),(0,0,0,0))
