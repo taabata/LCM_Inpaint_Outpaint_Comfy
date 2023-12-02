@@ -18,9 +18,16 @@ var ll = false;
 var lr = false;
 var lt = false;
 var lb = false;
+var setref = false;
 var comporder = [];
 var imagetomove = "";
 var savedata = {
+    "crpdimsref": {
+        "left":0,
+        "top": 0,
+        "right":0,
+        "bottom":0
+    },
     "crpdims": {
         "left":0,
         "top": 0,
@@ -260,7 +267,27 @@ function prepare(){
     });
 }
 
-
+function setreftoggle(){
+    setref = !setref;
+    if(setref){
+        document.getElementById("selector").style.border = "2px solid red";
+        document.getElementById("setref").style.backgroundColor = "rgb(20,20,20)";
+        document.getElementById("saveexit").style.visibility = "hidden";
+        ll = true;
+        lr = true;
+        lt = true;
+        lb = true;
+        document.getElementById("lockleft").style.backgroundColor = "gray";
+        document.getElementById("lockright").style.backgroundColor = "gray";
+        document.getElementById("locktop").style.backgroundColor = "gray";
+        document.getElementById("lockbottom").style.backgroundColor = "gray";
+        document.getElementById("lockbox").style.backgroundColor = "rgb(20, 20, 20)";
+    }
+    else{
+        document.getElementById("selector").style.border = "2px solid green";
+        document.getElementById("setref").style.backgroundColor = "gray";
+    }
+}
 function resetimg(){
     var canvas = document.getElementById("source");
     var ctx = canvas.getContext("2d");
@@ -506,86 +533,129 @@ function imgmover(){
     
 }
 function snapshot(){
-    savedata = {
-        "crpdims": {
-            "left":0,
-            "top": 0,
-            "right":0,
-            "bottom":0
-        },
-        "additionaldims": {
-            "left":0,
-            "top": 0,
-            "right":0,
-            "bottom":0
-        },
-        "imgpos": savedata["imgpos"],
-        "boxsz":savedata["boxsz"],
-        "ff":savedata["ff"],
-        "pxlsarray":savedata["pxlsarray"]
-    
-    };
     imagedims["width"] = parseInt(document.getElementById('source').width);
     imagedims["height"] = parseInt(document.getElementById('source').height);
-    document.getElementById("saveexit").style.visibility = "visible";
-    console.log((parseFloat(document.getElementById("selector").style.left)-(selectorsize/2)));
-    console.log(document.getElementById('source').getBoundingClientRect()["left"]);
-    if((parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))<document.getElementById('source').getBoundingClientRect()["left"]){
-        if(document.getElementById('selector').getBoundingClientRect()["right"]<document.getElementById('source').getBoundingClientRect()["right"]){
-            savedata["additionaldims"]["left"] = document.getElementById('source').getBoundingClientRect()["left"]-(parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2));
-            savedata["crpdims"]["left"] = 0;
-            savedata["crpdims"]["right"] = parseFloat(selectorsize) - (parseFloat(document.getElementById('source').getBoundingClientRect()["left"])-(parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2)));
-            console.log(savedata["crpdims"]["right"]);
+    if(!setref){
+        savedata["crpdims"] = {
+            "left":0,
+            "top": 0,
+            "right":0,
+            "bottom":0
+        };
+        document.getElementById("saveexit").style.visibility = "visible";
+        if((parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))<document.getElementById('source').getBoundingClientRect()["left"]){
+            if(document.getElementById('selector').getBoundingClientRect()["right"]<document.getElementById('source').getBoundingClientRect()["right"]){
+                savedata["additionaldims"]["left"] = document.getElementById('source').getBoundingClientRect()["left"]-(parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2));
+                savedata["crpdims"]["left"] = 0;
+                savedata["crpdims"]["right"] = parseFloat(selectorsize) - (parseFloat(document.getElementById('source').getBoundingClientRect()["left"])-(parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2)));
+                console.log(savedata["crpdims"]["right"]);
+            }
+            else{
+                savedata["crpdims"]["right"] = imagedims["width"];
+                console.log(savedata["crpdims"]["right"]);
+                savedata["additionaldims"]["left"] = document.getElementById('source').getBoundingClientRect()["left"]-(parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2));
+                let lft = (parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["left"];
+                savedata["additionaldims"]["right"] = parseFloat(selectorsize) - (imagedims["width"]-lft);
+            }
         }
-        else{
-            savedata["crpdims"]["right"] = imagedims["width"];
-            console.log(savedata["crpdims"]["right"]);
-            savedata["additionaldims"]["left"] = document.getElementById('source').getBoundingClientRect()["left"]-(parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2));
-            let lft = (parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["left"];
-            savedata["additionaldims"]["right"] = parseFloat(selectorsize) - (imagedims["width"]-lft);
+        else if((parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))>=document.getElementById('source').getBoundingClientRect()["left"]){
+            if(((parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["left"])+parseFloat(selectorsize)>imagedims["width"]){
+                let lft = (parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["left"];
+                savedata["additionaldims"]["right"] = parseFloat(selectorsize) - (imagedims["width"]-lft);
+                savedata["additionaldims"]["left"] = 0;
+                savedata["crpdims"]["left"] = lft;
+                savedata["crpdims"]["right"] = imagedims["width"];
+                console.log(savedata["crpdims"]["right"]);
+            }
+            else{
+        
+                savedata["crpdims"]["left"] = (parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["left"];
+                savedata["crpdims"]["right"] = parseFloat(selectorsize) + ((parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))-parseFloat(document.getElementById('source').getBoundingClientRect()["left"]));
+                console.log(savedata["crpdims"]["right"]);
+            }
+        }
+        
+        if((parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))<document.getElementById('source').getBoundingClientRect()["top"]){
+            if(document.getElementById('selector').getBoundingClientRect()["bottom"]<document.getElementById('source').getBoundingClientRect()["bottom"]){
+                savedata["additionaldims"]["top"] = document.getElementById('source').getBoundingClientRect()["top"]-(parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2));
+                savedata["crpdims"]["top"] = 0;
+                savedata["crpdims"]["bottom"] = parseFloat(selectorsize) - (document.getElementById('source').getBoundingClientRect()["top"]-(parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2)));
+            }
+            else{
+                savedata["crpdims"]["bottom"] = imagedims["height"];
+                savedata["additionaldims"]["top"] = document.getElementById('source').getBoundingClientRect()["top"]-(parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2));
+                let lft = (parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["top"];
+                savedata["additionaldims"]["bottom"] = parseFloat(selectorsize) - (imagedims["height"]-lft);
+            }
+        }
+        else if((parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))>=document.getElementById('source').getBoundingClientRect()["top"]){
+            if(((parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["top"])+parseFloat(selectorsize)>imagedims["height"]){
+                let tp = (parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["top"];
+                savedata["additionaldims"]["bottom"] = parseFloat(selectorsize) - (imagedims["height"]-tp);
+                savedata["additionaldims"]["top"] = 0;
+                savedata["crpdims"]["top"] = tp;
+                savedata["crpdims"]["bottom"] = imagedims["height"];
+            }
+            else{
+                savedata["crpdims"]["top"] = (parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["top"];
+                savedata["crpdims"]["bottom"] = (((parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["top"])+parseFloat(selectorsize));
+            }
         }
     }
-    else if((parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))>=document.getElementById('source').getBoundingClientRect()["left"]){
-        if(((parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["left"])+parseFloat(selectorsize)>imagedims["width"]){
-            let lft = (parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["left"];
-            savedata["additionaldims"]["right"] = parseFloat(selectorsize) - (imagedims["width"]-lft);
-            savedata["additionaldims"]["left"] = 0;
-            savedata["crpdims"]["left"] = lft;
-            savedata["crpdims"]["right"] = imagedims["width"];
-            console.log(savedata["crpdims"]["right"]);
+    else{
+        savedata["crpdimsref"] = {
+            "left":0,
+            "top": 0,
+            "right":0,
+            "bottom":0
+        };
+        if((parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))<document.getElementById('source').getBoundingClientRect()["left"]){
+            if(document.getElementById('selector').getBoundingClientRect()["right"]<document.getElementById('source').getBoundingClientRect()["right"]){
+                savedata["crpdimsref"]["left"] = 0;
+                savedata["crpdimsref"]["right"] = parseFloat(selectorsize) - (parseFloat(document.getElementById('source').getBoundingClientRect()["left"])-(parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2)));
+                console.log(savedata["crpdimsref"]["right"]);
+            }
+            else{
+                savedata["crpdimsref"]["right"] = imagedims["width"];
+                console.log(savedata["crpdimsref"]["right"]);
+            }
         }
-        else{
-    
-            savedata["crpdims"]["left"] = (parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["left"];
-            savedata["crpdims"]["right"] = parseFloat(selectorsize) + ((parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))-parseFloat(document.getElementById('source').getBoundingClientRect()["left"]));
-            console.log(savedata["crpdims"]["right"]);
+        else if((parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))>=document.getElementById('source').getBoundingClientRect()["left"]){
+            if(((parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["left"])+parseFloat(selectorsize)>imagedims["width"]){
+                let lft = (parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["left"];
+                savedata["crpdimsref"]["left"] = lft;
+                savedata["crpdimsref"]["right"] = imagedims["width"];
+                console.log(savedata["crpdimsref"]["right"]);
+            }
+            else{
+        
+                savedata["crpdimsref"]["left"] = (parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["left"];
+                savedata["crpdimsref"]["right"] = parseFloat(selectorsize) + ((parseFloat(document.getElementById("selector").style.left)-(parseFloat(selectorsize)/2))-parseFloat(document.getElementById('source').getBoundingClientRect()["left"]));
+                console.log(savedata["crpdimsref"]["right"]);
+            }
         }
-    }
-    
-    if((parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))<document.getElementById('source').getBoundingClientRect()["top"]){
-        if(document.getElementById('selector').getBoundingClientRect()["bottom"]<document.getElementById('source').getBoundingClientRect()["bottom"]){
-            savedata["additionaldims"]["top"] = document.getElementById('source').getBoundingClientRect()["top"]-(parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2));
-            savedata["crpdims"]["top"] = 0;
-            savedata["crpdims"]["bottom"] = parseFloat(selectorsize) - (document.getElementById('source').getBoundingClientRect()["top"]-(parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2)));
+        
+        if((parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))<document.getElementById('source').getBoundingClientRect()["top"]){
+            if(document.getElementById('selector').getBoundingClientRect()["bottom"]<document.getElementById('source').getBoundingClientRect()["bottom"]){
+                savedata["crpdimsref"]["top"] = 0;
+                savedata["crpdimsref"]["bottom"] = parseFloat(selectorsize) - (document.getElementById('source').getBoundingClientRect()["top"]-(parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2)));
+            }
+            else{
+                savedata["crpdimsref"]["bottom"] = imagedims["height"];
+                
+            }
         }
-        else{
-            savedata["crpdims"]["bottom"] = imagedims["height"];
-            savedata["additionaldims"]["top"] = document.getElementById('source').getBoundingClientRect()["top"]-(parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2));
-            let lft = (parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["top"];
-            savedata["additionaldims"]["bottom"] = parseFloat(selectorsize) - (imagedims["height"]-lft);
-        }
-    }
-    else if((parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))>=document.getElementById('source').getBoundingClientRect()["top"]){
-        if(((parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["top"])+parseFloat(selectorsize)>imagedims["height"]){
-            let tp = (parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["top"];
-            savedata["additionaldims"]["bottom"] = parseFloat(selectorsize) - (imagedims["height"]-tp);
-            savedata["additionaldims"]["top"] = 0;
-            savedata["crpdims"]["top"] = tp;
-            savedata["crpdims"]["bottom"] = imagedims["height"];
-        }
-        else{
-            savedata["crpdims"]["top"] = (parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["top"];
-            savedata["crpdims"]["bottom"] = (((parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["top"])+parseFloat(selectorsize));
+        else if((parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))>=document.getElementById('source').getBoundingClientRect()["top"]){
+            if(((parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["top"])+parseFloat(selectorsize)>imagedims["height"]){
+                let tp = (parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["top"];
+                
+                savedata["crpdimsref"]["top"] = tp;
+                savedata["crpdimsref"]["bottom"] = imagedims["height"];
+            }
+            else{
+                savedata["crpdimsref"]["top"] = (parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["top"];
+                savedata["crpdimsref"]["bottom"] = (((parseFloat(document.getElementById("selector").style.top)-(parseFloat(selectorsize)/2))-document.getElementById('source').getBoundingClientRect()["top"])+parseFloat(selectorsize));
+            }
         }
     }
     
