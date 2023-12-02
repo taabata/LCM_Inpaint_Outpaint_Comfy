@@ -12,6 +12,8 @@ from .LCM.pipeline_cn_inpaint import LatentConsistencyModelPipeline_inpaintV2
 from .LCM.pipeline_cn_inpaint_ipadapter import LatentConsistencyModelPipeline_inpaintV3
 from .LCM.pipeline_inpaint_cn_reference import LatentConsistencyModelPipeline_refinpaintcn
 from .LCM.pipeline_cn_reference_img2img import LatentConsistencyModelPipeline_reference_img2img
+from .LCM.LCM_lora_inpaint import LCM_inpaint_final
+from .LCM.LCM_lora_inpaint_ipadapter import LCM_lora_inpaint_ipadapter
 from .LCM.pipeline_cn import LatentConsistencyModelPipeline_controlnet
 from diffusers import AutoencoderKL, UNet2DConditionModel, T2IAdapter, ControlNetModel, StableDiffusionPipeline
 from diffusers.utils import get_class_from_dynamic_module
@@ -2064,6 +2066,205 @@ class stitch:
         res.append(new)
         return (res,)
 
+class LCMLoraLoader_inpaint:
+    def __init__(self):
+        pass
+
+    
+
+    @classmethod
+    def INPUT_TYPES(s):
+        files = []
+        for j in ["/IPAdapter/models","\IPAdapter\models"]:
+            try:
+                for i in os.listdir(folder_paths.get_folder_paths("controlnet")[0]+j):
+                    if os.path.isfile(os.path.join(folder_paths.get_folder_paths("controlnet")[0]+j,i)):
+                        files.append(i)
+            except:
+                pass
+        
+        return {
+            "required": {
+                "device": (["GPU", "CPU"],),
+                "tomesd_value": ("FLOAT", {
+                    "default": 0.6,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                "ip_adapter":(["disable","enable"],),
+                "reference_only":(["disable","enable"],),
+                "ip_adapter_model":(files,),
+                "model_name":([i for i in os.listdir(folder_paths.get_folder_paths("diffusers")[0]) if os.path.isdir(folder_paths.get_folder_paths("diffusers")[0]+f"/{i}") or  os.path.isdir(folder_paths.get_folder_paths("diffusers")[0]+f"\{i}")],),
+                "controlnet_model":([i for i in os.listdir(folder_paths.get_folder_paths("controlnet")[0]) if os.path.isdir(folder_paths.get_folder_paths("controlnet")[0]+f"/{i}") or  os.path.isdir(folder_paths.get_folder_paths("controlnet")[0]+f"\{i}")],)
+            }
+        }
+    RETURN_TYPES = ("class",)
+    FUNCTION = "mainfunc"
+
+    CATEGORY = "LCM_Nodes/nodes"
+
+    def mainfunc(self,device,tomesd_value,controlnet_model,ip_adapter_model,model_name,ip_adapter,reference_only):        
+        try:
+            model_id = folder_paths.get_folder_paths("diffusers")[0]+f"/{model_name}"
+        except:
+            model_id = folder_paths.get_folder_paths("diffusers")[0]+f"\{model_name}"       
+
+        try:
+            mpath = folder_paths.get_folder_paths("controlnet")[0]+f"/{controlnet_model}"
+        except:
+            mpath = folder_paths.get_folder_paths("controlnet")[0]+f"\{controlnet_model}"
+        controlnet = ControlNetModel.from_pretrained(mpath)
+        if reference_only == "disable":
+            pipe = LCM_lora_inpaint_ipadapter.from_pretrained(model_id,safety_checker=None,controlnet=controlnet)
+        else:
+            pipe = LCM_inpaint_final.from_pretrained(model_id,safety_checker=None,controlnet=controlnet)
+        if ip_adapter=="enable":
+            pipe.load_ip_adapter(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter", subfolder="models", weight_name=ip_adapter_model)
+        
+        # set scheduler
+        pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config)
+        
+        # load LCM-LoRA
+        pipe.load_lora_weights(folder_paths.get_folder_paths("loras")[0]+"/pytorch_lora_weights.safetensors")
+        pipe.fuse_lora()
+        tomesd.apply_patch(pipe, ratio=tomesd_value)
+        if device == "GPU":
+            pipe.enable_xformers_memory_efficient_attention()
+            pipe.enable_sequential_cpu_offload()
+        else:
+            pipe.to("cpu")
+        return (pipe,)
+        
+class LCMLora_inpaint:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                "text": ("STRING", {"default": '', "multiline": True}),
+                "steps": ("INT", {
+                    "default": 4,
+                    "min": 0,
+                    "max": 360,
+                    "step": 1,
+                }),                
+                "width": ("INT", {
+                    "default": 512,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 64,
+                }),
+                "height": ("INT", {
+                    "default": 512,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 64,
+                }),
+                "cfg": ("FLOAT", {
+                    "default": 1.8,
+                    "min": 0,
+                    "max": 3.0,
+                    "step": 0.1,
+                }),
+                "mask": ("IMAGE", ),
+                "image": ("IMAGE", ),
+                "reference_image": ("IMAGE", ),
+                "reference_style_fidelity": ("FLOAT", {
+                    "default": 0.5,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                "pipe":("class",),
+                "batch": ("INT", {
+                    "default": 1,
+                    "min": 1,
+                    "max": 100,
+                    "step": 1,
+                }),
+                "strength": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                "prompt_weighting":(["disable","enable"],),
+                "controlnet_weight": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                "reference_only":(["disable","enable"],),
+                "ip_adapter":(["disable","enable"],),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "mainfunc"
+
+    CATEGORY = "LCM_Nodes/nodes"
+
+    def mainfunc(self, text: str,steps: int,width:int,height:int,cfg:float,seed: int,image,pipe,batch,reference_image,reference_style_fidelity,strength,prompt_weighting, controlnet_weight,mask,reference_only,ip_adapter):
+        
+        
+        img = image[0].numpy()
+        img = img*255.0
+        image = Image.fromarray(np.uint8(img))
+        
+        img = mask[0].numpy()
+        img = img*255.0
+        mask = Image.fromarray(np.uint8(img)).convert("RGB")
+
+        img = reference_image[0].numpy()
+        img = img*255.0
+        reference_image = Image.fromarray(np.uint8(img)).convert("RGB")
+        
+        if ip_adapter == "enable":
+            ip_adapter_image = reference_image
+        else:
+            ip_adapter_image = None
+ 
+               
+        res = []
+        prompt = text
+        if prompt_weighting == "enable":
+
+            compel_proc = Compel(tokenizer=pipe.tokenizer, text_encoder=pipe.text_encoder)
+            prompt_embeds = compel_proc(prompt)
+            for i in range(0,batch):
+                seed = random.randint(0,1000000000000000)
+                torch.manual_seed(seed)
+                if reference_only == "enable":
+                    images = pipe(
+                        prompt_embeds=prompt_embeds, num_inference_steps=steps, generator=generator, guidance_scale=cfg,width=width,height=height,image=image,controlnet_conditioning_scale=adapter_weight,mask_image=mask,control_image=None,strength=strength,ip_adapter_image= ip_adapter_image,ref_image=reference_image,style_fidelity=reference_style_fidelity,
+                        cross_attention_kwargs={"scale": 1}
+                    ).images
+                else:
+                    images = pipe(
+                        prompt_embeds=prompt_embeds, num_inference_steps=steps, generator=generator, guidance_scale=cfg,width=width,height=height,image=image,controlnet_conditioning_scale=adapter_weight,mask_image=mask,control_image=None,strength=strength,ip_adapter_image= ip_adapter_image,
+                        cross_attention_kwargs={"scale": 1}
+                    ).images
+                res.append(images[0])
+        else:
+            for i in range(0,batch):
+                seed = random.randint(0,1000000000000000)
+                generator = torch.manual_seed(seed)
+                if reference_only == "enable":
+                    images = pipe(prompt=prompt, num_inference_steps=steps, generator=generator, guidance_scale=cfg,width=width,height=height,image=image,controlnet_conditioning_scale=controlnet_weight,mask_image=mask,control_image=None,strength=strength,ip_adapter_image= ip_adapter_image,ref_image=reference_image,style_fidelity=reference_style_fidelity,cross_attention_kwargs={"scale": 1}).images
+                else:
+                    images = pipe(
+                        prompt=prompt, num_inference_steps=steps, generator=generator, guidance_scale=cfg,width=width,height=height,image=image,controlnet_conditioning_scale=controlnet_weight,mask_image=mask,control_image=None,strength=strength,ip_adapter_image= ip_adapter_image,
+                        cross_attention_kwargs={"scale": 1}
+                    ).images
+                res.append(images[0])                
+            
+        return (res,)
+
 
 NODE_CLASS_MAPPINGS = {
     "LCMGenerate": LCMGenerate,
@@ -2089,5 +2290,7 @@ NODE_CLASS_MAPPINGS = {
     "LCM_IPAdapter_inpaint":LCM_IPAdapter_inpaint,
     "LCMGenerate_inpaintv3":LCMGenerate_inpaintv3,
     "OutpaintCanvasTool":OutpaintCanvasTool,
-    "stitch":stitch
+    "stitch":stitch,
+    "LCMLora_inpaint":LCMLora_inpaint,
+    "LCMLoraLoader_inpaint":LCMLoraLoader_inpaint
 }
