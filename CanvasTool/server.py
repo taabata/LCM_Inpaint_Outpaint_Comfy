@@ -129,9 +129,9 @@ class PromptServer():
         @routes.post("/canvas")
         async def get_canvas(request):
             try:
-                subprocess.run(["python", "index.py","--same","no","--path",folder_paths.get_folder_paths("custom_nodes")[0]+'/LCM_Inpaint-Outpaint_Comfy/CanvasTool'], cwd=folder_paths.get_folder_paths("custom_nodes")[0]+'/LCM_Inpaint-Outpaint_Comfy/CanvasTool')
+                subprocess.run(["python", "index.py","--same","no","--path",folder_paths.get_folder_paths("custom_nodes")[0]+'/LCM_Inpaint-Outpaint_Comfy/CanvasTool'], cwd=folder_paths.get_folder_paths("custom_nodes")[0]+'/LCM_Inpaint_Outpaint_Comfy/CanvasTool')
             except:
-                subprocess.run(["python", "index.py","--same","no","--path",folder_paths.get_folder_paths("custom_nodes")[0]+'\LCM_Inpaint-Outpaint_Comfy\CanvasTool'], cwd=folder_paths.get_folder_paths("custom_nodes")[0]+'\LCM_Inpaint-Outpaint_Comfy\CanvasTool',shell=True)
+                subprocess.run(["python", "index.py","--same","no","--path",folder_paths.get_folder_paths("custom_nodes")[0]+'\LCM_Inpaint-Outpaint_Comfy\CanvasTool'], cwd=folder_paths.get_folder_paths("custom_nodes")[0]+'\LCM_Inpaint_Outpaint_Comfy\CanvasTool',shell=True)
             return web.FileResponse(os.path.join(self.web_root, "index.html"))
             
         @routes.post("/canvassame")
