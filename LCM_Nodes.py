@@ -12,6 +12,7 @@ from .LCM.pipeline_cn_inpaint import LatentConsistencyModelPipeline_inpaintV2
 from .LCM.pipeline_cn_inpaint_ipadapter import LatentConsistencyModelPipeline_inpaintV3
 from .LCM.pipeline_inpaint_cn_reference import LatentConsistencyModelPipeline_refinpaintcn
 from .LCM.pipeline_cn_reference_img2img import LatentConsistencyModelPipeline_reference_img2img
+from .LCM.stable_diffusion_reference_img2img import StableDiffusionImg2ImgPipeline_reference
 from .LCM.LCM_lora_inpaint import LCM_inpaint_final
 from .LCM.LCM_lora_inpaint_ipadapter import LCM_lora_inpaint_ipadapter
 from .LCM.pipeline_cn import LatentConsistencyModelPipeline_controlnet
@@ -2265,6 +2266,136 @@ class LCMLora_inpaint:
             
         return (res,)
 
+class LCMLoader_SDTurbo:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "model_path": ("STRING", {"default": '', "multiline": False}),
+                "tomesd_value": ("FLOAT", {
+                    "default": 0.6,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                "reference_only":(["disable","enable"],)
+            }
+        }
+    RETURN_TYPES = ("class",)
+    FUNCTION = "mainfunc"
+
+    CATEGORY = "LCM_Nodes/nodes"
+
+    def mainfunc(self,tomesd_value,model_path,reference_only):
+        
+        
+        save_path = "./lcm_images"
+        if model_path != "":
+            model_id = model_path
+        else:
+            try:
+                model_id = folder_paths.get_folder_paths("diffusers")[0]+"/SDTurbo"
+            except:
+                model_id = folder_paths.get_folder_paths("diffusers")[0]+"\SDTurbo"
+       
+        pipe = StableDiffusionImg2ImgPipeline_reference.from_pretrained(model_id,safety_checker=None)
+        tomesd.apply_patch(pipe, ratio=tomesd_value)
+        pipe.enable_xformers_memory_efficient_attention()
+        pipe.enable_sequential_cpu_offload()
+        return (pipe,)
+
+
+class LCMGenerate_SDTurbo:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "pipe":("class",),
+                "device": (["cuda", "cpu"],),	
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                "negative_prompt": ("STRING", {"default": '', "multiline": True}),
+                "prompt": ("STRING", {"default": '', "multiline": True}),
+                "steps": ("INT", {
+                    "default": 4,
+                    "min": 0,
+                    "max": 360,
+                    "step": 1,
+                }),
+                
+                "width": ("INT", {
+                    "default": 512,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 64,
+                }),
+                "height": ("INT", {
+                    "default": 512,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 64,
+                }),
+                "cfg": ("FLOAT", {
+                    "default": 8.0,
+                    "min": 0,
+                    "max": 30.0,
+                    "step": 0.5,
+                }),
+                "image": ("IMAGE", ),
+                "reference_image": ("IMAGE", ),
+                "style_fidelity": ("FLOAT", {
+                    "default": 0.5,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                }),
+                "strength": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                "batch": ("INT", {
+                    "default": 1,
+                    "min": 0,
+                    "max": 1000,
+                    "step": 1,
+                }),
+                "reference_only":(["disable","enable"],),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "mainfunc"
+
+    CATEGORY = "LCM_Nodes/nodes"
+
+    def mainfunc(self, prompt: str,steps: int,width:int,height:int,cfg:float,seed: int,image,pipe,batch,strength,negative_prompt,device,reference_image,style_fidelity,reference_only):
+        img = image[0].numpy()
+        img = img*255.0
+        image = Image.fromarray(np.uint8(img))
+
+        img = reference_image[0].numpy()
+        img = img*255.0
+        reference_image = Image.fromarray(np.uint8(img))
+            
+        negative_prompt=negative_prompt
+        
+        res = []
+        for m in range(batch):
+            if reference_only == "disable":
+                images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=0.0).images      
+            else:
+                images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=0.0,ref_image = reference_image,style_fidelity=style_fidelity).images      
+            res.append(images[0])                
+            
+        return (res,)
+
 
 NODE_CLASS_MAPPINGS = {
     "LCMGenerate": LCMGenerate,
@@ -2292,5 +2423,7 @@ NODE_CLASS_MAPPINGS = {
     "OutpaintCanvasTool":OutpaintCanvasTool,
     "stitch":stitch,
     "LCMLora_inpaint":LCMLora_inpaint,
-    "LCMLoraLoader_inpaint":LCMLoraLoader_inpaint
+    "LCMLoraLoader_inpaint":LCMLoraLoader_inpaint,
+    "LCMLoader_SDTurbo":LCMLoader_SDTurbo,
+    "LCMGenerate_SDTurbo":LCMGenerate_SDTurbo
 }
