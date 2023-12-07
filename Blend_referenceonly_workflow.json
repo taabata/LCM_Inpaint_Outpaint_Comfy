@@ -1,5 +1,5 @@
 {
-  "last_node_id": 373,
+  "last_node_id": 374,
   "last_link_id": 781,
   "nodes": [
     {
@@ -37,7 +37,7 @@
         0.5,
         0.5,
         "mix",
-        189952895899821,
+        735344607339162,
         "randomize"
       ]
     },
@@ -1050,7 +1050,7 @@
         0.5,
         0.5,
         "mix",
-        389352898209778,
+        950459564957517,
         "randomize"
       ]
     },
@@ -1861,7 +1861,7 @@
         0.5,
         0.5,
         "mix",
-        97316630215295,
+        538304360112064,
         "randomize"
       ]
     },
@@ -2693,42 +2693,6 @@
       "widgets_values": [
         "ComfyUI_03356_ (2).png",
         "image"
-      ]
-    },
-    {
-      "id": 359,
-      "type": "LCMLoader_SDTurbo",
-      "pos": [
-        -820,
-        -890
-      ],
-      "size": {
-        "0": 315,
-        "1": 106
-      },
-      "flags": {},
-      "order": 16,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "class",
-          "type": "class",
-          "links": [
-            754,
-            763,
-            767
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LCMLoader_SDTurbo"
-      },
-      "widgets_values": [
-        "",
-        0.6,
-        "enable"
       ]
     },
     {
@@ -3586,7 +3550,7 @@
         "Node name for S&R": "ImageShuffle"
       },
       "widgets_values": [
-        557047619812541,
+        648245345316851,
         "randomize",
         "enable"
       ]
@@ -3603,7 +3567,7 @@
         "1": 202
       },
       "flags": {},
-      "order": 17,
+      "order": 16,
       "mode": 0,
       "outputs": [
         {
@@ -3625,7 +3589,7 @@
         2,
         4,
         0.15,
-        182334012780371,
+        746730698458482,
         "randomize"
       ]
     },
@@ -3765,7 +3729,7 @@
       },
       "widgets_values": [
         "cuda",
-        123514440794332,
+        181534185183437,
         "randomize",
         "",
         "",
@@ -3835,7 +3799,7 @@
       },
       "widgets_values": [
         "cuda",
-        228933300350901,
+        663675806631110,
         "randomize",
         "",
         "",
@@ -3904,7 +3868,7 @@
       },
       "widgets_values": [
         "cuda",
-        844398703097325,
+        515244381452019,
         "randomize",
         "",
         "",
@@ -3930,7 +3894,7 @@
         "1": 146
       },
       "flags": {},
-      "order": 18,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
@@ -3988,7 +3952,7 @@
         "1": 146
       },
       "flags": {},
-      "order": 19,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
@@ -4032,6 +3996,42 @@
         "integer",
         0.8,
         ""
+      ]
+    },
+    {
+      "id": 359,
+      "type": "LCMLoader_SDTurbo",
+      "pos": [
+        -820,
+        -890
+      ],
+      "size": {
+        "0": 315,
+        "1": 106
+      },
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "class",
+          "type": "class",
+          "links": [
+            754,
+            763,
+            767
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LCMLoader_SDTurbo"
+      },
+      "widgets_values": [
+        "SDTurbo",
+        0.6,
+        "enable"
       ]
     }
   ],
