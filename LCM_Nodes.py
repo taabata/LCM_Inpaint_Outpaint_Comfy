@@ -2274,14 +2274,14 @@ class LCMLoader_SDTurbo:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "model_path": ("STRING", {"default": '', "multiline": False}),
+                "model_path": ([i for i in os.listdir(folder_paths.get_folder_paths("diffusers")[0]) if os.path.isdir(folder_paths.get_folder_paths("diffusers")[0]+f"/{i}") or  os.path.isdir(folder_paths.get_folder_paths("diffusers")[0]+f"\{i}")],),
                 "tomesd_value": ("FLOAT", {
                     "default": 0.6,
                     "min": 0.0,
                     "max": 1.0,
                     "step": 0.1,
                 }),
-                "reference_only":(["disable","enable"],)
+                "reference_only":(["disable","enable"],),
             }
         }
     RETURN_TYPES = ("class",)
@@ -2292,21 +2292,17 @@ class LCMLoader_SDTurbo:
     def mainfunc(self,tomesd_value,model_path,reference_only):
         
         
-        save_path = "./lcm_images"
-        if model_path != "":
-            model_id = model_path
-        else:
-            try:
-                model_id = folder_paths.get_folder_paths("diffusers")[0]+"/SDTurbo"
-            except:
-                model_id = folder_paths.get_folder_paths("diffusers")[0]+"\SDTurbo"
+        
+        try:
+            model_id = folder_paths.get_folder_paths("diffusers")[0]+f'/{model_path}'
+        except:
+            model_id = folder_paths.get_folder_paths("diffusers")[0]+f'\{model_path}'
        
         pipe = StableDiffusionImg2ImgPipeline_reference.from_pretrained(model_id,safety_checker=None)
         tomesd.apply_patch(pipe, ratio=tomesd_value)
         pipe.enable_xformers_memory_efficient_attention()
         pipe.enable_sequential_cpu_offload()
         return (pipe,)
-
 
 class LCMGenerate_SDTurbo:
     def __init__(self):
