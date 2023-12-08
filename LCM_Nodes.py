@@ -1983,8 +1983,13 @@ class SaveImage_LCM:
                 "lastimage":str(os.path.join(full_output_folder, file))
             }
             json_object = json.dumps(data, indent=4)
-            with open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/lastimage.json", "w") as outfile:
-                outfile.write(json_object)
+            try:
+                with open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/lastimage.json", "w") as outfile:
+                    outfile.write(json_object)
+            except:
+                with open(folder_paths.get_folder_paths("custom_nodes")[0]+"\LCM_Inpaint_Outpaint_Comfy\CanvasTool\lastimage.json", "w") as outfile:
+                    outfile.write(json_object)
+                
             
             
             results.append({
