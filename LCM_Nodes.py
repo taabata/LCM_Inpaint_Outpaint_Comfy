@@ -20,6 +20,7 @@ from diffusers import AutoPipelineForImage2Image,AutoencoderKL, UNet2DConditionM
 from diffusers.utils import get_class_from_dynamic_module
 from transformers import CLIPTokenizer, CLIPTextModel, CLIPImageProcessor
 import os
+from pathlib import Path
 import torch
 from PIL import Image
 import tomesd
@@ -1983,12 +1984,11 @@ class SaveImage_LCM:
                 "lastimage":str(os.path.join(full_output_folder, file))
             }
             json_object = json.dumps(data, indent=4)
-            try:
-                with open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/lastimage.json", "w") as outfile:
-                    outfile.write(json_object)
-            except:
-                with open(folder_paths.get_folder_paths("custom_nodes")[0]+"\LCM_Inpaint_Outpaint_Comfy\CanvasTool\lastimage.json", "w") as outfile:
-                    outfile.write(json_object)
+            savepath = folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasTool/lastimage.json"
+            savepath = Path(savepath)
+            with open(savepath, "w") as outfile:
+                print(savepath)
+                outfile.write(json_object)
                 
             
             
