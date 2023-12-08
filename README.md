@@ -1,3 +1,8 @@
+# DISCLAIMER
+
+Errors may occur on Windows due to paths being formatted for linux without accounting for Windows. Let me know if you face any error in the issues page.
+
+
 # LCM_Inpaint-Outpaint_Comfy
 ComfyUI custom nodes for inpainting/outpainting using the new latent consistency model (LCM)
 
