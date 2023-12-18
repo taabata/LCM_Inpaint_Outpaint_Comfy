@@ -1,0 +1,83 @@
+{
+  "21": {
+    "inputs": {
+      "device": "GPU",
+      "tomesd_value": 0.6,
+      "ip_adapter_model": "ip-adapter_sd15.bin",
+      "reference_only": "disable",
+      "ip_adapter": "disable",
+      "model_name": "SegmindVega"
+    },
+    "class_type": "Loader_SegmindVega"
+  },
+  "25": {
+    "inputs": {
+      "device": "cuda",
+      "mode": "variation",
+      "seed": 929293106066303,
+      "original_prompt": "",
+      "prompt": "a fuzzy orange cat sitting on planet earth, digital art",
+      "negative_prompt": "",
+      "steps": 4,
+      "width": 512,
+      "height": 512,
+      "cfg": 0,
+      "style_fidelity": 0.5,
+      "strength": 1,
+      "editing_early_steps": 1000,
+      "batch": 1,
+      "ipadapter_scale": 0.6,
+      "reference_only": "disable",
+      "ip_adapter": "disable",
+      "pipe": [
+        "21",
+        0
+      ],
+      "image": [
+        "32",
+        0
+      ],
+      "reference_image": [
+        "32",
+        0
+      ]
+    },
+    "class_type": "SegmindVega"
+  },
+  "26": {
+    "inputs": {
+      "tile_size": 512,
+      "samples": [
+        "25",
+        0
+      ],
+      "vae": [
+        "27",
+        0
+      ]
+    },
+    "class_type": "VAEDecodeTiled"
+  },
+  "27": {
+    "inputs": {
+      "vae_name": "sdxl_vae.safetensors"
+    },
+    "class_type": "VAELoader"
+  },
+  "31": {
+    "inputs": {
+      "filename_prefix": "ComfyUI",
+      "images": [
+        "26",
+        0
+      ]
+    },
+    "class_type": "SaveImage_Puzzle"
+  },
+  "32": {
+    "inputs": {
+      "image": ""
+    },
+    "class_type": "LoadImageNode_LCM"
+  }
+}

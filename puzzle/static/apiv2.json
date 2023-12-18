@@ -1,0 +1,55 @@
+{
+  "32": {
+    "inputs": {
+      "image": ""
+    },
+    "class_type": "LoadImageNode_LCM"
+  },
+  "33": {
+    "inputs": {
+      "model_path": "SDTurbo",
+      "tomesd_value": 0.6,
+      "reference_only": "disable"
+    },
+    "class_type": "LCMLoader_SDTurbo"
+  },
+  "34": {
+    "inputs": {
+      "device": "cuda",
+      "seed": 0,
+      "negative_prompt": "",
+      "prompt": "",
+      "steps": 2,
+      "width": 512,
+      "height": 512,
+      "cfg": 8,
+      "style_fidelity": 0.5,
+      "strength": 1,
+      "batch": 1,
+      "reference_only": "disable",
+      "pipe": [
+        "33",
+        0
+      ],
+      "image": [
+        "32",
+        0
+      ],
+      "reference_image": [
+        "32",
+        0
+      ]
+    },
+    "class_type": "LCMGenerate_SDTurbo"
+  },
+  "35": {
+    "inputs": {
+      "filename_prefix": "ComfyUI",
+      "images": [
+        "34",
+        0
+      ]
+    },
+    "class_type": "SaveImage_PuzzleV2"
+  }
+}

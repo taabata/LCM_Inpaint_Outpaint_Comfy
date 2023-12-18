@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/puzzle.css">
+</head>
+<body onwheel="changesize(event);" oncontextmenu="return false;" onmousemove="mousecoordinates(event);">
+    <script src="/static/puzzle.js"></script>
+    <div id="canvascontainer">
+        <img id="sourceimg" src="" width="1024" height="1024"/>
+        <canvas id="source" width="" height="" ></canvas>
+    </div>   
+    <div id="piececont"></div>
+    <div id="settings">
+        <label for="openimgadd" id="uploadanotherimg"><p class="icontxt">+</p></label>   
+        <input id="openimgadd" type="file"> 
+        <div id="SDVEGA" onclick="generate(this);"><p class="txt">GENERATE SD VEGA</p></div>
+        <div id="SDT" onclick="generate(this);"><p class="txt">GENERATE SD TURBO</p></div>       
+        <div id="hide" onclick="hidepanel();"><p class="txt"></p></div> 
+        <input id="inprange" type="range" min="2" max="10" step="1" value="5" onchange="getsize(this);">
+        <div id="piecesnumber"></div>
+        <input id="prompt" type="text" size="80" onchange="getprompt(this);">
+    </div>
+    <button id="btns" onclick="generate();" style="opacity: 0;">Generate</button>
+    <div id="banner">
+        <p id="bannermessage"></p>
+        <div id="closebanner" onclick="closebanner();"><p class="txt">CLOSE</p></div>     
+    </div>
+    <div id="animation">
+        <div id="b1" class="b"></div>
+        <div id="b2" class="b"></div>
+        <div id="b3" class="b"></div>
+        <div id="b4" class="b"></div>
+    </div>
+    
+</body>
+</html>
