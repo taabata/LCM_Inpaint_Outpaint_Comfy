@@ -16,7 +16,7 @@ from .LCM.stable_diffusion_reference_img2img import StableDiffusionImg2ImgPipeli
 from .LCM.LCM_lora_inpaint import LCM_inpaint_final
 from .LCM.LCM_lora_inpaint_ipadapter import LCM_lora_inpaint_ipadapter
 from .LCM.pipeline_cn import LatentConsistencyModelPipeline_controlnet
-from diffusers import AutoPipelineForImage2Image,AutoencoderKL, UNet2DConditionModel, T2IAdapter, ControlNetModel, StableDiffusionPipeline, AutoencoderTiny, DiffusionPipeline, LCMScheduler, AutoPipelineForInpainting, StableDiffusionControlNetPipeline, StableDiffusionControlNetInpaintPipeline
+from diffusers import StableDiffusionXLPipeline, AutoPipelineForImage2Image,AutoencoderKL, UNet2DConditionModel, T2IAdapter, ControlNetModel, StableDiffusionPipeline, AutoencoderTiny, DiffusionPipeline, LCMScheduler, AutoPipelineForInpainting, StableDiffusionControlNetPipeline, StableDiffusionControlNetInpaintPipeline
 from diffusers.utils import get_class_from_dynamic_module
 from transformers import CLIPTokenizer, CLIPTextModel, CLIPImageProcessor
 import os
@@ -2397,7 +2397,304 @@ class LCMGenerate_SDTurbo:
             
         return (res,)
 
+class Loader_SegmindVega:
+    def __init__(self):
+        pass
 
+    
+
+    @classmethod
+    def INPUT_TYPES(s):
+        files = []
+        for j in ["/IPAdapter/models","\IPAdapter\models"]:
+            try:
+                for i in os.listdir(folder_paths.get_folder_paths("controlnet")[0]+j):
+                    if os.path.isfile(os.path.join(folder_paths.get_folder_paths("controlnet")[0]+j,i)):
+                        files.append(i)
+            except:
+                pass
+        return {
+            "required": {
+                "device": (["GPU", "CPU"],),
+                "tomesd_value": ("FLOAT", {
+                    "default": 0.6,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                "ip_adapter_model":(files,),
+                "reference_only":(["disable","enable"],),
+                "ip_adapter":(["disable","enable"],),
+                "model_name":([i for i in os.listdir(folder_paths.get_folder_paths("diffusers")[0]) if os.path.isdir(folder_paths.get_folder_paths("diffusers")[0]+f"/{i}") or  os.path.isdir(folder_paths.get_folder_paths("diffusers")[0]+f"\{i}")],),
+                
+            }
+        }
+    RETURN_TYPES = ("class",)
+    FUNCTION = "mainfunc"
+
+    CATEGORY = "LCM_Nodes/nodes"
+
+    def mainfunc(self,device,tomesd_value,ip_adapter_model,model_name,reference_only,ip_adapter):        
+        try:
+            model_id = folder_paths.get_folder_paths("diffusers")[0]+f"/{model_name}"
+        except:
+            model_id = folder_paths.get_folder_paths("diffusers")[0]+f"\{model_name}"       
+        '''if ip_adapter == "enable" and reference_only=="disable":
+            pipe = StableDiffusionImg2ImgPipeline.from_pretrained(model_id,safety_checker=None)
+            pipe.load_ip_adapter(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter", subfolder="models", weight_name=ip_adapter_model)
+        elif reference_only == "disable":
+            pipe = StableDiffusionImg2ImgPipeline.from_pretrained(model_id,safety_checker=None)
+        else:
+            pipe = StableDiffusionImg2ImgPipeline_reference.from_pretrained(model_id,safety_checker=None)'''
+        pipe = StableDiffusionXLPipeline.from_pretrained(model_id,safety_checker=None)
+        # set scheduler
+        pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config)
+        
+        pipe.load_lora_weights(folder_paths.get_folder_paths("loras")[0]+"/pytorch_lora_weights_vega.safetensors")
+        pipe.fuse_lora()
+        tomesd.apply_patch(pipe, ratio=tomesd_value)
+        if device == "GPU":
+            pipe.enable_xformers_memory_efficient_attention()
+            pipe.enable_sequential_cpu_offload()
+            pipe.enable_vae_tiling()
+            pipe.enable_vae_slicing()
+        else:
+            pipe.to("cpu")
+        return (pipe,)
+        
+class SegmindVega:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "pipe":("class",),
+                "device": (["cuda", "cpu"],),
+                "mode": (["variation", "editing"],),	
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                "original_prompt": ("STRING", {"default": '', "multiline": True}),
+                "prompt": ("STRING", {"default": '', "multiline": True}),
+                "negative_prompt": ("STRING", {"default": '', "multiline": True}),
+                "steps": ("INT", {
+                    "default": 4,
+                    "min": 0,
+                    "max": 360,
+                    "step": 1,
+                }),
+                
+                "width": ("INT", {
+                    "default": 512,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 64,
+                }),
+                "height": ("INT", {
+                    "default": 512,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 64,
+                }),
+                "cfg": ("FLOAT", {
+                    "default": 8.0,
+                    "min": 0,
+                    "max": 30.0,
+                    "step": 0.5,
+                }),
+                "image": ("IMAGE", ),
+                "reference_image": ("IMAGE", ),
+                "style_fidelity": ("FLOAT", {
+                    "default": 0.5,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                }),
+                "strength": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                "editing_early_steps": ("INT", {
+                    "default": 1000,
+                    "min": 0,
+                    "max": 5000,
+                    "step": 1,
+                }),
+                "batch": ("INT", {
+                    "default": 1,
+                    "min": 0,
+                    "max": 1000,
+                    "step": 1,
+                }),
+                "ipadapter_scale":("FLOAT", {
+                    "default": 0.6,
+                    "min": 0.0,
+                    "max": 10.0,
+                    "step": 0.1,
+                }),
+                "reference_only":(["disable","enable"],),
+                "ip_adapter":(["disable","enable"],),
+            }
+        }
+
+    RETURN_TYPES = ("LATENT",)
+    FUNCTION = "mainfunc"
+
+    CATEGORY = "LCM_Nodes/nodes"
+
+    def mainfunc(self, prompt: str,steps: int,width:int,height:int,cfg:float,seed: int,image,mode,pipe,batch,strength,editing_early_steps,original_prompt,device,reference_image,style_fidelity,ipadapter_scale,reference_only,ip_adapter,negative_prompt):
+        if ip_adapter =="enable":
+            pipe.set_ip_adapter_scale(ipadapter_scale)
+
+        img = image[0].numpy()
+        img = img*255.0
+        image = Image.fromarray(np.uint8(img))
+
+        img = reference_image[0].numpy()
+        img = img*255.0
+        reference_image = Image.fromarray(np.uint8(img))
+
+        
+              
+        res = []
+        for m in range(batch):
+            '''if ip_adapter == "enable" and reference_only=="disable":
+                images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg,ip_adapter_image = reference_image).images
+            elif reference_only == "disable":
+                images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg).images      
+            elif reference_only=="enable":
+                images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg,ref_image=reference_image,style_fidelity=style_fidelity).images      
+            else:
+                images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg,ip_adapter_image = reference_image,ref_image=reference_image,style_fidelity=style_fidelity).images      
+            '''
+            images = pipe(prompt=prompt, negative_prompt=negative_prompt,num_inference_steps=steps,guidance_scale=cfg,output_type="latent").images
+            '''res = []
+            for idx, image in enumerate(images):
+                res.append(image) '''
+            out = {"samples":(images/0.13025)}
+
+            
+        return (out,)
+
+
+class SaveImage_Puzzle:
+    def __init__(self):
+        self.output_dir = folder_paths.get_output_directory()
+        self.type = "output"
+        self.prefix_append = ""
+        self.compress_level = 4
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": 
+                    {"images": ("IMAGE", ),
+                     "filename_prefix": ("STRING", {"default": "ComfyUI"})},
+                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+                }
+
+    RETURN_TYPES = ()
+    FUNCTION = "save_images"
+
+    OUTPUT_NODE = True
+
+    CATEGORY = "image"
+
+    def save_images(self, images, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None):
+        filename_prefix += self.prefix_append
+        full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(filename_prefix, self.output_dir, images[0].shape[1], images[0].shape[0])
+        results = list()
+        for image in images:
+            i = 255. * image.cpu().numpy()
+            img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
+            metadata = None
+            if not args.disable_metadata:
+                metadata = PngInfo()
+                if prompt is not None:
+                    metadata.add_text("prompt", json.dumps(prompt))
+                if extra_pnginfo is not None:
+                    for x in extra_pnginfo:
+                        metadata.add_text(x, json.dumps(extra_pnginfo[x]))
+
+            file = f"{filename}_{counter:05}_.png"
+            img.save(os.path.join(full_output_folder, file), pnginfo=metadata, compress_level=self.compress_level)
+            data = {
+                "lastimage":str(os.path.join(full_output_folder, file)),
+                "done":"y"
+            }
+            json_object = json.dumps(data, indent=4)
+            savepath = folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/puzzle/lastimage.json"
+            savepath = Path(savepath)
+            with open(savepath, "w") as outfile:
+                print(savepath)
+                outfile.write(json_object)
+            results.append({
+                "filename": file,
+                "subfolder": subfolder,
+                "type": self.type
+            })
+            counter += 1
+
+        return { "ui": { "images": results } }
+
+class SaveImage_PuzzleV2:
+    def __init__(self):
+        self.output_dir = folder_paths.get_output_directory()
+        self.type = "output"
+        self.prefix_append = ""
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": 
+                    {"images": ("IMAGE", ),
+                     "filename_prefix": ("STRING", {"default": "ComfyUI"})},
+                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+                }
+
+    RETURN_TYPES = ()
+    FUNCTION = "save_images"
+
+    OUTPUT_NODE = True
+
+    CATEGORY = "image"
+
+    def save_images(self, images, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None):
+        filename_prefix += self.prefix_append
+        full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(filename_prefix, self.output_dir, 512, 512)
+        results = list()
+        for image in images:
+            img = image
+            if not args.disable_metadata:
+                metadata = PngInfo()
+                if prompt is not None:
+                    metadata.add_text("prompt", json.dumps(prompt))
+                if extra_pnginfo is not None:
+                    for x in extra_pnginfo:
+                        metadata.add_text(x, json.dumps(extra_pnginfo[x]))
+
+            file = f"{filename}_{counter:05}_.png"
+            img.save(os.path.join(full_output_folder, file), pnginfo=metadata, compress_level=4)
+            data = {
+                "lastimage":str(os.path.join(full_output_folder, file)),
+                "done":"y"
+            }
+            json_object = json.dumps(data, indent=4)
+            savepath = folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/puzzle/lastimage.json"
+            savepath = Path(savepath)
+            with open(savepath, "w") as outfile:
+                print(savepath)
+                outfile.write(json_object)
+            
+            
+            results.append({
+                "filename": file,
+                "subfolder": subfolder,
+                "type": self.type
+            })
+            counter += 1
+            
+        return { "ui": { "images": results } }
 NODE_CLASS_MAPPINGS = {
     "LCMGenerate": LCMGenerate,
     "LoadImageNode_LCM":LoadImageNode_LCM,
@@ -2426,5 +2723,9 @@ NODE_CLASS_MAPPINGS = {
     "LCMLora_inpaint":LCMLora_inpaint,
     "LCMLoraLoader_inpaint":LCMLoraLoader_inpaint,
     "LCMLoader_SDTurbo":LCMLoader_SDTurbo,
-    "LCMGenerate_SDTurbo":LCMGenerate_SDTurbo
+    "LCMGenerate_SDTurbo":LCMGenerate_SDTurbo,
+    "Loader_SegmindVega":Loader_SegmindVega,
+    "SegmindVega":SegmindVega,
+    "SaveImage_Puzzle":SaveImage_Puzzle,
+    "SaveImage_PuzzleV2":SaveImage_PuzzleV2
 }
