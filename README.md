@@ -6,6 +6,10 @@ Errors may occur on Windows due to paths being formatted for linux without accou
 # LCM_Inpaint-Outpaint_Comfy
 ComfyUI custom nodes for inpainting/outpainting using the new latent consistency model (LCM)
 
+# Mix Images
+<img src='https://github.com/taabata/LCM_Inpaint_Outpaint_Comfy/blob/main/LCM/instructions.png'>
+
+
 # Inpaint
 <img src='https://github.com/taabata/LCM_Inpaint-Outpaint_Comfy/blob/main/LCM/Screenshot%20from%202023-10-24%2022-38-53.png'>
 
