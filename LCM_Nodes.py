@@ -2753,21 +2753,21 @@ class LCMLoraLoader_ipadapter:
         if control_net == "disable":
             if ip_adapter == "enable" and reference_only=="disable":
                 pipe = StableDiffusionImg2ImgPipeline.from_pretrained(model_id,safety_checker=None)
-                pipe.load_ip_adapter(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter", subfolder="models", weight_name=ip_adapter_model)
+                pipe.load_ip_adapter(folder_paths.get_folder_paths("IPAdapter")[0], subfolder="models", weight_name=ip_adapter_model)
             elif reference_only == "disable":
                 pipe = StableDiffusionImg2ImgPipeline.from_pretrained(model_id,safety_checker=None)
             else:
                 pipe = StableDiffusionImg2ImgPipeline_reference.from_pretrained(model_id,safety_checker=None)
-                pipe.load_ip_adapter(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter", subfolder="models", weight_name=ip_adapter_model)
+                pipe.load_ip_adapter(folder_paths.get_folder_paths("IPAdapter")[0], subfolder="models", weight_name=ip_adapter_model)
         else:
             if ip_adapter == "enable" and reference_only=="disable":
                 pipe = StableDiffusionControlNetImg2ImgPipeline_ipadapter.from_pretrained(model_id,safety_checker=None,controlnet=controlnet)
-                pipe.load_ip_adapter(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter", subfolder="models", weight_name=ip_adapter_model)
+                pipe.load_ip_adapter(folder_paths.get_folder_paths("IPAdapter")[0], subfolder="models", weight_name=ip_adapter_model)
             elif reference_only == "disable":
                 pipe = StableDiffusionControlNetImg2ImgPipeline.from_pretrained(model_id,safety_checker=None,controlnet=controlnet)
             else:
                 pipe = StableDiffusionControlNetImg2ImgPipeline_ref.from_pretrained(model_id,safety_checker=None,controlnet=controlnet)
-                pipe.load_ip_adapter(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter", subfolder="models", weight_name=ip_adapter_model)
+                pipe.load_ip_adapter(folder_paths.get_folder_paths("IPAdapter")[0], subfolder="models", weight_name=ip_adapter_model)
         
         
         
@@ -2775,11 +2775,13 @@ class LCMLoraLoader_ipadapter:
         pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config)
         
         # load LCM-LoRA
-        pipe.load_lora_weights(folder_paths.get_folder_paths("loras")[0]+"/pytorch_lora_weights.safetensors")
+        try:
+            pipe.load_lora_weights(folder_paths.get_folder_paths("loras")[0]+"/pytorch_lora_weights.safetensors")
+        except:
+            pipe.load_lora_weights(folder_paths.get_folder_paths("loras")[0]+"\pytorch_lora_weights.safetensors")
         pipe.fuse_lora()
         tomesd.apply_patch(pipe, ratio=tomesd_value)
         if device == "GPU":
-            #pipe.enable_xformers_memory_efficient_attention()
             pipe.enable_sequential_cpu_offload()
         else:
             pipe.to("cpu")
