@@ -2920,6 +2920,140 @@ class LCMLora_ipadapter:
             
         return (res,)
 
+class ImageSwitch:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {"image_1": ("IMAGE",),
+                    "image_2": ("IMAGE",),
+                    "switch":(["enable","disable"],),
+                    }
+                }
+
+    CATEGORY = "image"
+
+    RETURN_TYPES = ("IMAGE","IMAGE",)
+    FUNCTION = "load_image"
+    def load_image(self, image_1,image_2,switch):
+        newarr = [image_1,image_2]
+        if switch == "enable":
+            newarr = [image_2,image_1]
+        return (newarr[0],newarr[1])
+
+class SettingsSwitch:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {"sf_1": ("FLOAT",{
+                        "default": 0.6,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "step": 0.01,
+                    }),
+                    "sf_2": ("FLOAT",{
+                        "default": 0.6,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "step": 0.01,
+                    }),
+                    "sf_3": ("FLOAT",{
+                        "default": 0.6,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "step": 0.01,
+                    }),
+                    "strength_1": ("FLOAT",{
+                        "default": 0.6,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "step": 0.01,
+                    }),
+                    "strength_2": ("FLOAT",{
+                        "default": 0.6,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "step": 0.01,
+                    }),
+                    "strength_3": ("FLOAT",{
+                        "default": 0.6,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "step": 0.01,
+                    }),
+                    "IPAScale_1": ("FLOAT",{
+                        "default": 0.6,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "step": 0.01,
+                    }),
+                    "IPAScale_2": ("FLOAT",{
+                        "default": 0.6,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "step": 0.01,
+                    }),
+                    "IPAScale_3": ("FLOAT",{
+                        "default": 0.6,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "step": 0.01,
+                    }),
+                    "CNScale_1": ("FLOAT",{
+                        "default": 0.6,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "step": 0.01,
+                    }),
+                    "CNScale_2": ("FLOAT",{
+                        "default": 0.6,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "step": 0.01,
+                    }),
+                    "CNScale_3": ("FLOAT",{
+                        "default": 0.6,
+                        "min": 0.0,
+                        "max": 1.0,
+                        "step": 0.01,
+                    }),
+                    "setting":(["v1","v2","v3"],),
+                    }
+                }
+
+    CATEGORY = "image"
+
+    RETURN_TYPES = ("FLOAT","FLOAT","FLOAT","FLOAT",)
+    FUNCTION = "load_image"
+    def load_image(self, sf_1,sf_2,sf_3,strength_1,strength_2,strength_3,IPAScale_1,IPAScale_2,IPAScale_3,CNScale_1,CNScale_2,CNScale_3,setting):
+        if setting == "v1":
+            newarr = [sf_1,strength_1,IPAScale_1,CNScale_1]
+        elif setting == "v2":
+            newarr = [sf_2,strength_2,IPAScale_2,CNScale_2]
+        elif setting == "v3":
+            newarr = [sf_3,strength_3,IPAScale_3,CNScale_3]
+        return (newarr[0],newarr[1],newarr[2],newarr[3],)
+
+class FloatNumber:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {
+                        "Number": ("FLOAT",{
+                            "default": 0.6,
+                            "min": 0.0,
+                            "max": 1.0,
+                            "step": 0.01,
+                        }),
+                    }
+                }
+
+    CATEGORY = "image"
+
+    RETURN_TYPES = ("FLOAT",)
+    FUNCTION = "load_image"
+    def load_image(self, Number):
+        return (Number,)
+
 NODE_CLASS_MAPPINGS = {
     "LCMGenerate": LCMGenerate,
     "LoadImageNode_LCM":LoadImageNode_LCM,
