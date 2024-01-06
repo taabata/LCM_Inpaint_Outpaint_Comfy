@@ -2092,7 +2092,6 @@ class LCMLoraLoader_inpaint:
                         files.append(i)
             except:
                 pass
-        
         return {
             "required": {
                 "device": (["GPU", "CPU"],),
@@ -2100,7 +2099,7 @@ class LCMLoraLoader_inpaint:
                     "default": 0.6,
                     "min": 0.0,
                     "max": 1.0,
-                    "step": 0.1,
+                    "step": 0.01,
                 }),
                 "ip_adapter":(["disable","enable"],),
                 "reference_only":(["disable","enable"],),
@@ -2125,13 +2124,15 @@ class LCMLoraLoader_inpaint:
         except:
             mpath = folder_paths.get_folder_paths("controlnet")[0]+f"\{controlnet_model}"
         controlnet = ControlNetModel.from_pretrained(mpath)
+        vae2 = AutoencoderTiny.from_pretrained(folder_paths.get_folder_paths("vae")[0]+"/taesd", torch_device='cuda', torch_dtype=torch.float32)
         if reference_only == "disable":
-            pipe = LCM_lora_inpaint_ipadapter.from_pretrained(model_id,safety_checker=None,controlnet=controlnet)
+            pipe = LCM_lora_inpaint_ipadapter.from_pretrained(model_id,safety_checker=None,controlnet=controlnet,vae2 = vae2)
         else:
-            pipe = LCM_inpaint_final.from_pretrained(model_id,safety_checker=None,controlnet=controlnet)
+            pipe = LCM_inpaint_final.from_pretrained(model_id,safety_checker=None,controlnet=controlnet,vae2 = vae2)
         if ip_adapter=="enable":
             pipe.load_ip_adapter(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter", subfolder="models", weight_name=ip_adapter_model)
         
+        pipe.vae2 = pipe.vae2.cuda()
         # set scheduler
         pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config)
         
@@ -2140,7 +2141,7 @@ class LCMLoraLoader_inpaint:
         pipe.fuse_lora()
         tomesd.apply_patch(pipe, ratio=tomesd_value)
         if device == "GPU":
-            pipe.enable_xformers_memory_efficient_attention()
+            #pipe.enable_xformers_memory_efficient_attention()
             pipe.enable_sequential_cpu_offload()
         else:
             pipe.to("cpu")
