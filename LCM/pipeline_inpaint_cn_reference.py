@@ -18,7 +18,7 @@
 import math
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple, Union
-
+import os
 import numpy as np
 import torch
 from transformers import CLIPImageProcessor, CLIPTextModel, CLIPTokenizer
@@ -42,6 +42,16 @@ import PIL.Image
 
 
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
+
+def make_inpaint_condition(image, image_mask):
+    image = np.array(image.convert("RGB")).astype(np.float32) / 255.0
+    image_mask = np.array(image_mask.convert("L")).astype(np.float32) / 255.0
+
+    assert image.shape[0:1] == image_mask.shape[0:1]
+    image[image_mask > 0.5] = -1.0  # set as masked pixel
+    image = np.expand_dims(image, 0).transpose(0, 3, 1, 2)
+    image = torch.from_numpy(image)
+    return image
 def prepare_image(image):
     if isinstance(image, torch.Tensor):
         # Batch single image
@@ -75,6 +85,7 @@ class LatentConsistencyModelPipeline_refinpaintcn(DiffusionPipeline):
     def __init__(
         self,
         vae: Union[AutoencoderKL, AsymmetricAutoencoderKL],
+        vae2: AutoencoderKL,
         text_encoder: CLIPTextModel,
         tokenizer: CLIPTokenizer,
         controlnet: Union[ControlNetModel, List[ControlNetModel], Tuple[ControlNetModel], MultiControlNetModel],
@@ -96,6 +107,7 @@ class LatentConsistencyModelPipeline_refinpaintcn(DiffusionPipeline):
 
         self.register_modules(
             vae=vae,
+            vae2 = vae2,
             text_encoder=text_encoder,
             tokenizer=tokenizer,
             unet=unet,
@@ -501,6 +513,8 @@ class LatentConsistencyModelPipeline_refinpaintcn(DiffusionPipeline):
         control_guidance_start: Union[float, List[float]] = 0.0,
         control_guidance_end: Union[float, List[float]] = 1.0,
     ):
+        
+        control_image = make_inpaint_condition(image,mask_image)
         controlnet = self.controlnet._orig_mod if is_compiled_module(self.controlnet) else self.controlnet
         # 0. Default height and width to unet
         height = height or self.unet.config.sample_size * self.vae_scale_factor
@@ -1078,6 +1092,12 @@ class LatentConsistencyModelPipeline_refinpaintcn(DiffusionPipeline):
                 # # call the callback, if provided
                 # if i == len(timesteps) - 1:
                 progress_bar.update()
+                image = self.vae2.decode(latents / self.vae2.config.scaling_factor, return_dict=False, generator=generator)[0]
+                do_denormalize = [True] * image.shape[0]
+                image = self.image_processor.postprocess(image, output_type=output_type, do_denormalize=do_denormalize)
+                image = image[0]
+                par = os.path.abspath(os.path.join(os.path.join(os.path.realpath(__file__), os.pardir), os.pardir))
+                image.save(f"{par}/CanvasToolLone/taesd.png")
 
         denoised = denoised.to(prompt_embeds.dtype)
         if hasattr(self, "final_offload_hook") and self.final_offload_hook is not None:

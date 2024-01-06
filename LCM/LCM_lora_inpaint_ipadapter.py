@@ -16,7 +16,7 @@
 
 import inspect
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
-
+import os
 import numpy as np
 import PIL.Image
 import torch
@@ -316,6 +316,7 @@ class LCM_lora_inpaint_ipadapter(
     def __init__(
         self,
         vae: AutoencoderKL,
+        vae2: AutoencoderKL,
         text_encoder: CLIPTextModel,
         tokenizer: CLIPTokenizer,
         unet: UNet2DConditionModel,
@@ -349,6 +350,7 @@ class LCM_lora_inpaint_ipadapter(
 
         self.register_modules(
             vae=vae,
+            vae2 = vae2,
             text_encoder=text_encoder,
             tokenizer=tokenizer,
             unet=unet,
@@ -1511,6 +1513,12 @@ class LCM_lora_inpaint_ipadapter(
                 # call the callback, if provided
                 if i == len(timesteps) - 1 or ((i + 1) > num_warmup_steps and (i + 1) % self.scheduler.order == 0):
                     progress_bar.update()
+                    image = self.vae2.decode(latents / self.vae2.config.scaling_factor, return_dict=False, generator=generator)[0]
+                    do_denormalize = [True] * image.shape[0]
+                    image = self.image_processor.postprocess(image, output_type=output_type, do_denormalize=do_denormalize)
+                    image = image[0]
+                    par = os.path.abspath(os.path.join(os.path.join(os.path.realpath(__file__), os.pardir), os.pardir))
+                    image.save(f"{par}/CanvasToolLone/taesd.png")
                     if callback is not None and i % callback_steps == 0:
                         step_idx = i // getattr(self.scheduler, "order", 1)
                         callback(step_idx, t, latents)
