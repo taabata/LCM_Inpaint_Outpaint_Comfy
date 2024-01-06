@@ -2018,17 +2018,20 @@ class OutpaintCanvasTool:
     RETURN_TYPES = ("IMAGE","IMAGE","IMAGE")
     FUNCTION = "canvasopen"
     def canvasopen(self,seed):
-        bg = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/image.png")
+        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasToolLone/image.png")
+        bg = Image.open(path)
         i = ImageOps.exif_transpose(bg)
         image = i.convert("RGB")
         image = np.array(image).astype(np.float32) / 255.0
         bg = torch.from_numpy(image)[None,]
-        bg2 = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/mask.png")
+        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasToolLone/mask.png")
+        bg2 = Image.open(path)
         i = ImageOps.exif_transpose(bg2)
         image = i.convert("RGB")
         image = np.array(image).astype(np.float32) / 255.0
         bg2 = torch.from_numpy(image)[None,]
-        ref = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/cropped.png")
+        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasToolLone/reference.png")
+        ref = Image.open(path)
         i = ImageOps.exif_transpose(ref)
         image = i.convert("RGB")
         image = np.array(image).astype(np.float32) / 255.0
@@ -2052,11 +2055,15 @@ class stitch:
         img = image[0].numpy()
         img = img*255.0
         image = Image.fromarray(np.uint8(img)).convert("RGBA")
-        with open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/data.json","r") as json_file:
+        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasToolLone/data.json")
+        with open(path,"r") as json_file:
             savedata = json.load(json_file)["savedata"]
-        bg = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/out.png").convert("RGBA")
-        msksmall = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/mask.png").convert("L")
-        cropped = Image.open(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/image.png").convert("RGBA")
+        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasToolLone/out.png")
+        bg = Image.open(path).convert("RGBA")
+        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasToolLone/mask.png")
+        msksmall = Image.open(path).convert("L")
+        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasToolLone/image.png")
+        cropped = Image.open(path).convert("RGBA")
         width = int(savedata["additionaldims"]["right"]) + int(savedata["additionaldims"]["left"]) + bg.size[0]
         height = int(savedata["additionaldims"]["top"]) + int(savedata["additionaldims"]["bottom"]) + bg.size[1]
         new = Image.new("RGBA",(width,height),(0,0,0,0))
@@ -2075,7 +2082,7 @@ class stitch:
         res = []
         res.append(new)
         return (res,)
-
+        
 class LCMLoraLoader_inpaint:
     def __init__(self):
         pass
@@ -2124,20 +2131,23 @@ class LCMLoraLoader_inpaint:
         except:
             mpath = folder_paths.get_folder_paths("controlnet")[0]+f"\{controlnet_model}"
         controlnet = ControlNetModel.from_pretrained(mpath)
-        vae2 = AutoencoderTiny.from_pretrained(folder_paths.get_folder_paths("vae")[0]+"/taesd", torch_device='cuda', torch_dtype=torch.float32)
+        path = Path(folder_paths.get_folder_paths("vae")[0]+"/taesd")
+        vae2 = AutoencoderTiny.from_pretrained(path, torch_device='cuda', torch_dtype=torch.float32)
         if reference_only == "disable":
             pipe = LCM_lora_inpaint_ipadapter.from_pretrained(model_id,safety_checker=None,controlnet=controlnet,vae2 = vae2)
         else:
             pipe = LCM_inpaint_final.from_pretrained(model_id,safety_checker=None,controlnet=controlnet,vae2 = vae2)
         if ip_adapter=="enable":
-            pipe.load_ip_adapter(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter", subfolder="models", weight_name=ip_adapter_model)
+            path = Path(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter")
+            pipe.load_ip_adapter(path, subfolder="models", weight_name=ip_adapter_model)
         
         pipe.vae2 = pipe.vae2.cuda()
         # set scheduler
         pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config)
         
         # load LCM-LoRA
-        pipe.load_lora_weights(folder_paths.get_folder_paths("loras")[0]+"/pytorch_lora_weights.safetensors")
+        path = Path(folder_paths.get_folder_paths("loras")[0]+"/pytorch_lora_weights.safetensors")
+        pipe.load_lora_weights(path)
         pipe.fuse_lora()
         tomesd.apply_patch(pipe, ratio=tomesd_value)
         if device == "GPU":
@@ -2146,7 +2156,6 @@ class LCMLoraLoader_inpaint:
         else:
             pipe.to("cpu")
         return (pipe,)
-        
 class LCMLora_inpaint:
     def __init__(self):
         pass
