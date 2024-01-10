@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="/static/index.css">
+        
+    </head>
+    <body onwheel="changesize(event);" onmousemove="mousecoordinates(event);">
+        <script src="/static/index.js"></script>
+        <div id="container" onmouseenter="reset();" style="width: 100%;height: 100%;">
+            <div id="canvascontainer">
+                <img id="sourceimg" src={{byte_im}} width={{w}} height={{h}} style="visibility: hidden;" style="position: fixed;"/>
+                <canvas id="source" width={{w}} height={{h}} onclick="drawenable();" onmousemove="draw();" ></canvas>
+            </div>            
+            <div id="moveimglistner" style="position: absolute; width: 100%;height: 100%;top: 0%;left: 0%; z-index: 3;"  onclick="moveimg(); " onmousemove="grabselector();"></div>
+            <div id="selector" onmousemove="selector();" onclick="snapshot();"></div>
+            <div id="settings">
+                <div id="setref" onclick="setreftoggle();"><p class="txt">Set Reference</p></div>
+                <div id="undo" onclick="undoimg();"><p class="txt">UNDO</p></div>
+                <div id="moveimg" onclick="moveimgenablefirst();"><p class="txt">Move Image</p></div>
+                <p id="label" style="position: absolute;top: 30%;left: 34%;">Box Size: </p>
+                <input type="text" id="selectorsize" onchange="changeselectorsize();" size="4">
+                <div id="saveexit" onclick="savejson()"><p class="txt">Generate</p></div>
+                <div id="eraseon" onclick="erasemodeon()"><p class="txt">Erase</p></div>
+                <div id="drawon" onclick="drawmodeon()"><p class="txt">Draw</p></div>
+                <p id="label2" style="position: absolute;top: 30%;left: 43%;">Fade Factor: </p>
+                <input id="ff" type="text" size="4"  onchange="ffupdate();">
+                <p id="label3" style="position: absolute;top: 30%;left: 53%;">Eraser/Pencil Size: </p>
+                <input id="erasersize" type="text" size="4">
+                <input id="clr" type="color" size="3">
+                <input id="inprange" type="range" min="0" max="255" step="1">
+                <div id="lockbox" onclick="lockbox();"><p class="txt">Lock Box To Image</p></div>
+                <div id="lockleft" onclick="lockleft();"><p class="txt">Left</p></div>
+                <div id="lockright" onclick="lockright();"><p class="txt">Right</p></div>
+                <div id="lockbottom" onclick="lockbottom();"><p class="txt">Bottom</p></div>
+                <div id="locktop" onclick="locktop();"><p class="txt">Top</p></div>
+                <div id="resetimg" onclick="resetimg();"><p class="txt">Reset Image</p></div>
+                <label for="openimgadd" id="uploadanotherimg"><p class="icontxt">+</p></label>
+                <input id="openimgadd" type="file">
+                <div class="dropdown" id="wfsdropdown">
+                    <button class="dropbtn" id="wfbutton">Select Workflow</button>
+                    <div class="dropdown-content" id="wfscont">
+                    </div>
+                </div>
+                <div class="dropdown" id="modelsdropdown">
+                    <button class="dropbtn" id="modelbutton">Select Model</button>
+                    <div class="dropdown-content" id="modelscont">
+                    </div>
+                </div>
+                <div class="dropdown" id="paramsdropdown">
+                    <button class="dropbtn" id="paramsbutton">Change Parameter</button>
+                    <input id="paramvalue" type="text" size="4"  onchange="paramset();">
+                    <div class="dropdown-content" id="paramscont">
+                    </div>
+                </div>
+                
+                
+                
+            </div>
+            <div id="settings2">
+                <div id="moveimg1"  onclick="moveimgenable();"><p class="txt">Move Image</p></div>
+                <div id="done" onclick="compimage();"><p class="txt">Done</p></div>
+                <label for="openimgadd" id="uploadanotherimg"><p class="icontxt">+</p></label>
+            </div>
+            <div id="uploadcontainer">
+                <label for="openimg" class="uploadstyle">
+                    <p>Upload Image</p>
+                </label>
+                <input id="openimg" type="file">
+            </div>
+                
+                
+        </div>
+        <div id="msg"><p class="txt">Close the tab if not auto-closed</p></div>
+    </body>
+</html>

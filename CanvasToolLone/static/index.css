@@ -1,0 +1,426 @@
+html{
+    background: linear-gradient(to top,rgb(29, 29, 29) 80%, rgb(5, 5, 5));
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+#settings,#settings2{
+    width: 100%;
+    height: 10%;
+    background: linear-gradient(to bottom,rgb(44, 44, 44) 80%, rgb(36, 36, 36),transparent);
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    z-index: 3;
+}
+#moveimg{
+    position: absolute;
+    top: 30%;
+    left: 5%;
+    width: 10%;
+    height: 50%;
+    background-color: gray;
+    transform: translate(-50%,-50%);
+    font-weight: bolder;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+    cursor: pointer;
+}
+#setref,#undo{
+    position: absolute;
+    top: 65%;
+    left: 5%;
+    width: 10%;
+    height: 50%;
+    background-color: gray;
+    transform: translate(-50%,-50%);
+    font-weight: bolder;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+    cursor: pointer;
+}
+#undo{
+    left: 14%;
+    visibility: hidden;
+}
+#resetimg{
+    position: absolute;
+    top: 50%;
+    left: 83%;
+    width: 10%;
+    height: 50%;
+    background-color: gray;
+    transform: translate(-50%,-50%);
+    font-weight: bolder;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+    cursor: pointer;
+}
+#eraseon{
+    position: absolute;
+    top: 30%;
+    left: 14%;
+    width: 10%;
+    height: 50%;
+    background-color: gray;
+    transform: translate(-50%,-50%);
+    font-weight: bolder;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+    cursor: pointer;
+}
+#drawon{
+    position: absolute;
+    top: 30%;
+    left: 23%;
+    width: 10%;
+    height: 50%;
+    background-color: gray;
+    transform: translate(-50%,-50%);
+    font-weight: bolder;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+    cursor: pointer;
+}
+
+#selectorsize{
+    position: absolute;
+    left: 39%;
+    top: 45%;
+}
+
+body{
+    color: white;
+}
+.txt{
+    width: 100%;
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+#container{
+    width: 100%;
+    height: 100%;
+}
+#saveexit{
+    position: absolute;
+    top: 50%;
+    left: 92%;
+    width: 10%;
+    height: 50%;
+    background-color: gray;
+    transform: translate(-50%,-50%);
+    font-weight: bolder;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+    visibility: hidden;
+    cursor: pointer;
+}
+#msg{
+    position: absolute;
+    width: 90%;
+    height: 90%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    visibility: hidden;
+    font-size: 50px;
+    background-color: gray;
+}
+
+#saveexit:hover{
+    background-color: rgb(20, 20, 20);
+}
+
+
+#moveimg:hover{
+    background-color: rgb(20, 20, 20);
+}
+#eraseon:hover{
+    background-color: rgb(20, 20, 20);
+}
+#drawon:hover{
+    background-color: rgb(20, 20, 20);
+}
+
+input{
+    background-color: rgb(20, 20, 20);
+    border-radius: 5%;
+    outline: none;
+    caret-color: transparent;
+    color: white;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    border: 1px solid transparent;
+    text-align: center;
+}
+p{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+#erasersize{
+    position: absolute;
+    left: 61%;
+    top: 45%;
+}
+#ff{
+    position: absolute;
+    left: 49%;
+    top: 45%;
+}
+#clr{
+    position: absolute;
+    left: 30%;
+    top: 40%;
+}
+#inprange{
+    position: absolute;
+    left: 30%;
+    top: 73%;
+    color: grey;
+}
+#source,#sourceunder,#taesdcanvas{
+    position: fixed;
+    left: 0px;
+    top: 0px;
+
+}
+
+#selector{
+    width: 256px;
+    height: 256px;
+    background-color: transparent;
+    left: 0px;
+    top: 0px;
+    position: fixed;
+    border: 2px solid green;
+    transform: translate(-50%,-50%);
+    z-index: 3;
+}
+label{
+    position: fixed;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+
+
+}
+#openimg{
+    position: fixed;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+label p{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-15%);
+    font-size: 500%;
+    text-align: center;
+    
+    
+}
+
+#uploadcontainer{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0%;
+    opacity: 0;
+    background: linear-gradient(to bottom,black,rgb(20,20,20),black);
+    left: 0%;
+    z-index: 4;
+    
+}
+#sourceimg{
+    display: none;
+}
+#source,.canvas{
+    z-index: 2;
+}
+#taesdcanvas{
+    z-index: 1;
+}
+
+#lockbox{
+    position: absolute;
+    top: 61%;
+    left: 73.1%;
+    width: 10%;
+    height: 28%;
+    background-color: gray;
+    transform: translate(-50%,-50%);
+    font-weight: bolder;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+    cursor: pointer;
+}
+#lockbox p{
+    font-size: 15px;
+    top: 0%;
+}
+
+#lockbox:hover{
+    background-color: rgb(20, 20, 20);
+}
+#locktop, #lockleft, #lockright, #lockbottom{
+    position: absolute;
+    top: 40%;
+    width: 2.5%;
+    height: 30%;
+    background-color: gray;
+    transform: translate(-50%,-50%);
+    font-weight: bolder;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+    cursor: pointer;
+    font-size: 10px;
+    text-align: center;
+}
+#locktop{
+    left: 69.35%;
+}
+#lockleft{
+    left: 71.85%
+}
+#lockright{
+    left: 74.33%;
+}
+#lockbottom{
+    left: 76.8%;
+}
+#moveimg2{
+    position: absolute;
+    top: 50%;
+    left: 15%;
+    width: 10%;
+    height: 50%;
+    background-color: gray;
+    transform: translate(-50%,-50%);
+    font-weight: bolder;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+    cursor: pointer;
+}
+#moveimg2:hover{
+    background-color: rgb(20, 20, 20);
+}
+#openimgadd{
+    position: fixed;
+    top: 50%;
+    left: 90%;
+}
+#settings2{
+    visibility: hidden;
+}
+.moveimgclass,#done,#moveimg1{
+    position: absolute;
+    top: 50%;
+    width: 10%;
+    height: 50%;
+    background-color: gray;
+    transform: translate(-50%,-50%);
+    font-weight: bolder;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+    cursor: pointer;
+    z-index: 1;
+}
+.moveimgclass:hover{
+    background-color: rgb(20, 20, 20);
+}
+#done{
+    left: 95%;
+}
+#moveimg1{
+    left: 5%;
+}
+#uploadanotherimg,#openimgadd{
+    position: absolute;
+    width: 2%;
+    height: 40%;
+    top: 30%;
+    left: 65%;
+    
+}
+#uploadanotherimg{
+    background-color: rgb(20, 20, 20);
+}
+#openimgadd{
+    opacity: 0;
+}
+.icontxt{
+    position: absolute;
+    top: -140%;
+    font-size: 50px;
+}
+
+
+.dropbtn {
+    background-color: transparent;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    transform: translate(-50%,-30%);
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: rgb(20,20,20);
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 3;
+    cursor: pointer;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: rgb(44, 44, 44)}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {
+    background-color: transparent;
+}
+
+#wfsdropdown{
+    left: 34%;
+    top: 5%;
+}
+#modelsdropdown{
+    left: 38%;
+    top: 5%;
+}
+#paramsdropdown{
+    left: 42%;
+    top: 5%;
+}
+#paramvalue{
+    text-align: center;
+}

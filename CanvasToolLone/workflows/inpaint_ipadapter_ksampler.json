@@ -1,0 +1,203 @@
+{
+  "3": {
+    "inputs": {
+      "seed": 156680208700286,
+      "steps": 20,
+      "cfg": 8,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 1,
+      "model": [
+        "19",
+        0
+      ],
+      "positive": [
+        "11",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "20",
+        0
+      ]
+    },
+    "class_type": "KSampler"
+  },
+  "4": {
+    "inputs": {
+      "ckpt_name": "deliberate_v2.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple"
+  },
+  "5": {
+    "inputs": {
+      "width": 512,
+      "height": 512,
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage"
+  },
+  "6": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "4",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "7": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "4",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "10": {
+    "inputs": {
+      "control_net_name": "control_v11p_sd15_inpaint_fp16.safetensors"
+    },
+    "class_type": "ControlNetLoader"
+  },
+  "11": {
+    "inputs": {
+      "strength": 1,
+      "conditioning": [
+        "6",
+        0
+      ],
+      "control_net": [
+        "10",
+        0
+      ],
+      "image": [
+        "12",
+        0
+      ]
+    },
+    "class_type": "ControlNetApply"
+  },
+  "12": {
+    "inputs": {
+      "image": [
+        "13",
+        0
+      ],
+      "mask": [
+        "21",
+        0
+      ]
+    },
+    "class_type": "InpaintPreprocessor"
+  },
+  "13": {
+    "inputs": {
+      "seed": 0
+    },
+    "class_type": "OutpaintCanvasTool"
+  },
+  "14": {
+    "inputs": {
+      "tile_size": 512,
+      "samples": [
+        "3",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ]
+    },
+    "class_type": "VAEDecodeTiled"
+  },
+  "15": {
+    "inputs": {
+      "image": [
+        "14",
+        0
+      ]
+    },
+    "class_type": "stitch"
+  },
+  "16": {
+    "inputs": {
+      "filename_prefix": "ComfyUI",
+      "images": [
+        "15",
+        0
+      ]
+    },
+    "class_type": "SaveImage_LCM"
+  },
+  "17": {
+    "inputs": {
+      "ipadapter_file": "ip-adapter_sd15.bin"
+    },
+    "class_type": "IPAdapterModelLoader"
+  },
+  "18": {
+    "inputs": {
+      "clip_name": "pytorch_model.ckpt"
+    },
+    "class_type": "CLIPVisionLoader"
+  },
+  "19": {
+    "inputs": {
+      "weight": 1,
+      "noise": 0,
+      "weight_type": "original",
+      "ipadapter": [
+        "17",
+        0
+      ],
+      "clip_vision": [
+        "18",
+        0
+      ],
+      "image": [
+        "13",
+        2
+      ],
+      "model": [
+        "4",
+        0
+      ]
+    },
+    "class_type": "IPAdapterApply"
+  },
+  "20": {
+    "inputs": {
+      "grow_mask_by": 6,
+      "pixels": [
+        "13",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ],
+      "mask": [
+        "21",
+        0
+      ]
+    },
+    "class_type": "VAEEncodeForInpaint"
+  },
+  "21": {
+    "inputs": {
+      "channel": "red",
+      "image": [
+        "13",
+        1
+      ]
+    },
+    "class_type": "ImageToMask"
+  }
+}
