@@ -1947,7 +1947,7 @@ class LoadImageNode_LCM:
         image = torch.from_numpy(image)[None,]
         return (image,)
 
-class SaveImage_LCM:
+class LCM:
     def __init__(self):
         self.output_dir = folder_paths.get_output_directory()
         self.type = "output"
@@ -2593,7 +2593,7 @@ class SegmindVega:
         return (out,)
 
 
-class SaveImage_Puzzle:
+class Puzzle:
     def __init__(self):
         self.output_dir = folder_paths.get_output_directory()
         self.type = "output"
@@ -2652,7 +2652,7 @@ class SaveImage_Puzzle:
 
         return { "ui": { "images": results } }
 
-class SaveImage_PuzzleV2:
+class PuzzleV2:
     def __init__(self):
         self.output_dir = folder_paths.get_output_directory()
         self.type = "output"
@@ -3064,6 +3064,64 @@ class FloatNumber:
     def load_image(self, Number):
         return (Number,)
 
+class SaveImage_Canvas:
+    def __init__(self):
+        self.output_dir = folder_paths.get_output_directory()
+        self.type = "output"
+        self.prefix_append = ""
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": 
+                    {"images": ("IMAGE", ),
+                     "filename_prefix": ("STRING", {"default": "ComfyUI"})},
+                "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+                }
+
+    RETURN_TYPES = ()
+    FUNCTION = "save_images"
+
+    OUTPUT_NODE = True
+
+    CATEGORY = "image"
+
+    def save_images(self, images, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None):
+        filename_prefix += self.prefix_append
+        full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(filename_prefix, self.output_dir, 512, 512)
+        results = list()
+        for image in images:
+            img = image
+            if not args.disable_metadata:
+                metadata = PngInfo()
+                if prompt is not None:
+                    metadata.add_text("prompt", json.dumps(prompt))
+                if extra_pnginfo is not None:
+                    for x in extra_pnginfo:
+                        metadata.add_text(x, json.dumps(extra_pnginfo[x]))
+
+            file = f"{filename}_{counter:05}_.png"
+            img.save(os.path.join(full_output_folder, file), pnginfo=metadata, compress_level=4)
+            data = {
+                "lastimage":str(os.path.join(full_output_folder, file)),
+                "done":"y"
+            }
+            json_object = json.dumps(data, indent=4)
+            savepath = folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasToolLone/lastimage.json"
+            savepath = Path(savepath)
+            with open(savepath, "w") as outfile:
+                print(savepath)
+                outfile.write(json_object)
+            
+            
+            results.append({
+                "filename": file,
+                "subfolder": subfolder,
+                "type": self.type
+            })
+            counter += 1
+            
+        return { "ui": { "images": results } }
+
 NODE_CLASS_MAPPINGS = {
     "LCMGenerate": LCMGenerate,
     "LoadImageNode_LCM":LoadImageNode_LCM,
@@ -3102,4 +3160,5 @@ NODE_CLASS_MAPPINGS = {
     "FloatNumber":FloatNumber,
     "LCMLora_ipadapter":LCMLora_ipadapter,
     "LCMLoraLoader_ipadapter":LCMLoraLoader_ipadapter,
+    "SaveImage_Canvas":SaveImage_Canvas
 }
