@@ -2018,19 +2018,19 @@ class OutpaintCanvasTool:
     RETURN_TYPES = ("IMAGE","IMAGE","IMAGE")
     FUNCTION = "canvasopen"
     def canvasopen(self,seed):
-        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasToolLone/image.png")
+        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/image.png")
         bg = Image.open(path)
         i = ImageOps.exif_transpose(bg)
         image = i.convert("RGB")
         image = np.array(image).astype(np.float32) / 255.0
         bg = torch.from_numpy(image)[None,]
-        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasToolLone/mask.png")
+        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/mask.png")
         bg2 = Image.open(path)
         i = ImageOps.exif_transpose(bg2)
         image = i.convert("RGB")
         image = np.array(image).astype(np.float32) / 255.0
         bg2 = torch.from_numpy(image)[None,]
-        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasToolLone/reference.png")
+        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/reference.png")
         ref = Image.open(path)
         i = ImageOps.exif_transpose(ref)
         image = i.convert("RGB")
@@ -2055,14 +2055,14 @@ class stitch:
         img = image[0].numpy()
         img = img*255.0
         image = Image.fromarray(np.uint8(img)).convert("RGBA")
-        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasToolLone/data.json")
+        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/data.json")
         with open(path,"r") as json_file:
             savedata = json.load(json_file)["savedata"]
-        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasToolLone/out.png")
+        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/out.png")
         bg = Image.open(path).convert("RGBA")
-        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasToolLone/mask.png")
+        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/mask.png")
         msksmall = Image.open(path).convert("L")
-        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasToolLone/image.png")
+        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/image.png")
         cropped = Image.open(path).convert("RGBA")
         width = int(savedata["additionaldims"]["right"]) + int(savedata["additionaldims"]["left"]) + bg.size[0]
         height = int(savedata["additionaldims"]["top"]) + int(savedata["additionaldims"]["bottom"]) + bg.size[1]
@@ -2638,7 +2638,7 @@ class SaveImage_Puzzle:
                 "done":"y"
             }
             json_object = json.dumps(data, indent=4)
-            savepath = folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/puzzle/lastimage.json"
+            savepath = folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/puzzle/lastimage.json"
             savepath = Path(savepath)
             with open(savepath, "w") as outfile:
                 print(savepath)
@@ -2694,7 +2694,7 @@ class SaveImage_PuzzleV2:
                 "done":"y"
             }
             json_object = json.dumps(data, indent=4)
-            savepath = folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/puzzle/lastimage.json"
+            savepath = folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/puzzle/lastimage.json"
             savepath = Path(savepath)
             with open(savepath, "w") as outfile:
                 print(savepath)
@@ -3107,7 +3107,7 @@ class SaveImage_Canvas:
                 "done":"y"
             }
             json_object = json.dumps(data, indent=4)
-            savepath = folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasToolLone/lastimage.json"
+            savepath = folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/lastimage.json"
             savepath = Path(savepath)
             with open(savepath, "w") as outfile:
                 print(savepath)
