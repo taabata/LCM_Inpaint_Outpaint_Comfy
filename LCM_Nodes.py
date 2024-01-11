@@ -1947,7 +1947,7 @@ class LoadImageNode_LCM:
         image = torch.from_numpy(image)[None,]
         return (image,)
 
-class LCM:
+class SaveImage_LCM:
     def __init__(self):
         self.output_dir = folder_paths.get_output_directory()
         self.type = "output"
@@ -2593,7 +2593,7 @@ class SegmindVega:
         return (out,)
 
 
-class Puzzle:
+class SaveImage_Puzzle:
     def __init__(self):
         self.output_dir = folder_paths.get_output_directory()
         self.type = "output"
@@ -2652,7 +2652,7 @@ class Puzzle:
 
         return { "ui": { "images": results } }
 
-class PuzzleV2:
+class SaveImage_PuzzleV2:
     def __init__(self):
         self.output_dir = folder_paths.get_output_directory()
         self.type = "output"
@@ -3063,6 +3063,7 @@ class FloatNumber:
     FUNCTION = "load_image"
     def load_image(self, Number):
         return (Number,)
+
 
 class SaveImage_Canvas:
     def __init__(self):
