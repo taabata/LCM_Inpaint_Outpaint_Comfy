@@ -326,7 +326,8 @@ def savedata():
         taesds = "no"
     flag = False
     realflag = flag
-    with open("./lastimage.json","r") as filename:
+    path = Path("./lastimage.json")
+    with open(path,"r") as filename:
         status = json.load(filename)["done"]
         if status == "y":
             flag = True
