@@ -100,7 +100,6 @@ Load the workflow by choosing the .json file for inpainting or outpainting.
 
 nagolinc's img2img script
 
-patrickvonplaten's StableDiffusionReferencePipeline
 
 Michael Poutre https://github.com/M1kep T2IAdapters
 
