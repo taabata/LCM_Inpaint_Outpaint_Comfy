@@ -93,6 +93,18 @@ def grabwfsmodels():
     wfs = os.listdir(path)
     return{"models":models,"wfs":wfs}
 
+@app.route("/cancelgen",methods=['GET', 'POST','DELETE'])
+def cancelgen():
+    data = {
+        "lastimage":f"{os.path.abspath(os.path.join(os.path.join(os.path.realpath(__file__), os.pardir), os.pardir))}/CanvasToolLone/cropped.png",
+        "done":"y"
+    }
+    json_object = json.dumps(data, indent=4)
+    path = Path("./lastimage.json")
+    with open(path, "w") as outfile:
+        outfile.write(json_object)
+    return{}
+
 @app.route("/grabwfparams",methods=['GET', 'POST','DELETE'])
 def grabwfparams():
     wf = request.json["wf"]
@@ -140,6 +152,7 @@ def generate():
 @app.route("/savedata",methods=['GET', 'POST','DELETE'])
 def savedata():
     global image
+    img2img = "inpaint"
     print("trigerred")
     taesd = request.json["taesd"]
     savedata = request.json["savedata"]
@@ -311,6 +324,7 @@ def savedata():
             bg2 = bg2.resize((bg2.size[0]-ff*2,bg2.size[1]-ff*2))
             border.paste(bg2,(ff,ff))
             bg2 = border
+            img2img = "img2img"
         bg2 = bg2.filter(ImageFilter.BoxBlur(ff-int(ff/2)))
         bg2.save("mask.png")
         width = int(float(savedata["additionaldims"]["left"])) + int(float(savedata["additionaldims"]["right"]))
@@ -397,7 +411,7 @@ def savedata():
         width = ""
         height = ""
     #time.sleep(0.1)
-    return {"img":byte_im,"width":width,"height":height,"data":savedata,"flag":str(realflag),"taesd":taesds}
+    return {"img":byte_im,"width":width,"height":height,"data":savedata,"flag":str(realflag),"taesd":taesds,"img2img":img2img}
 
 @app.route("/refresh",methods=['GET', 'POST','DELETE'])
 def refresh():

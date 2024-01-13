@@ -424,3 +424,18 @@ label p{
 #paramvalue{
     text-align: center;
 }
+#cancel{
+    position: fixed;
+    width: 20%;
+    height: 5%;
+    top: 12%;
+    left: 94%;
+    visibility: hidden;
+    color: wheat;
+    transform: rotate(45deg);
+    cursor: pointer;
+    font-size: 150px;
+}
+#cancel:hover{
+    filter: brightness(50%);
+}

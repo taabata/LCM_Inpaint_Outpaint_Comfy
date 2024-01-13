@@ -106,14 +106,14 @@
         1
       ],
       "cfg": 1.5,
-      "reference_style_fidelity": 0.1,
+      "reference_style_fidelity": 0.05,
       "batch": 1,
       "strength": 1,
       "prompt_weighting": "disable",
       "controlnet_weight": 1,
       "reference_only": "enable",
       "ip_adapter": "enable",
-      "ipadapter_scale": 0.25,
+      "ipadapter_scale": 0.1,
       "mask": [
         "16",
         1

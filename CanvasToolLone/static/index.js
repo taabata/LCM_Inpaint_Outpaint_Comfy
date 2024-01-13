@@ -224,6 +224,8 @@ window.onload = function(){
                     newel.id = "source"+num;
                     newel.className = "canvas";
                     newel.style.position = "fixed";
+                    newel.style.left = parseInt(document.getElementById("source").style.left) + document.getElementById("source").width + "px";
+                    newel.style.top = document.getElementById("source").style.top;
                     document.getElementById("canvascontainer").append(newel);
                     img = new Image();
                     img.onload = function() {
@@ -282,6 +284,8 @@ window.onload = function(){
             newel.id = "source"+num;
             newel.className = "canvas";
             newel.style.position = "fixed";
+            newel.style.left = parseInt(document.getElementById("source").style.left) + document.getElementById("source").width + "px";
+            newel.style.top = document.getElementById("source").style.top;
             document.getElementById("canvascontainer").append(newel);
             img = new Image();
             img.onload = function() {
@@ -365,6 +369,11 @@ function setreftoggle(){
     else{
         document.getElementById("selector").style.border = "2px solid green";
         document.getElementById("setref").style.backgroundColor = "gray";
+        ll = false;
+        lr = false;
+        lt = false;
+        lb = false;
+        document.getElementById("lockbox").style.backgroundColor = "gray";
     }
 }
 function resetimg(){
@@ -760,6 +769,14 @@ function generate(){
     });
 }
 
+function cancelgen(){
+    fetch('http://localhost:5000/cancelgen')
+    .then(function (response){
+        return response.json();
+    })
+    .then(data=>{
+    });
+}
 function saved(savedata){
     var responseClone; // 1    
     var canvas = document.getElementById("source");
@@ -800,6 +817,8 @@ function saved(savedata){
         document.getElementById("selector").style.visibility = "hidden";
         document.getElementById("saveexit").style.visibility = "hidden";
         document.getElementById("undo").style.visibility = "hidden";
+        document.getElementById("moveimglistner").style.visibility = "hidden";
+        document.getElementById("cancel").style.visibility = "visible";
         if(genflag==false){
             generate();
             genflag = true;
@@ -818,10 +837,7 @@ function saved(savedata){
                     canvas.style.top = boxtop;
                     //var maincanv = document.getElementById("source");
                     //document.getElementById("source").remove();
-                    if(parseFloat(boxleft)>=parseFloat(document.getElementById("source").style.left) 
-                    && parseFloat(boxtop)>=parseFloat(document.getElementById("source").style.top)
-                    && parseFloat(boxleft)+canvas.width<=parseFloat(document.getElementById('source').getBoundingClientRect()["right"])
-                    && parseFloat(boxtop)+canvas.height<=parseFloat(document.getElementById('source').getBoundingClientRect()["bottom"])            
+                    if(data["img2img"]=="img2img"       
                     ){
                         canvas.style.zIndex = "4";
                     }
@@ -925,6 +941,8 @@ function saved(savedata){
             document.getElementById("settings").style.visibility = "visible";
             document.getElementById("selector").style.visibility = "visible";
             document.getElementById("undo").style.visibility = "visible";
+            document.getElementById("moveimglistner").style.visibility = "visible";
+            document.getElementById("cancel").style.visibility = "hidden";
             taesd = "false";
             canvasflag = true;
             genflag = false;
