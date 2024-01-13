@@ -1925,6 +1925,25 @@ class ImageOutputToComfyNodes:
         image = torch.from_numpy(image)[None,]
         return (image,)
 
+
+class ComfyNodesToSaveCanvas:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":
+                    {"image": ("IMAGE",)},
+                }
+
+    CATEGORY = "image"
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "load_image"
+    def load_image(self, image):
+        img = image[0].numpy()
+        img = img*255.0
+        image = Image.fromarray(np.uint8(img))
+        res = [image]
+        return (res,)
+
 class LoadImageNode_LCM:
     @classmethod
     def INPUT_TYPES(s):
@@ -1988,7 +2007,7 @@ class SaveImage_LCM:
                 "lastimage":str(os.path.join(full_output_folder, file))
             }
             json_object = json.dumps(data, indent=4)
-            savepath = folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint-Outpaint_Comfy/CanvasTool/lastimage.json"
+            savepath = folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasTool/lastimage.json"
             savepath = Path(savepath)
             with open(savepath, "w") as outfile:
                 print(savepath)
@@ -2138,7 +2157,7 @@ class LCMLoraLoader_inpaint:
         else:
             pipe = LCM_inpaint_final.from_pretrained(model_id,safety_checker=None,controlnet=controlnet,vae2 = vae2)
         if ip_adapter=="enable":
-            path = Path(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter")
+            path = Path(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter", subfolder="models", weight_name=ip_adapter_model)
             pipe.load_ip_adapter(path, subfolder="models", weight_name=ip_adapter_model)
         
         pipe.vae2 = pipe.vae2.cuda()
@@ -2763,21 +2782,21 @@ class LCMLoraLoader_ipadapter:
         if control_net == "disable":
             if ip_adapter == "enable" and reference_only=="disable":
                 pipe = StableDiffusionImg2ImgPipeline.from_pretrained(model_id,safety_checker=None)
-                pipe.load_ip_adapter(folder_paths.get_folder_paths("IPAdapter")[0], subfolder="models", weight_name=ip_adapter_model)
+                pipe.load_ip_adapter(Path(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter"), subfolder="models", weight_name=ip_adapter_model)
             elif reference_only == "disable":
                 pipe = StableDiffusionImg2ImgPipeline.from_pretrained(model_id,safety_checker=None)
             else:
                 pipe = StableDiffusionImg2ImgPipeline_reference.from_pretrained(model_id,safety_checker=None)
-                pipe.load_ip_adapter(folder_paths.get_folder_paths("IPAdapter")[0], subfolder="models", weight_name=ip_adapter_model)
+                pipe.load_ip_adapter(Path(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter"), subfolder="models", weight_name=ip_adapter_model)
         else:
             if ip_adapter == "enable" and reference_only=="disable":
                 pipe = StableDiffusionControlNetImg2ImgPipeline_ipadapter.from_pretrained(model_id,safety_checker=None,controlnet=controlnet)
-                pipe.load_ip_adapter(folder_paths.get_folder_paths("IPAdapter")[0], subfolder="models", weight_name=ip_adapter_model)
+                pipe.load_ip_adapter(Path(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter"), subfolder="models", weight_name=ip_adapter_model)
             elif reference_only == "disable":
                 pipe = StableDiffusionControlNetImg2ImgPipeline.from_pretrained(model_id,safety_checker=None,controlnet=controlnet)
             else:
                 pipe = StableDiffusionControlNetImg2ImgPipeline_ref.from_pretrained(model_id,safety_checker=None,controlnet=controlnet)
-                pipe.load_ip_adapter(folder_paths.get_folder_paths("IPAdapter")[0], subfolder="models", weight_name=ip_adapter_model)
+                pipe.load_ip_adapter(Path(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter"), subfolder="models", weight_name=ip_adapter_model)
         
         
         
@@ -3161,5 +3180,6 @@ NODE_CLASS_MAPPINGS = {
     "FloatNumber":FloatNumber,
     "LCMLora_ipadapter":LCMLora_ipadapter,
     "LCMLoraLoader_ipadapter":LCMLoraLoader_ipadapter,
-    "SaveImage_Canvas":SaveImage_Canvas
+    "SaveImage_Canvas":SaveImage_Canvas,
+    "ComfyNodesToSaveCanvas":ComfyNodesToSaveCanvas
 }
