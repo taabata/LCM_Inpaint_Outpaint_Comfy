@@ -29,7 +29,7 @@ class TAESDPreviewerImpl(LatentPreviewer):
         x_sample = x_sample.astype(np.uint8)
 
         preview_image = Image.fromarray(x_sample)
-        p = Path(folder_paths.get_folder_paths("custom_nodes")[0]+f"/LCM_Inpaint-Outpaint_Comfy/CanvasToolLone/taesd.png")
+        p = Path(folder_paths.get_folder_paths("custom_nodes")[0]+f"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/taesd.png")
         preview_image.save(p)
         return preview_image
 
