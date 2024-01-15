@@ -2240,6 +2240,12 @@ class LCMLora_inpaint:
                 }),
                 "reference_only":(["disable","enable"],),
                 "ip_adapter":(["disable","enable"],),
+                "ipadapter_scale": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                }),
             }
         }
 
@@ -2248,7 +2254,7 @@ class LCMLora_inpaint:
 
     CATEGORY = "LCM_Nodes/nodes"
 
-    def mainfunc(self, text: str,steps: int,width:int,height:int,cfg:float,seed: int,image,pipe,batch,reference_image,reference_style_fidelity,strength,prompt_weighting, controlnet_weight,mask,reference_only,ip_adapter):
+    def mainfunc(self, text: str,steps: int,width:int,height:int,cfg:float,seed: int,image,pipe,ipadapter_scale,batch,reference_image,reference_style_fidelity,strength,prompt_weighting, controlnet_weight,mask,reference_only,ip_adapter):
         
         
         img = image[0].numpy()
@@ -2264,7 +2270,8 @@ class LCMLora_inpaint:
         reference_image = Image.fromarray(np.uint8(img)).convert("RGB")
         
         if ip_adapter == "enable":
-            ip_adapter_image = reference_image
+            ip_adapter_image = reference_image            
+            pipe.set_ip_adapter_scale(ipadapter_scale)
         else:
             ip_adapter_image = None
  
