@@ -1,0 +1,699 @@
+{
+  "1": {
+    "inputs": {
+      "seed": 0,
+      "prompt": "",
+      "negative_prompt": "",
+      "steps": 4,
+      "width": 512,
+      "height": 512,
+      "cfg": 1.5,
+      "style_fidelity": 0.5,
+      "strength": 1,
+      "batch": 1,
+      "ipadapter_scale": 0.6,
+      "controlnet_conditioning_scale": 0.6,
+      "reference_only": "enable",
+      "ip_adapter": "enable",
+      "control_net": "enable",
+      "pipe": [
+        "2",
+        0
+      ],
+      "image": [
+        "22",
+        0
+      ],
+      "control_image": [
+        "79",
+        0
+      ],
+      "reference_image": [
+        "22",
+        0
+      ],
+      "ipadapter_image": [
+        "22",
+        1
+      ]
+    },
+    "class_type": "LCMLora_ipadapter"
+  },
+  "2": {
+    "inputs": {
+      "device": "GPU",
+      "tomesd_value": 0.6,
+      "ip_adapter_model": "ip-adapter_sd15.bin",
+      "reference_only": "enable",
+      "ip_adapter": "enable",
+      "control_net": "enable",
+      "model_name": "Juggernaut",
+      "controlnet_model": "cn_depth"
+    },
+    "class_type": "LCMLoraLoader_ipadapter"
+  },
+  "5": {
+    "inputs": {
+      "low_threshold": 100,
+      "high_threshold": 200,
+      "resolution": 512
+    },
+    "class_type": "CannyEdgePreprocessor"
+  },
+  "7": {
+    "inputs": {
+      "seed": 0,
+      "prompt": "",
+      "negative_prompt": "",
+      "steps": 4,
+      "width": 512,
+      "height": 512,
+      "cfg": 1.5,
+      "style_fidelity": 0.5,
+      "strength": 1,
+      "batch": 1,
+      "ipadapter_scale": 0.6,
+      "controlnet_conditioning_scale": 0.6,
+      "reference_only": "enable",
+      "ip_adapter": "enable",
+      "control_net": "enable",
+      "pipe": [
+        "2",
+        0
+      ],
+      "image": [
+        "22",
+        1
+      ],
+      "control_image": [
+        "80",
+        0
+      ],
+      "reference_image": [
+        "22",
+        1
+      ],
+      "ipadapter_image": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "LCMLora_ipadapter"
+  },
+  "11": {
+    "inputs": {
+      "low_threshold": 100,
+      "high_threshold": 200,
+      "resolution": 512
+    },
+    "class_type": "CannyEdgePreprocessor"
+  },
+  "13": {
+    "inputs": {
+      "image": [
+        "1",
+        0
+      ]
+    },
+    "class_type": "ImageOutputToComfyNodes"
+  },
+  "18": {
+    "inputs": {
+      "stitch": "right",
+      "feathering": 0,
+      "image_a": [
+        "22",
+        0
+      ],
+      "image_b": [
+        "22",
+        1
+      ]
+    },
+    "class_type": "Image Stitch"
+  },
+  "19": {
+    "inputs": {
+      "stitch": "bottom",
+      "feathering": 0,
+      "image_a": [
+        "18",
+        0
+      ],
+      "image_b": [
+        "20",
+        0
+      ]
+    },
+    "class_type": "Image Stitch"
+  },
+  "20": {
+    "inputs": {
+      "stitch": "right",
+      "feathering": 0,
+      "image_a": [
+        "13",
+        0
+      ],
+      "image_b": [
+        "21",
+        0
+      ]
+    },
+    "class_type": "Image Stitch"
+  },
+  "21": {
+    "inputs": {
+      "image": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "ImageOutputToComfyNodes"
+  },
+  "22": {
+    "inputs": {
+      "switch": "disable",
+      "image_1": [
+        "169",
+        0
+      ],
+      "image_2": [
+        "170",
+        0
+      ]
+    },
+    "class_type": "ImageSwitch"
+  },
+  "23": {
+    "inputs": {
+      "sf_1": 0.6,
+      "sf_2": 0.6,
+      "sf_3": 0.6,
+      "strength_1": 0.6,
+      "strength_2": 0.6,
+      "strength_3": 0.6,
+      "IPAScale_1": 0.6,
+      "IPAScale_2": 0.6,
+      "IPAScale_3": 0.6,
+      "CNScale_1": 0.6,
+      "CNScale_2": 0.6,
+      "CNScale_3": 0.6,
+      "setting": "v3"
+    },
+    "class_type": "SettingsSwitch"
+  },
+  "26": {
+    "inputs": {
+      "Number": 0.8
+    },
+    "class_type": "FloatNumber"
+  },
+  "27": {
+    "inputs": {
+      "Number": 0.8200000000000001
+    },
+    "class_type": "FloatNumber"
+  },
+  "28": {
+    "inputs": {
+      "Number": 0.3
+    },
+    "class_type": "FloatNumber"
+  },
+  "29": {
+    "inputs": {
+      "Number": 0.7000000000000001
+    },
+    "class_type": "FloatNumber"
+  },
+  "30": {
+    "inputs": {
+      "Number": 0.25
+    },
+    "class_type": "FloatNumber"
+  },
+  "31": {
+    "inputs": {
+      "Number": 0.05
+    },
+    "class_type": "FloatNumber"
+  },
+  "32": {
+    "inputs": {
+      "Number": 0.07
+    },
+    "class_type": "FloatNumber"
+  },
+  "33": {
+    "inputs": {
+      "Number": 0.08
+    },
+    "class_type": "FloatNumber"
+  },
+  "34": {
+    "inputs": {
+      "Number": 0.55
+    },
+    "class_type": "FloatNumber"
+  },
+  "35": {
+    "inputs": {
+      "Number": 0.1
+    },
+    "class_type": "FloatNumber"
+  },
+  "36": {
+    "inputs": {
+      "Number": 0.65
+    },
+    "class_type": "FloatNumber"
+  },
+  "37": {
+    "inputs": {
+      "Number": 0.9
+    },
+    "class_type": "FloatNumber"
+  },
+  "38": {
+    "inputs": {
+      "sf_1": 0.6,
+      "sf_2": 0.6,
+      "sf_3": 0.6,
+      "strength_1": 0.6,
+      "strength_2": 0.6,
+      "strength_3": 0.6,
+      "IPAScale_1": 0.6,
+      "IPAScale_2": 0.6,
+      "IPAScale_3": 0.6,
+      "CNScale_1": 0.6,
+      "CNScale_2": 0.6,
+      "CNScale_3": 0.6,
+      "setting": "v1"
+    },
+    "class_type": "SettingsSwitch"
+  },
+  "39": {
+    "inputs": {
+      "Number": 0.73
+    },
+    "class_type": "FloatNumber"
+  },
+  "40": {
+    "inputs": {
+      "Number": 0.2
+    },
+    "class_type": "FloatNumber"
+  },
+  "41": {
+    "inputs": {
+      "Number": 0.85
+    },
+    "class_type": "FloatNumber"
+  },
+  "42": {
+    "inputs": {
+      "Number": 0.72
+    },
+    "class_type": "FloatNumber"
+  },
+  "43": {
+    "inputs": {
+      "Number": 0.88
+    },
+    "class_type": "FloatNumber"
+  },
+  "44": {
+    "inputs": {
+      "Number": 0.1
+    },
+    "class_type": "FloatNumber"
+  },
+  "45": {
+    "inputs": {
+      "Number": 0.09
+    },
+    "class_type": "FloatNumber"
+  },
+  "46": {
+    "inputs": {
+      "Number": 0.85
+    },
+    "class_type": "FloatNumber"
+  },
+  "47": {
+    "inputs": {
+      "sf_1": 0.6,
+      "sf_2": 0.6,
+      "sf_3": 0.6,
+      "strength_1": 0.6,
+      "strength_2": 0.6,
+      "strength_3": 0.6,
+      "IPAScale_1": 0.6,
+      "IPAScale_2": 0.6,
+      "IPAScale_3": 0.6,
+      "CNScale_1": 0.6,
+      "CNScale_2": 0.6,
+      "CNScale_3": 0.6,
+      "setting": "v3"
+    },
+    "class_type": "SettingsSwitch"
+  },
+  "48": {
+    "inputs": {
+      "Number": 0.45
+    },
+    "class_type": "FloatNumber"
+  },
+  "49": {
+    "inputs": {
+      "Number": 0.8200000000000001
+    },
+    "class_type": "FloatNumber"
+  },
+  "50": {
+    "inputs": {
+      "Number": 0.96
+    },
+    "class_type": "FloatNumber"
+  },
+  "51": {
+    "inputs": {
+      "Number": 0.04
+    },
+    "class_type": "FloatNumber"
+  },
+  "59": {
+    "inputs": {
+      "Number": 0.99
+    },
+    "class_type": "FloatNumber"
+  },
+  "60": {
+    "inputs": {
+      "Number": 0.75
+    },
+    "class_type": "FloatNumber"
+  },
+  "61": {
+    "inputs": {
+      "Number": 0.8
+    },
+    "class_type": "FloatNumber"
+  },
+  "62": {
+    "inputs": {
+      "Number": 0.5
+    },
+    "class_type": "FloatNumber"
+  },
+  "64": {
+    "inputs": {
+      "Number": 0.06
+    },
+    "class_type": "FloatNumber"
+  },
+  "76": {
+    "inputs": {
+      "a": 6.28,
+      "bg_threshold": 0.1,
+      "resolution": 512
+    },
+    "class_type": "MiDaS-DepthMapPreprocessor"
+  },
+  "77": {
+    "inputs": {
+      "a": 6.28,
+      "bg_threshold": 0.1,
+      "resolution": 512
+    },
+    "class_type": "MiDaS-DepthMapPreprocessor"
+  },
+  "79": {
+    "inputs": {
+      "rm_nearest": 0,
+      "rm_background": 0,
+      "boost": "disable",
+      "resolution": 512,
+      "image": [
+        "22",
+        0
+      ]
+    },
+    "class_type": "LeReS-DepthMapPreprocessor"
+  },
+  "80": {
+    "inputs": {
+      "rm_nearest": 0,
+      "rm_background": 0,
+      "boost": "disable",
+      "resolution": 512,
+      "image": [
+        "22",
+        1
+      ]
+    },
+    "class_type": "LeReS-DepthMapPreprocessor"
+  },
+  "81": {
+    "inputs": {
+      "Number": 0.8
+    },
+    "class_type": "FloatNumber"
+  },
+  "83": {
+    "inputs": {
+      "seed": 0,
+      "prompt": "",
+      "negative_prompt": "",
+      "steps": 2,
+      "width": 512,
+      "height": 512,
+      "cfg": 1.5,
+      "style_fidelity": 0.5,
+      "strength": 1,
+      "batch": 1,
+      "ipadapter_scale": 0.6,
+      "controlnet_conditioning_scale": 0.6,
+      "reference_only": "enable",
+      "ip_adapter": "enable",
+      "control_net": "enable",
+      "pipe": [
+        "2",
+        0
+      ],
+      "image": [
+        "84",
+        0
+      ],
+      "control_image": [
+        "85",
+        0
+      ],
+      "reference_image": [
+        "84",
+        0
+      ],
+      "ipadapter_image": [
+        "22",
+        1
+      ]
+    },
+    "class_type": "LCMLora_ipadapter"
+  },
+  "84": {
+    "inputs": {
+      "image": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "ImageOutputToComfyNodes"
+  },
+  "85": {
+    "inputs": {
+      "rm_nearest": 0,
+      "rm_background": 0,
+      "boost": "disable",
+      "resolution": 512,
+      "image": [
+        "84",
+        0
+      ]
+    },
+    "class_type": "LeReS-DepthMapPreprocessor"
+  },
+  "86": {
+    "inputs": {
+      "Number": 0.5
+    },
+    "class_type": "FloatNumber"
+  },
+  "87": {
+    "inputs": {
+      "Number": 0.75
+    },
+    "class_type": "FloatNumber"
+  },
+  "88": {
+    "inputs": {
+      "Number": 0.28
+    },
+    "class_type": "FloatNumber"
+  },
+  "89": {
+    "inputs": {
+      "Number": 0.65
+    },
+    "class_type": "FloatNumber"
+  },
+  "92": {
+    "inputs": {
+      "number_type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000,
+      "seed": 595187789626548
+    },
+    "class_type": "Random Number"
+  },
+  "159": {
+    "inputs": {
+      "seed": 0,
+      "prompt": "",
+      "negative_prompt": "",
+      "steps": 4,
+      "width": 512,
+      "height": 512,
+      "cfg": 1.5,
+      "style_fidelity": 0.5,
+      "strength": 1,
+      "batch": 1,
+      "ipadapter_scale": 0.6,
+      "controlnet_conditioning_scale": 0.6,
+      "reference_only": "enable",
+      "ip_adapter": "enable",
+      "control_net": "enable",
+      "pipe": [
+        "2",
+        0
+      ],
+      "image": [
+        "160",
+        0
+      ],
+      "control_image": [
+        "161",
+        0
+      ],
+      "reference_image": [
+        "160",
+        0
+      ],
+      "ipadapter_image": [
+        "22",
+        0
+      ]
+    },
+    "class_type": "LCMLora_ipadapter"
+  },
+  "160": {
+    "inputs": {
+      "image": [
+        "83",
+        0
+      ]
+    },
+    "class_type": "ImageOutputToComfyNodes"
+  },
+  "161": {
+    "inputs": {
+      "rm_nearest": 0,
+      "rm_background": 0,
+      "boost": "disable",
+      "resolution": 512,
+      "image": [
+        "160",
+        0
+      ]
+    },
+    "class_type": "LeReS-DepthMapPreprocessor"
+  },
+  "162": {
+    "inputs": {
+      "Number": 0.5
+    },
+    "class_type": "FloatNumber"
+  },
+  "163": {
+    "inputs": {
+      "Number": 0.9
+    },
+    "class_type": "FloatNumber"
+  },
+  "164": {
+    "inputs": {
+      "Number": 0.28
+    },
+    "class_type": "FloatNumber"
+  },
+  "165": {
+    "inputs": {
+      "Number": 0.65
+    },
+    "class_type": "FloatNumber"
+  },
+  "166": {
+    "inputs": {
+      "filename_prefix": "ComfyUI",
+      "images": [
+        "159",
+        0
+      ]
+    },
+    "class_type": "SaveImage_LCM"
+  },
+  "169": {
+    "inputs": {
+      "mode": "resize",
+      "supersample": "true",
+      "resampling": "lanczos",
+      "rescale_factor": 2,
+      "resize_width": 512,
+      "resize_height": 512,
+      "image": [
+        "171",
+        0
+      ]
+    },
+    "class_type": "Image Resize"
+  },
+  "170": {
+    "inputs": {
+      "mode": "resize",
+      "supersample": "true",
+      "resampling": "lanczos",
+      "rescale_factor": 2,
+      "resize_width": 512,
+      "resize_height": 512,
+      "image": [
+        "172",
+        0
+      ]
+    },
+    "class_type": "Image Resize"
+  },
+  "171": {
+    "inputs": {
+      "image": "/home/mohammad/ComfyUI/custom_nodes/LCM_Inpaint-Outpaint_Comfy/mixture/image1.png",
+      "seed": 3521
+    },
+    "class_type": "LoadImageNode_LCM"
+  },
+  "172": {
+    "inputs": {
+      "image": "/home/mohammad/ComfyUI/custom_nodes/LCM_Inpaint-Outpaint_Comfy/mixture/image2.png",
+      "seed": 8874
+    },
+    "class_type": "LoadImageNode_LCM"
+  }
+}

@@ -1,0 +1,166 @@
+@keyframes changeprogressbar {
+    from{width: 30%;height: 10%;top: 85%;}
+    to{width: 40%;height: 5%;top: 80%;}
+}
+
+@keyframes progressbar {
+    0%{left: -5%;}
+    50%{left: 100%;}
+    100%{left:-5%;}
+}
+
+@keyframes appearcp {
+    from{top: 130%;}
+    to{top: 85%;}
+}
+
+@keyframes appearimg {
+    from{top: -30%;}
+    to{top: 30%;}
+}
+
+body{
+    background: linear-gradient(to bottom, #3B3486,#332941);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+img,canvas{
+    box-shadow: 10px 10px 10px black;
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    transform: translate(-50%,-50%);
+    visibility: hidden;
+}
+
+
+#cpcontainer{
+    position: fixed;
+    background: linear-gradient(to bottom, #F8E559 50%,#e2c90b 100%);
+    left: 50%;
+    top: 85%;
+    transform: translate(-50%,-50%);
+    border-radius: 10px;
+    width: 30%;
+    height: 10%;
+    box-shadow: 5px 5px 10px black;
+    overflow: hidden;
+    animation: appearcp 1s forwards;
+}
+
+#sticker div{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 150%;
+    font-weight: 1000;
+    color: #332941;
+    position: absolute;
+    left: 20%;
+    top: 50%;
+}
+
+#sticker{
+    position: absolute;
+    top: 50%;
+    left: 55%;
+    background-color: transparent;
+    width: 40%;
+    height: 80%;
+    cursor: pointer;
+}
+
+#cpcontainer *{
+    top: 50%;
+    transform: translate(0,-50%);
+}
+
+#inputimg{
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    transform: translate(-50%,-50%);
+    width: 50%;
+    height: 50%;
+    animation: appearimg 1s forwards;
+}
+
+#inp{
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#inplbl{
+    position: fixed;
+    background: grey;
+    left: 50%;
+    top: 85%;
+    transform: translate(-50%,-50%);
+    border-radius: 10px;
+    width: 100%;
+    height: 100%;
+    opacity: 0.25;
+}
+
+#settings{
+    position: absolute;
+    top: 50%;
+    left: 5%;
+    background-color: transparent;
+    width: 50%;
+    height: 80%;
+}
+
+.settings{
+    position: absolute;
+    top: 50%;
+    background-color: rgba(128, 128, 128, 0.2);
+    width: 20%;
+    height: 50%;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 1s;
+}
+
+.settings div{
+    position: absolute;
+    top: 50%;
+    left: 40%;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 150%;
+    font-weight: 1000;
+    color: #332941;
+
+}
+
+#setting1{
+    left: 5%;
+    background-color: rgba(128, 128, 128, 0.4);
+}
+
+#setting2{
+    left: 35%;
+}
+
+#setting3{
+    left: 65%;
+}
+
+.settings:hover{
+    background-color: rgba(128, 128, 128, 0.4);
+}
+
+#sticker:hover{
+    text-shadow: -5px -5px 0 white, 5px -5px 0 white, -5px 5px 0 white, 5px 5px 0 white;
+}
+
+#progressanimation{
+    position: absolute;
+    left: -5%;
+    top: 50%;
+    width: 22%;
+    height: 90%;
+    background: linear-gradient(to left,transparent,white,transparent);
+    opacity: 0.6;
+    visibility: hidden;
+}

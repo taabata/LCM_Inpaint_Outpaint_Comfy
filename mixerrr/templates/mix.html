@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="/static/mix.css">
+    </head>
+    <body>
+        <script src="/static/mix.js"></script>
+        <canvas id="canvas" width=512 height=512></canvas>
+        <img id="image" width="512" height="512" src="/static/images/test.png">
+        <div id="inputimg">
+            <label for="inp" id="inplbl"></label>
+            <input type="file" id="inp" onchange="changeimg(event);">
+        </div>
+        <div id="cpcontainer">
+            <div id="settings">
+                <div id="setting1" class="settings" onclick="select(event);">
+                    <div>1</div>
+                </div>
+                <div id="setting2" class="settings" onclick="select(event);">
+                    <div>2</div>
+                </div>
+                <div id="setting3" class="settings" onclick="select(event);">
+                    <div>3</div>
+                </div>
+            </div>
+            <div id="sticker" onclick="stickerize();">
+                <div>STICKERIZE</div>
+            </div>
+            <div id="progressanimation"></div>
+        </div>
+    </body>
+</html>
