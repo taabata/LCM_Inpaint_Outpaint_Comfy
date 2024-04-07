@@ -19,7 +19,7 @@ from .LCM.pipeline_cn import LatentConsistencyModelPipeline_controlnet
 from .LCM.stable_diffusion_reference_img2img import StableDiffusionImg2ImgPipeline_reference
 from .LCM.stable_diffusion_reference_img2img_controlnet import StableDiffusionControlNetImg2ImgPipeline_ref
 from .LCM.stable_diffusion_ipadapter_img2img_controlnet import StableDiffusionControlNetImg2ImgPipeline_ipadapter
-from diffusers import StableDiffusionControlNetImg2ImgPipeline,StableDiffusionXLPipeline, AutoPipelineForImage2Image,AutoencoderKL, UNet2DConditionModel, T2IAdapter, ControlNetModel, StableDiffusionPipeline, AutoencoderTiny, DiffusionPipeline, LCMScheduler, AutoPipelineForInpainting, StableDiffusionControlNetPipeline, StableDiffusionControlNetInpaintPipeline
+from diffusers import DDIMScheduler,StableDiffusionControlNetImg2ImgPipeline,StableDiffusionXLPipeline, AutoPipelineForImage2Image,AutoencoderKL, UNet2DConditionModel, T2IAdapter, ControlNetModel, StableDiffusionPipeline, AutoencoderTiny, DiffusionPipeline, LCMScheduler, AutoPipelineForInpainting, StableDiffusionControlNetPipeline, StableDiffusionControlNetInpaintPipeline
 from diffusers.pipelines.stable_diffusion import StableDiffusionImg2ImgPipeline
 from diffusers.utils import get_class_from_dynamic_module
 from transformers import CLIPTokenizer, CLIPTextModel, CLIPImageProcessor
@@ -2150,8 +2150,11 @@ class LCMLoraLoader_inpaint:
         except:
             mpath = folder_paths.get_folder_paths("controlnet")[0]+f"\{controlnet_model}"
         controlnet = ControlNetModel.from_pretrained(mpath)
-        path = Path(folder_paths.get_folder_paths("vae")[0]+"/taesd")
-        vae2 = AutoencoderTiny.from_pretrained(path, torch_device='cuda', torch_dtype=torch.float32)
+        try:
+            path = Path(folder_paths.get_folder_paths("vae")[0]+"/taesd")
+            vae2 = AutoencoderTiny.from_pretrained(path, torch_device='cuda', torch_dtype=torch.float32)
+        except:
+            vae2 = None
         if reference_only == "disable":
             pipe = LCM_lora_inpaint_ipadapter.from_pretrained(model_id,safety_checker=None,controlnet=controlnet,vae2 = vae2)
         else:
@@ -2310,7 +2313,158 @@ class LCMLora_inpaint:
                 res.append(images[0])                
             
         return (res,)
+    
 
+class ImageDims:
+    def __init__(self):
+        pass    
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "image": ("IMAGE", ),
+            }
+        }
+    RETURN_TYPES = ("NUMBER","NUMBER",)
+    FUNCTION = "mainfunc"
+
+    CATEGORY = "LCM_Nodes/nodes"
+
+    def mainfunc(self,image):        
+        img = image[0].numpy()
+        img = img*255.0
+        image = Image.fromarray(np.uint8(img))
+
+        return (image.size[0],image.size[1])
+
+class LCMLora_inpaintV2:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                "text": ("STRING", {"default": '', "multiline": True}),
+                "steps": ("INT", {
+                    "default": 4,
+                    "min": 0,
+                    "max": 360,
+                    "step": 1,
+                }),                
+                "width": ("NUMBER",),
+                "height": ("NUMBER",),
+                "cfg": ("FLOAT", {
+                    "default": 1.8,
+                    "min": 0,
+                    "max": 3.0,
+                    "step": 0.1,
+                }),
+                "mask": ("IMAGE", ),
+                "image": ("IMAGE", ),
+                "reference_image": ("IMAGE", ),
+                "reference_style_fidelity": ("FLOAT", {
+                    "default": 0.5,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                "pipe":("class",),
+                "batch": ("INT", {
+                    "default": 1,
+                    "min": 1,
+                    "max": 100,
+                    "step": 1,
+                }),
+                "strength": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                "prompt_weighting":(["disable","enable"],),
+                "controlnet_weight": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.1,
+                }),
+                "reference_only":(["disable","enable"],),
+                "ip_adapter":(["disable","enable"],),
+                "ipadapter_scale": ("FLOAT", {
+                    "default": 1.0,
+                    "min": 0.0,
+                    "max": 1.0,
+                    "step": 0.01,
+                }),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "mainfunc"
+
+    CATEGORY = "LCM_Nodes/nodes"
+
+    def mainfunc(self, text: str,steps: int,width,height,cfg:float,seed: int,image,pipe,ipadapter_scale,batch,reference_image,reference_style_fidelity,strength,prompt_weighting, controlnet_weight,mask,reference_only,ip_adapter):
+        width = int(width)
+        height = int(height)
+        
+        img = image[0].numpy()
+        img = img*255.0
+        image = Image.fromarray(np.uint8(img))
+        
+        img = mask[0].numpy()
+        img = img*255.0
+        mask = Image.fromarray(np.uint8(img)).convert("RGB")
+
+        img = reference_image[0].numpy()
+        img = img*255.0
+        reference_image = Image.fromarray(np.uint8(img)).convert("RGB")
+        
+        if ip_adapter == "enable":
+            ip_adapter_image = reference_image            
+            pipe.set_ip_adapter_scale(ipadapter_scale)
+        else:
+            ip_adapter_image = None
+ 
+               
+        res = []
+        prompt = text
+        if prompt_weighting == "enable":
+
+            compel_proc = Compel(tokenizer=pipe.tokenizer, text_encoder=pipe.text_encoder)
+            prompt_embeds = compel_proc(prompt)
+            for i in range(0,batch):
+                seed = random.randint(0,1000000000000000)
+                torch.manual_seed(seed)
+                if reference_only == "enable":
+                    images = pipe(
+                        prompt_embeds=prompt_embeds, num_inference_steps=steps, generator=generator, guidance_scale=cfg,width=width,height=height,image=image,controlnet_conditioning_scale=adapter_weight,mask_image=mask,control_image=None,strength=strength,ip_adapter_image= ip_adapter_image,ref_image=reference_image,style_fidelity=reference_style_fidelity,
+                        cross_attention_kwargs={"scale": 1}
+                    ).images
+                else:
+                    images = pipe(
+                        prompt_embeds=prompt_embeds, num_inference_steps=steps, generator=generator, guidance_scale=cfg,width=width,height=height,image=image,controlnet_conditioning_scale=adapter_weight,mask_image=mask,control_image=None,strength=strength,ip_adapter_image= ip_adapter_image,
+                        cross_attention_kwargs={"scale": 1}
+                    ).images
+                res.append(images[0])
+        else:
+            for i in range(0,batch):
+                seed = random.randint(0,1000000000000000)
+                generator = torch.manual_seed(seed)
+                if reference_only == "enable":
+                    images = pipe(prompt=prompt, num_inference_steps=steps, generator=generator, guidance_scale=cfg,width=width,height=height,image=image,controlnet_conditioning_scale=controlnet_weight,mask_image=mask,control_image=None,strength=strength,ip_adapter_image= ip_adapter_image,ref_image=reference_image,style_fidelity=reference_style_fidelity,cross_attention_kwargs={"scale": 1}).images
+                else:
+                    images = pipe(
+                        prompt=prompt, num_inference_steps=steps, generator=generator, guidance_scale=cfg,width=width,height=height,image=image,controlnet_conditioning_scale=controlnet_weight,mask_image=mask,control_image=None,strength=strength,ip_adapter_image= ip_adapter_image,
+                        cross_attention_kwargs={"scale": 1}
+                    ).images
+                res.append(images[0])                
+            
+        return (res,)
+        
 class LCMLoader_SDTurbo:
     def __init__(self):
         pass
@@ -2767,6 +2921,7 @@ class LCMLoraLoader_ipadapter:
                 "control_net":(["disable","enable"],),
                 "model_name":([i for i in os.listdir(folder_paths.get_folder_paths("diffusers")[0]) if os.path.isdir(folder_paths.get_folder_paths("diffusers")[0]+f"/{i}") or  os.path.isdir(folder_paths.get_folder_paths("diffusers")[0]+f"\{i}")],),
                 "controlnet_model":([i for i in os.listdir(folder_paths.get_folder_paths("controlnet")[0]) if os.path.isdir(folder_paths.get_folder_paths("controlnet")[0]+f"/{i}") or  os.path.isdir(folder_paths.get_folder_paths("controlnet")[0]+f"\{i}")],),
+                "LCM_enable":(["disable","enable"],),
 
             }
         }
@@ -2775,7 +2930,7 @@ class LCMLoraLoader_ipadapter:
 
     CATEGORY = "LCM_Nodes/nodes"
 
-    def mainfunc(self,device,tomesd_value,ip_adapter_model,model_name,reference_only,ip_adapter,controlnet_model,control_net):        
+    def mainfunc(self,device,tomesd_value,ip_adapter_model,model_name,reference_only,ip_adapter,controlnet_model,control_net,LCM_enable):        
         try:          
             model_id = folder_paths.get_folder_paths("diffusers")[0]+f"/{model_name}"
         except:
@@ -2785,37 +2940,49 @@ class LCMLoraLoader_ipadapter:
         except:
             mpath = folder_paths.get_folder_paths("controlnet")[0]+f"\{controlnet_model}"
         controlnet = ControlNetModel.from_pretrained(mpath)
-
+        try:
+            path = Path(folder_paths.get_folder_paths("vae")[0]+"/taesd")
+            vae2 = AutoencoderTiny.from_pretrained(path, torch_device='cuda', torch_dtype=torch.float32)
+        except:
+            vae2 = None
         if control_net == "disable":
             if ip_adapter == "enable" and reference_only=="disable":
                 pipe = StableDiffusionImg2ImgPipeline.from_pretrained(model_id,safety_checker=None)
                 pipe.load_ip_adapter(Path(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter"), subfolder="models", weight_name=ip_adapter_model)
             elif reference_only == "disable":
                 pipe = StableDiffusionImg2ImgPipeline.from_pretrained(model_id,safety_checker=None)
+            elif reference_only == "enable":
+                pipe = StableDiffusionImg2ImgPipeline_reference.from_pretrained(model_id,safety_checker=None)
             else:
                 pipe = StableDiffusionImg2ImgPipeline_reference.from_pretrained(model_id,safety_checker=None)
                 pipe.load_ip_adapter(Path(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter"), subfolder="models", weight_name=ip_adapter_model)
         else:
             if ip_adapter == "enable" and reference_only=="disable":
-                pipe = StableDiffusionControlNetImg2ImgPipeline_ipadapter.from_pretrained(model_id,safety_checker=None,controlnet=controlnet)
+                #pipe = StableDiffusionControlNetImg2ImgPipeline_ipadapter.from_pretrained(model_id,safety_checker=None,controlnet=controlnet)
+                pipe = StableDiffusionControlNetImg2ImgPipeline_ref.from_pretrained(model_id,safety_checker=None,controlnet=controlnet,vae2=vae2)
                 pipe.load_ip_adapter(Path(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter"), subfolder="models", weight_name=ip_adapter_model)
             elif reference_only == "disable":
-                pipe = StableDiffusionControlNetImg2ImgPipeline.from_pretrained(model_id,safety_checker=None,controlnet=controlnet)
+                #pipe = StableDiffusionControlNetImg2ImgPipeline.from_pretrained(model_id,safety_checker=None,controlnet=controlnet)
+                pipe = StableDiffusionControlNetImg2ImgPipeline_ref.from_pretrained(model_id,safety_checker=None,controlnet=controlnet,vae2=vae2)
+            elif ip_adapter == "disable" and reference_only == "enable":
+                #pipe = StableDiffusionControlNetImg2ImgPipeline_ref.from_pretrained(model_id,safety_checker=None, controlnet=controlnet,vae2=vae2)
+                pipe = StableDiffusionControlNetImg2ImgPipeline_ref.from_pretrained(model_id,safety_checker=None,controlnet=controlnet,vae2=vae2)
             else:
-                pipe = StableDiffusionControlNetImg2ImgPipeline_ref.from_pretrained(model_id,safety_checker=None,controlnet=controlnet)
+                pipe = StableDiffusionControlNetImg2ImgPipeline_ref.from_pretrained(model_id,safety_checker=None,controlnet=controlnet,vae2=vae2)
                 pipe.load_ip_adapter(Path(folder_paths.get_folder_paths("controlnet")[0]+"/IPAdapter"), subfolder="models", weight_name=ip_adapter_model)
         
         
-        
-        # set scheduler
-        pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config)
-        
-        # load LCM-LoRA
-        try:
-            pipe.load_lora_weights(folder_paths.get_folder_paths("loras")[0]+"/pytorch_lora_weights.safetensors")
-        except:
-            pipe.load_lora_weights(folder_paths.get_folder_paths("loras")[0]+"\pytorch_lora_weights.safetensors")
-        pipe.fuse_lora()
+        if LCM_enable == "enable":
+            # set scheduler
+            pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config)
+            # load LCM-LoRA
+            try:
+                pipe.load_lora_weights(folder_paths.get_folder_paths("loras")[0]+"/pytorch_lora_weights.safetensors")
+            except:
+                pipe.load_lora_weights(folder_paths.get_folder_paths("loras")[0]+"\pytorch_lora_weights.safetensors")
+            pipe.fuse_lora()
+        else:
+            pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config)
         tomesd.apply_patch(pipe, ratio=tomesd_value)
         if device == "GPU":
             pipe.enable_sequential_cpu_offload()
@@ -2934,20 +3101,20 @@ class LCMLora_ipadapter:
         for m in range(batch):
             if control_net == "disable":
                 if ip_adapter == "enable" and reference_only=="disable":
-                    images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg,ip_adapter_image = ipadapter_image).images
+                    images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg,ip_adapter_image = ipadapter_image,cn_enabled = False,ref_enabled = False).images
                 elif reference_only == "disable":
-                    images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg).images      
+                    images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg,cn_enabled = False,ref_enabled = False,ip_enabled = False).images      
                 elif reference_only=="enable" and ip_adapter == "disable":
-                    images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg,ref_image=reference_image,style_fidelity=style_fidelity).images      
+                    images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg,ref_image=reference_image,style_fidelity=style_fidelity,cn_enabled = False,ip_enabled = False).images      
                 else:
-                    images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg,ip_adapter_image = ipadapter_image,ref_image=reference_image,style_fidelity=style_fidelity).images      
+                    images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg,ip_adapter_image = ipadapter_image,ref_image=reference_image,style_fidelity=style_fidelity,cn_enabled = False).images      
             else:
                 if ip_adapter == "enable" and reference_only=="disable":
-                    images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg,ip_adapter_image = ipadapter_image,controlnet_conditioning_scale=controlnet_conditioning_scale,control_image=control_image).images
+                    images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg,ip_adapter_image = ipadapter_image,controlnet_conditioning_scale=controlnet_conditioning_scale,control_image=control_image,ref_enabled = False).images
                 elif reference_only == "disable":
-                    images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg,controlnet_conditioning_scale=controlnet_conditioning_scale,control_image=control_image).images      
+                    images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg,controlnet_conditioning_scale=controlnet_conditioning_scale,control_image=control_image,ref_enabled = False,ip_enabled = False).images      
                 elif reference_only=="enable" and ip_adapter == "disable":
-                    images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg,ref_image=reference_image,style_fidelity=style_fidelity,control_image=control_image,controlnet_conditioning_scale=controlnet_conditioning_scale).images      
+                    images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg,ref_image=reference_image,style_fidelity=style_fidelity,control_image=control_image,controlnet_conditioning_scale=controlnet_conditioning_scale,ip_enabled = False).images      
                 else:
                     images = pipe(prompt,negative_prompt=negative_prompt,width=width,height=height, image=image, num_inference_steps=steps, strength=strength, guidance_scale=cfg,ip_adapter_image = ipadapter_image,ref_image=reference_image,style_fidelity=style_fidelity,controlnet_conditioning_scale=controlnet_conditioning_scale,control_image=control_image).images      
             
@@ -2955,7 +3122,7 @@ class LCMLora_ipadapter:
             res.append(images[0])                
             
         return (res,)
-
+        
 class ImageSwitch:
     @classmethod
     def INPUT_TYPES(s):
@@ -3149,6 +3316,71 @@ class SaveImage_Canvas:
             
         return { "ui": { "images": results } }
 
+######Copied from WAS_Node_Suite
+class ImageResize:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "mode": (["rescale", "resize"],),
+                "supersample": (["true", "false"],),
+                "resampling": (["lanczos", "nearest", "bilinear", "bicubic"],),
+                "rescale_factor": ("FLOAT", {"default": 2, "min": 0.01, "max": 16.0, "step": 0.01}),
+                "resize_width": ("NUMBER",),
+                "resize_height": ("NUMBER",),
+            },
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "image_rescale"
+
+    CATEGORY = "image"
+
+    def image_rescale(self, image, mode="rescale", supersample='true', resampling="lanczos", rescale_factor=2, resize_width=1024, resize_height=1024):
+        scaled_images = []
+        for img in image:
+            scaled_images.append(pil2tensor(self.apply_resize_image(tensor2pil(img), mode, supersample, rescale_factor, resize_width, resize_height, resampling)))
+        scaled_images = torch.cat(scaled_images, dim=0)
+            
+        return (scaled_images, )
+
+    def apply_resize_image(self, image: Image.Image, mode='scale', supersample='true', factor: int = 2, width: int = 1024, height: int = 1024, resample='bicubic'):
+
+        # Get the current width and height of the image
+        current_width, current_height = image.size
+
+        # Calculate the new width and height based on the given mode and parameters
+        if mode == 'rescale':
+            new_width, new_height = int(
+                current_width * factor), int(current_height * factor)
+        else:
+            new_width = width if width % 8 == 0 else width + (8 - width % 8)
+            new_height = height if height % 8 == 0 else height + \
+                (8 - height % 8)
+
+        # Define a dictionary of resampling filters
+        resample_filters = {
+            'nearest': 0,
+            'bilinear': 2,
+            'bicubic': 3,
+            'lanczos': 1
+        }
+        
+        # Apply supersample
+        if supersample == 'true':
+            image = image.resize((new_width * 8, new_height * 8), resample=Image.Resampling(resample_filters[resample]))
+
+        # Resize the image using the given resampling filter
+        resized_image = image.resize((new_width, new_height), resample=Image.Resampling(resample_filters[resample]))
+        
+        return resized_image
+
+
+
 NODE_CLASS_MAPPINGS = {
     "LCMGenerate": LCMGenerate,
     "LoadImageNode_LCM":LoadImageNode_LCM,
@@ -3188,5 +3420,8 @@ NODE_CLASS_MAPPINGS = {
     "LCMLora_ipadapter":LCMLora_ipadapter,
     "LCMLoraLoader_ipadapter":LCMLoraLoader_ipadapter,
     "SaveImage_Canvas":SaveImage_Canvas,
-    "ComfyNodesToSaveCanvas":ComfyNodesToSaveCanvas
+    "ComfyNodesToSaveCanvas":ComfyNodesToSaveCanvas,
+    "LCMLora_inpaintV2":LCMLora_inpaintV2,
+    "ImageDims":ImageDims,
+    "ImageResize":ImageResize
 }
