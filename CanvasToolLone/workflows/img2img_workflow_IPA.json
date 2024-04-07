@@ -27,8 +27,8 @@
     "inputs": {
       "device": "GPU",
       "tomesd_value": 0.6,
-      "ip_adapter": "disable",
-      "reference_only": "enable",
+      "ip_adapter": "enable",
+      "reference_only": "disable",
       "ip_adapter_model": "ip-adapter_sd15.bin",
       "model_name": "Juggernaut",
       "controlnet_model": "cn_inpaint"
@@ -79,15 +79,15 @@
     "inputs": {
       "seed": 0,
       "text": "",
-      "steps": 8,
+      "steps": 4,
       "cfg": 1.5,
-      "reference_style_fidelity": 0.30000000000000004,
+      "reference_style_fidelity": 0.1,
       "batch": 1,
       "strength": 0.5,
       "prompt_weighting": "disable",
       "controlnet_weight": 1,
-      "reference_only": "enable",
-      "ip_adapter": "disable",
+      "reference_only": "disable",
+      "ip_adapter": "enable",
       "ipadapter_scale": 0.25,
       "width": [
         "31",

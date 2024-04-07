@@ -1,6 +1,7 @@
 import torch
 from PIL import Image
-import struct
+import struct, io, base64, json
+from urllib import request
 import numpy as np
 from comfy.cli_args import args, LatentPreviewMethod
 from comfy.taesd.taesd import TAESD
@@ -29,8 +30,26 @@ class TAESDPreviewerImpl(LatentPreviewer):
         x_sample = x_sample.astype(np.uint8)
 
         preview_image = Image.fromarray(x_sample)
-        p = Path(folder_paths.get_folder_paths("custom_nodes")[0]+f"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/taesd.png")
-        preview_image.save(p)
+        image =preview_image
+        try:
+            buf = io.BytesIO()
+            image.save(buf, format='PNG')
+            byte_im = buf.getvalue()
+            byte_im = base64.b64encode(byte_im).decode('utf-8')
+            byte_im = f"data:image/png;base64,{byte_im}"
+            p = {
+                "data":{
+                            "img":byte_im,
+                            "width":image.size[0],
+                            "height":image.size[1]
+                        }
+            }
+            data = json.dumps(p).encode('utf-8')
+            req =  request.Request("http://localhost:5000/settaesd", data=data)
+            req.add_header("Content-Type", "application/json")
+            request.urlopen(req)
+        except Exception as e: 
+            print(e)
         return preview_image
 
 

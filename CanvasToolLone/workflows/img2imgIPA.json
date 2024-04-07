@@ -1,0 +1,102 @@
+{
+  "1": {
+    "inputs": {
+      "seed": 0
+    },
+    "class_type": "OutpaintCanvasTool"
+  },
+  "2": {
+    "inputs": {
+      "filename_prefix": "ComfyUI",
+      "images": [
+        "6",
+        0
+      ]
+    },
+    "class_type": "SaveImage_Canvas"
+  },
+  "3": {
+    "inputs": {
+      "seed": 0,
+      "prompt": "",
+      "negative_prompt": "",
+      "steps": 8,
+      "width": 512,
+      "height": 512,
+      "cfg": 1,
+      "style_fidelity": 0.5,
+      "strength": 0.55,
+      "batch": 1,
+      "ipadapter_scale": 1,
+      "controlnet_conditioning_scale": 1,
+      "reference_only": "disable",
+      "ip_adapter": "enable",
+      "control_net": "enable",
+      "pipe": [
+        "4",
+        0
+      ],
+      "image": [
+        "1",
+        0
+      ],
+      "control_image": [
+        "5",
+        0
+      ],
+      "reference_image": [
+        "1",
+        2
+      ],
+      "ipadapter_image": [
+        "1",
+        2
+      ]
+    },
+    "class_type": "LCMLora_ipadapter"
+  },
+  "4": {
+    "inputs": {
+      "device": "GPU",
+      "tomesd_value": 0.6,
+      "ip_adapter_model": "ip-adapter_sd15.bin",
+      "reference_only": "enable",
+      "ip_adapter": "enable",
+      "control_net": "enable",
+      "model_name": "Juggernaut",
+      "controlnet_model": "cn_canny",
+      "LCM_enable": "enable"
+    },
+    "class_type": "LCMLoraLoader_ipadapter"
+  },
+  "5": {
+    "inputs": {
+      "low_threshold": 100,
+      "high_threshold": 200,
+      "resolution": 512,
+      "image": [
+        "1",
+        0
+      ]
+    },
+    "class_type": "CannyEdgePreprocessor"
+  },
+  "6": {
+    "inputs": {
+      "image": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "stitch"
+  },
+  "7": {
+    "inputs": {
+      "image": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "ImageOutputToComfyNodes"
+  }
+}

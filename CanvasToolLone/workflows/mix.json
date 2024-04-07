@@ -1,0 +1,325 @@
+{
+  "176": {
+    "inputs": {
+      "device": "GPU",
+      "tomesd_value": 0.6,
+      "ip_adapter_model": "ip-adapter_sd15.bin",
+      "reference_only": "enable",
+      "ip_adapter": "enable",
+      "control_net": "enable",
+      "model_name": "Juggernaut",
+      "controlnet_model": "cn_depth",
+      "LCM_enable": "enable"
+    },
+    "class_type": "LCMLoraLoader_ipadapter"
+  },
+  "178": {
+    "inputs": {
+      "image": [
+        "188",
+        0
+      ]
+    },
+    "class_type": "ImageOutputToComfyNodes"
+  },
+  "183": {
+    "inputs": {
+      "mode": "resize",
+      "supersample": "true",
+      "resampling": "lanczos",
+      "rescale_factor": 2,
+      "resize_width": 512,
+      "resize_height": 512,
+      "image": [
+        "209",
+        0
+      ]
+    },
+    "class_type": "Image Resize"
+  },
+  "184": {
+    "inputs": {
+      "mode": "resize",
+      "supersample": "true",
+      "resampling": "lanczos",
+      "rescale_factor": 2,
+      "resize_width": 512,
+      "resize_height": 512,
+      "image": [
+        "209",
+        2
+      ]
+    },
+    "class_type": "Image Resize"
+  },
+  "185": {
+    "inputs": {
+      "images": [
+        "187",
+        0
+      ]
+    },
+    "class_type": "PreviewImage"
+  },
+  "186": {
+    "inputs": {
+      "images": [
+        "187",
+        1
+      ]
+    },
+    "class_type": "PreviewImage"
+  },
+  "187": {
+    "inputs": {
+      "switch": "disable",
+      "image_1": [
+        "183",
+        0
+      ],
+      "image_2": [
+        "184",
+        0
+      ]
+    },
+    "class_type": "ImageSwitch"
+  },
+  "188": {
+    "inputs": {
+      "seed": 302407027545540,
+      "prompt": "",
+      "negative_prompt": "",
+      "steps": 8,
+      "width": 512,
+      "height": 512,
+      "cfg": 1.5,
+      "style_fidelity": 0.3,
+      "strength": 0.45,
+      "batch": 1,
+      "ipadapter_scale": 1,
+      "controlnet_conditioning_scale": 1,
+      "reference_only": "enable",
+      "ip_adapter": "enable",
+      "control_net": "enable",
+      "pipe": [
+        "176",
+        0
+      ],
+      "image": [
+        "187",
+        0
+      ],
+      "control_image": [
+        "189",
+        0
+      ],
+      "reference_image": [
+        "187",
+        1
+      ],
+      "ipadapter_image": [
+        "187",
+        0
+      ]
+    },
+    "class_type": "LCMLora_ipadapter"
+  },
+  "189": {
+    "inputs": {
+      "rm_nearest": 0,
+      "rm_background": 0,
+      "boost": "disable",
+      "resolution": 512,
+      "image": [
+        "187",
+        0
+      ]
+    },
+    "class_type": "LeReS-DepthMapPreprocessor"
+  },
+  "190": {
+    "inputs": {
+      "images": [
+        "178",
+        0
+      ]
+    },
+    "class_type": "PreviewImage"
+  },
+  "191": {
+    "inputs": {
+      "seed": 109856558783046,
+      "prompt": "",
+      "negative_prompt": "",
+      "steps": 6,
+      "width": 512,
+      "height": 512,
+      "cfg": 1.5,
+      "style_fidelity": 0.5,
+      "strength": 0.5,
+      "batch": 1,
+      "ipadapter_scale": 1,
+      "controlnet_conditioning_scale": 0.35000000000000003,
+      "reference_only": "enable",
+      "ip_adapter": "enable",
+      "control_net": "enable",
+      "pipe": [
+        "176",
+        0
+      ],
+      "image": [
+        "178",
+        0
+      ],
+      "control_image": [
+        "192",
+        0
+      ],
+      "reference_image": [
+        "178",
+        0
+      ],
+      "ipadapter_image": [
+        "187",
+        1
+      ]
+    },
+    "class_type": "LCMLora_ipadapter"
+  },
+  "192": {
+    "inputs": {
+      "rm_nearest": 0,
+      "rm_background": 0,
+      "boost": "disable",
+      "resolution": 512,
+      "image": [
+        "178",
+        0
+      ]
+    },
+    "class_type": "LeReS-DepthMapPreprocessor"
+  },
+  "193": {
+    "inputs": {
+      "image": [
+        "191",
+        0
+      ]
+    },
+    "class_type": "ImageOutputToComfyNodes"
+  },
+  "194": {
+    "inputs": {
+      "images": [
+        "193",
+        0
+      ]
+    },
+    "class_type": "PreviewImage"
+  },
+  "195": {
+    "inputs": {
+      "image": [
+        "196",
+        0
+      ]
+    },
+    "class_type": "ImageOutputToComfyNodes"
+  },
+  "196": {
+    "inputs": {
+      "seed": 612916373693137,
+      "prompt": "",
+      "negative_prompt": "",
+      "steps": 8,
+      "width": 512,
+      "height": 512,
+      "cfg": 1.5,
+      "style_fidelity": 0.3,
+      "strength": 0.45,
+      "batch": 1,
+      "ipadapter_scale": 1,
+      "controlnet_conditioning_scale": 1,
+      "reference_only": "enable",
+      "ip_adapter": "enable",
+      "control_net": "enable",
+      "pipe": [
+        "176",
+        0
+      ],
+      "image": [
+        "193",
+        0
+      ],
+      "control_image": [
+        "197",
+        0
+      ],
+      "reference_image": [
+        "187",
+        1
+      ],
+      "ipadapter_image": [
+        "193",
+        0
+      ]
+    },
+    "class_type": "LCMLora_ipadapter"
+  },
+  "197": {
+    "inputs": {
+      "rm_nearest": 0,
+      "rm_background": 0,
+      "boost": "disable",
+      "resolution": 512,
+      "image": [
+        "193",
+        0
+      ]
+    },
+    "class_type": "LeReS-DepthMapPreprocessor"
+  },
+  "198": {
+    "inputs": {
+      "images": [
+        "195",
+        0
+      ]
+    },
+    "class_type": "PreviewImage"
+  },
+  "209": {
+    "inputs": {
+      "seed": 0
+    },
+    "class_type": "OutpaintCanvasTool"
+  },
+  "210": {
+    "inputs": {
+      "filename_prefix": "ComfyUI",
+      "images": [
+        "211",
+        0
+      ]
+    },
+    "class_type": "SaveImage_Canvas"
+  },
+  "211": {
+    "inputs": {
+      "image": [
+        "212",
+        0
+      ]
+    },
+    "class_type": "stitch"
+  },
+  "212": {
+    "inputs": {
+      "image": [
+        "196",
+        0
+      ]
+    },
+    "class_type": "ImageOutputToComfyNodes"
+  }
+}

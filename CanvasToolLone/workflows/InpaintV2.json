@@ -1,0 +1,260 @@
+{
+  "13": {
+    "inputs": {
+      "upscale_method": "bilinear",
+      "scale_by": 0.5,
+      "image": [
+        "49",
+        0
+      ]
+    },
+    "class_type": "ImageScaleBy"
+  },
+  "30": {
+    "inputs": {
+      "upscale_method": "bilinear",
+      "scale_by": 0.5,
+      "image": [
+        "91",
+        0
+      ]
+    },
+    "class_type": "ImageScaleBy"
+  },
+  "31": {
+    "inputs": {
+      "upscale_method": "bilinear",
+      "scale_by": 0.5,
+      "image": [
+        "91",
+        1
+      ]
+    },
+    "class_type": "ImageScaleBy"
+  },
+  "49": {
+    "inputs": {
+      "upscale_model": [
+        "50",
+        0
+      ],
+      "image": [
+        "84",
+        0
+      ]
+    },
+    "class_type": "ImageUpscaleWithModel"
+  },
+  "50": {
+    "inputs": {
+      "model_name": "RealESRGAN_x4plus.pth"
+    },
+    "class_type": "UpscaleModelLoader"
+  },
+  "55": {
+    "inputs": {
+      "force_resize_width": 0,
+      "force_resize_height": 0,
+      "image": [
+        "13",
+        0
+      ],
+      "mask": [
+        "59",
+        0
+      ]
+    },
+    "class_type": "Cut By Mask"
+  },
+  "59": {
+    "inputs": {
+      "padding": 32,
+      "constraints": "multiple_of",
+      "constraint_x": 64,
+      "constraint_y": 64,
+      "min_width": 512,
+      "min_height": 512,
+      "batch_behavior": "match_ratio",
+      "mask": [
+        "91",
+        1
+      ]
+    },
+    "class_type": "Mask To Region"
+  },
+  "83": {
+    "inputs": {
+      "device": "GPU",
+      "tomesd_value": 0.6,
+      "ip_adapter": "enable",
+      "reference_only": "disable",
+      "ip_adapter_model": "ip-adapter_sd15.bin",
+      "model_name": "Juggernaut",
+      "controlnet_model": "cn_inpaint"
+    },
+    "class_type": "LCMLoraLoader_inpaint"
+  },
+  "84": {
+    "inputs": {
+      "image": [
+        "111",
+        0
+      ]
+    },
+    "class_type": "ImageOutputToComfyNodes"
+  },
+  "86": {
+    "inputs": {
+      "image": [
+        "114",
+        0
+      ]
+    },
+    "class_type": "ImageOutputToComfyNodes"
+  },
+  "87": {
+    "inputs": {
+      "width": 512,
+      "height": 512,
+      "red": 255,
+      "green": 255,
+      "blue": 255
+    },
+    "class_type": "Image Blank"
+  },
+  "91": {
+    "inputs": {
+      "seed": 1151082822
+    },
+    "class_type": "OutpaintCanvasTool"
+  },
+  "92": {
+    "inputs": {
+      "image": [
+        "86",
+        0
+      ]
+    },
+    "class_type": "stitch"
+  },
+  "93": {
+    "inputs": {
+      "filename_prefix": "ComfyUI",
+      "images": [
+        "92",
+        0
+      ]
+    },
+    "class_type": "SaveImage_Canvas"
+  },
+  "111": {
+    "inputs": {
+      "seed": 6332438973,
+      "text": "",
+      "steps": 4,
+      "cfg": 1.8,
+      "reference_style_fidelity": 0.5,
+      "batch": 1,
+      "strength": 1,
+      "prompt_weighting": "disable",
+      "controlnet_weight": 1,
+      "reference_only": "disable",
+      "ip_adapter": "enable",
+      "ipadapter_scale": 1,
+      "width": [
+        "112",
+        0
+      ],
+      "height": [
+        "112",
+        1
+      ],
+      "mask": [
+        "31",
+        0
+      ],
+      "image": [
+        "30",
+        0
+      ],
+      "reference_image": [
+        "91",
+        2
+      ],
+      "pipe": [
+        "83",
+        0
+      ]
+    },
+    "class_type": "LCMLora_inpaintV2"
+  },
+  "112": {
+    "inputs": {
+      "image": [
+        "30",
+        0
+      ]
+    },
+    "class_type": "ImageDims"
+  },
+  "113": {
+    "inputs": {
+      "image": [
+        "55",
+        0
+      ]
+    },
+    "class_type": "ImageDims"
+  },
+  "114": {
+    "inputs": {
+      "seed": 2210654929,
+      "text": "",
+      "steps": 8,
+      "cfg": 1.8,
+      "reference_style_fidelity": 0.5,
+      "batch": 1,
+      "strength": 0.4,
+      "prompt_weighting": "disable",
+      "controlnet_weight": 1,
+      "reference_only": "disable",
+      "ip_adapter": "enable",
+      "ipadapter_scale": 1,
+      "width": [
+        "113",
+        0
+      ],
+      "height": [
+        "113",
+        1
+      ],
+      "mask": [
+        "87",
+        0
+      ],
+      "image": [
+        "55",
+        0
+      ],
+      "reference_image": [
+        "55",
+        0
+      ],
+      "pipe": [
+        "83",
+        0
+      ]
+    },
+    "class_type": "LCMLora_inpaintV2"
+  },
+  "115": {
+    "inputs": {
+      "filename_prefix": "ComfyUI",
+      "images": [
+        "55",
+        0
+      ]
+    },
+    "class_type": "SaveImage"
+  }
+}

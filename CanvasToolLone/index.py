@@ -19,62 +19,25 @@ def stopprocess():
         os.kill(int(pid), SIGABRT)
     return "none"
 from pathlib import Path
-import argparse
 import numpy as np
-parser = argparse.ArgumentParser()
-parser.add_argument("-s","--same")
-parser.add_argument("-p","--path")
-args = parser.parse_args()
 
+
+tt = ""
+genflag = False
+sharedata = {
+    "savedata":"",
+    "imgs":{}
+}
 
 app = Flask(__name__)
-data = {
-    "lastimage":"",
-    "done":"n"
-}
-json_object = json.dumps(data, indent=4)
-path = Path("./lastimage.json")
-with open(path, "w") as outfile:
-    outfile.write(json_object)
+
 image = ""
-if args.same == "yes":
-    path = Path("./lastimage.json")
-    with open(path,"r") as filename:
-        image = Image.open(json.load(filename)["lastimage"])
 
-        w = str(int(float(image.size[0])))
-        h = str(int(float(image.size[1])))
-
-try:
-    path = Path("./data.json")
-    with open(path,"r") as filename:
-        bs = str(json.load(filename)["savedata"]["boxsz"])
-        pixels = json.load(filename)["savedata"]["pxlsarray"]
-        if pixels != "":
-            for i in range(0,len(pixels)):
-                for j in range(0,len(pixels[i])):
-                    pixels[i][j] = tuple(pixels[i][j])
-                    
-            
-            array = np.array(pixels, dtype=np.uint8)
-            image = Image.fromarray(array)
-            new_image.save('erased.png')
-except:
-    pass
 bs = "256"
-if args.same == "yes":
-    buf = io.BytesIO()
-    image.save(buf, format='PNG')
-    byte_im = buf.getvalue()
-    byte_im = base64.b64encode(byte_im).decode('utf-8')
-    byte_im = f"data:image/png;base64,{byte_im}"
 
 @app.route("/")
 def index():
-    if args.same == "yes":
-        return render_template('index.html',byte_im=byte_im,w=w,h=h,bs=bs)
-    else:
-        return render_template('index.html',byte_im="",w="",h="",bs=bs)
+    return render_template('index.html',byte_im="",w="",h="",bs=bs)
 
 
 @app.route('/favicon.ico')
@@ -85,29 +48,54 @@ def favicon():
 @app.route("/grabwfsmodels",methods=['GET', 'POST','DELETE'])
 def grabwfsmodels():
     path = Path('../../../models/diffusers')
-    models = [i for i in os.listdir(path) if os.path.isdir(os.path.join(path,i))]
+    models = [i for i in sorted(os.listdir(path)) if os.path.isdir(os.path.join(path,i))]
     path = Path('../../../models/checkpoints')
-    ckpts = [i for i in os.listdir(path) if i.endswith((".safetensors", ".ckpt"))]
+    ckpts = [i for i in sorted(os.listdir(path)) if i.endswith((".safetensors", ".ckpt"))]
     models += ckpts
     path = Path('./workflows')
-    wfs = os.listdir(path)
+    wfs = sorted(os.listdir(path))
+    wfs = [i.replace(".json","") for i in wfs]
     return{"models":models,"wfs":wfs}
 
 @app.route("/cancelgen",methods=['GET', 'POST','DELETE'])
 def cancelgen():
-    data = {
-        "lastimage":f"{os.path.abspath(os.path.join(os.path.join(os.path.realpath(__file__), os.pardir), os.pardir))}/CanvasToolLone/cropped.png",
-        "done":"y"
-    }
-    json_object = json.dumps(data, indent=4)
-    path = Path("./lastimage.json")
-    with open(path, "w") as outfile:
-        outfile.write(json_object)
+    global genflag
+    genflag = True
+    return{}
+
+@app.route("/saveimg",methods=['GET', 'POST','DELETE'])
+def saveimg():
+    pixels = request.json["pixels"]
+    if pixels != "":
+        for i in range(0,len(pixels)):
+            for j in range(0,len(pixels[i])):
+                pixels[i][j] = tuple(pixels[i][j])
+                
+        
+        array = np.array(pixels, dtype=np.uint8)
+        image = Image.fromarray(array)
+        sharedata["imgs"]["image"] = json.dumps(np.array(image).tolist())
+        sharedata["imgs"]["mask"] = json.dumps(np.array(image).tolist())
+        sharedata["imgs"]["reference"] = json.dumps(np.array(image).tolist())
+        wf = "saveimg.json"
+        def queue_prompt(prompt_workflow):
+            p = {"prompt": prompt_workflow}
+            data = json.dumps(p).encode('utf-8')
+            req =  rq.Request("http://127.0.0.1:8188/prompt", data=data)
+            rq.urlopen(req)
+        path = Path('./workflows')
+        prompt_workflow = json.load(open(os.path.join(path,wf)))
+        for i in prompt_workflow:
+            if "seed" in prompt_workflow[i]['inputs']:
+                print(i)
+                prompt_workflow[i]['inputs']['seed'] = random.randint(0,10000000000)
+        queue_prompt(prompt_workflow)
     return{}
 
 @app.route("/grabwfparams",methods=['GET', 'POST','DELETE'])
 def grabwfparams():
     wf = request.json["wf"]
+    wf +=".json"
     path = Path('./workflows')
     prompt_workflow = json.load(open(os.path.join(path,wf)))
     for i in prompt_workflow:
@@ -118,11 +106,12 @@ def grabwfparams():
 
 @app.route("/prepare",methods=['GET', 'POST','DELETE'])
 def prep():
-    return{"exist":args.same}
+    return{"exist":"no"}
 
 @app.route("/generate",methods=['GET', 'POST','DELETE'])
 def generate():
     wf = request.json["wf"]
+    wf+=".json"
     model = request.json["model"]
     params = request.json["params"]
     def queue_prompt(prompt_workflow):
@@ -132,32 +121,55 @@ def generate():
         rq.urlopen(req)
     path = Path('./workflows')
     prompt_workflow = json.load(open(os.path.join(path,wf)))
-    for i in prompt_workflow:
-        if "seed" in prompt_workflow[i]['inputs']:
-            print(i)
-            prompt_workflow[i]['inputs']['seed'] = random.randint(0,10000000000)
-        if "model_name" in prompt_workflow[i]['inputs']:
-            print(i)
-            prompt_workflow[i]['inputs']['model_name'] = model
-        if "ckpt_name" in prompt_workflow[i]['inputs']:
-            print(i)
-            prompt_workflow[i]['inputs']['ckpt_name'] = model
-        if "steps" in prompt_workflow[i]['inputs']:
-            for j in params:
-                prompt_workflow[i]['inputs'][j] = params[j]
+    if "stickerize" not in wf:
+        for i in prompt_workflow:
+            if "seed" in prompt_workflow[i]['inputs']:
+                print(i)
+                prompt_workflow[i]['inputs']['seed'] = random.randint(0,10000000000)
+            if "model_name" in prompt_workflow[i]['inputs'] and prompt_workflow[i]['class_type'] !='UpscaleModelLoader':
+                print(i)
+                prompt_workflow[i]['inputs']['model_name'] = model
+            if "ckpt_name" in prompt_workflow[i]['inputs']:
+                print(i)
+                prompt_workflow[i]['inputs']['ckpt_name'] = model
+            if "steps" in prompt_workflow[i]['inputs']:
+                for j in params:
+                    prompt_workflow[i]['inputs'][j] = params[j]
+    else:
+        for i in prompt_workflow:
+            if "seed" in prompt_workflow[i]['inputs']:
+                print(i)
+                prompt_workflow[i]['inputs']['seed'] = random.randint(0,10000000000)
     queue_prompt(prompt_workflow)
     return{}
 
 
+@app.route("/settaesd",methods=['GET', 'POST','DELETE'])
+def settaesd():
+    global tt
+    tt = request.json["data"]
+    return {}
+
+@app.route("/getGenStatus",methods=['GET', 'POST','DELETE'])
+def getGenStatus():
+    global genflag
+    genflag = request.json["data"]
+    return {}
+
+@app.route("/getSharedData",methods=['GET', 'POST','DELETE'])
+def getSharedData():
+    global sharedata
+    return sharedata
+
+
 @app.route("/savedata",methods=['GET', 'POST','DELETE'])
 def savedata():
-    global image
+    global image, tt, genflag
     img2img = "inpaint"
     print("trigerred")
     taesd = request.json["taesd"]
     savedata = request.json["savedata"]
     if taesd == "false":
-        #print(savedata)
         ff = int(savedata["ff"])
         selectorsize = request.json["selectorsize"]
         pixels = savedata["pxlsarray"]
@@ -169,8 +181,9 @@ def savedata():
             
             array = np.array(pixels, dtype=np.uint8)
             image = Image.fromarray(array)
-            image.save('erased.png')
-        image.save("out.png")
+            #image.save('erased.png')
+        #image.save("out.png")
+        sharedata["imgs"]["out"] = json.dumps(np.array(image).tolist())
         left = int(float(savedata["crpdims"]["left"]))
         top = int(float(savedata["crpdims"]["top"]))
         right = int(float(savedata["crpdims"]["right"]))
@@ -181,10 +194,14 @@ def savedata():
             top = int(float(savedata["crpdimsref"]["top"]))
             right = int(float(savedata["crpdimsref"]["right"]))
             bottom = int(float(savedata["crpdimsref"]["bottom"]))
-            ref = image.crop((left,top,right,bottom))
+            if left==0 and right==0 and top ==0 and bottom==0:
+                ref = image
+            else:
+                ref = image.crop((left,top,right,bottom))
         except:
             ref = image
-        ref.save("reference.png")
+        #ref.save("reference.png")
+        sharedata["imgs"]["reference"] = json.dumps(np.array(ref).tolist())
         croped2 = croped.copy()
         px = croped2.load()
         for i in range(0,croped2.size[0]):
@@ -200,6 +217,7 @@ def savedata():
         bg = Image.new("RGB",(selectorsize,selectorsize),(0,0,0))
         bg2 = Image.new("RGB",(selectorsize,selectorsize),(255,255,255))
         add = (int(float(savedata["additionaldims"]["left"])),int(float(savedata["additionaldims"]["top"])),int(float(selectorsize-savedata["additionaldims"]["right"])),int(float(selectorsize-savedata["additionaldims"]["bottom"])))
+        print(croped,add,".......")
         bg.paste(croped,(add))
         bg2.paste(croped2,(add))
 
@@ -316,8 +334,9 @@ def savedata():
         #########################3
 
 
-        croped.save("cropped.png")
-        bg.save("image.png")
+        #croped.save("cropped.png")
+        #bg.save("image.png")
+        sharedata["imgs"]["image"] = json.dumps(np.array(bg).tolist())
         if whitepix == 0:
             border = Image.new("RGB",(bg2.size[0],bg2.size[1]),(0,0,0)) 
             bg2 = ImageOps.invert(bg2)
@@ -325,8 +344,10 @@ def savedata():
             border.paste(bg2,(ff,ff))
             bg2 = border
             img2img = "img2img"
+            print(img2img)
         bg2 = bg2.filter(ImageFilter.BoxBlur(ff-int(ff/2)))
-        bg2.save("mask.png")
+        #bg2.save("mask.png")
+        sharedata["imgs"]["mask"] = json.dumps(np.array(bg2).tolist())
         width = int(float(savedata["additionaldims"]["left"])) + int(float(savedata["additionaldims"]["right"]))
         height = int(float(savedata["additionaldims"]["top"])) + int(float(savedata["additionaldims"]["bottom"]))
         
@@ -334,13 +355,18 @@ def savedata():
             "savedata":savedata
         }
         json_object = json.dumps(data, indent=4)
-        with open("data.json", "w") as outfile:
-            outfile.write(json_object)
+        '''with open("data.json", "w") as outfile:
+            outfile.write(json_object)'''
+        sharedata["savedata"] = savedata
         #stopprocess()
         taesds = "no"
+    else:
+        img2img = request.json["img2img"]
+        if img2img=="":
+            img2img = "inpaint"
     flag = False
     realflag = flag
-    path = Path("./lastimage.json")
+    '''path = Path("./lastimage.json")
     with open(path,"r") as filename:
         status = json.load(filename)["done"]
         if status == "y":
@@ -365,14 +391,39 @@ def savedata():
             os.remove(path)
         except:
             pass
+    '''
+    if genflag:
+        try:
+            image = Image.open(genflag["genimg"])
+        except: 
+            pass
+        tt = ""
+        genflag = False
+        flag = True
+    if flag:
         taesds = "no"
         realflag = flag
         flag = False
+        try:
+            width = image.size[0]
+            height = image.size[1]
+            buf = io.BytesIO()
+            image.save(buf, format='PNG')
+            byte_im = buf.getvalue()
+            byte_im = base64.b64encode(byte_im).decode('utf-8')
+            byte_im = f"data:image/png;base64,{byte_im}"
+        except:
+            byte_im = ""
+            width = ""
+            height = ""
 
     else:
         try:
-            path = Path("./taesd.png")
-            image = Image.open(path)
+            #path = Path("./taesd.png")
+            #image = Image.open(path)
+            width = tt["width"]
+            height = tt["height"]
+            byte_im = tt["img"]
             '''with open("data.json","r") as json_file:
                 savedata = json.load(json_file)["savedata"]
             bg = Image.open("out.png").convert("RGBA")
@@ -396,66 +447,16 @@ def savedata():
             image = new'''
             taesds = "no"
         except:
-            image = Image.open("out.png")
             taesds = "yes"
     try:
-        width = image.size[0]
-        height = image.size[1]
-        buf = io.BytesIO()
-        image.save(buf, format='PNG')
-        byte_im = buf.getvalue()
-        byte_im = base64.b64encode(byte_im).decode('utf-8')
-        byte_im = f"data:image/png;base64,{byte_im}"
+        return {"img":byte_im,"width":width,"height":height,"data":savedata,"flag":str(realflag),"taesd":taesds,"img2img":img2img}
     except:
         byte_im = ""
         width = ""
         height = ""
-    #time.sleep(0.1)
-    return {"img":byte_im,"width":width,"height":height,"data":savedata,"flag":str(realflag),"taesd":taesds,"img2img":img2img}
+        return {"img":byte_im,"width":width,"height":height,"data":savedata,"flag":str(realflag),"taesd":taesds,"img2img":img2img}
 
-@app.route("/refresh",methods=['GET', 'POST','DELETE'])
-def refresh():
-    flag = False
-    with open("./lastimage.json","r") as filename:
-        status = json.load(filename)["done"]
-        if status == "y":
-            flag = True
-            print("done!!!")
-        else:
-            print("reading....")
-    if flag:
-        with open("./lastimage.json","r") as filename:
-            image = Image.open(json.load(filename)["lastimage"])
-        data = {
-            "lastimage":"",
-            "done":"n"
-        }
-        json_object = json.dumps(data, indent=4)
-        with open("./lastimage.json", "w") as outfile:
-            outfile.write(json_object)
-        try:
-            os.remove("./taesd.png")
-        except:
-            pass
-    else:
-        try:
-            image = Image.open("./taesd.png")
-        except:
-            image = ""
-    try:
-        width = image.size[0]
-        height = image.size[1]
-        buf = io.BytesIO()
-        image.save(buf, format='PNG')
-        byte_im = buf.getvalue()
-        byte_im = base64.b64encode(byte_im).decode('utf-8')
-        byte_im = f"data:image/png;base64,{byte_im}"
-    except:
-        byte_im = ""
-        width = ""
-        height = ""
-    time.sleep(0.1)
-    return {"img":byte_im,"width":width,"height":height,"data":savedata,"flag":str(flag)}
+
 
 if __name__ == "__main__":
 	webbrowser.open("http://localhost:5000")

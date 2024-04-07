@@ -1,0 +1,18 @@
+{
+  "1": {
+    "inputs": {
+      "seed": 0
+    },
+    "class_type": "OutpaintCanvasTool"
+  },
+  "2": {
+    "inputs": {
+      "filename_prefix": "ComfyUI",
+      "images": [
+        "1",
+        0
+      ]
+    },
+    "class_type": "SaveImage"
+  }
+}

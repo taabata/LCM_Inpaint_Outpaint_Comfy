@@ -5,63 +5,6 @@
     },
     "class_type": "OutpaintCanvasTool"
   },
-  "17": {
-    "inputs": {
-      "mode": "resize",
-      "supersample": "true",
-      "resampling": "bilinear",
-      "rescale_factor": 2,
-      "resize_width": [
-        "18",
-        0
-      ],
-      "resize_height": [
-        "18",
-        1
-      ],
-      "image": [
-        "16",
-        2
-      ]
-    },
-    "class_type": "Image Resize"
-  },
-  "18": {
-    "inputs": {
-      "image": [
-        "16",
-        0
-      ]
-    },
-    "class_type": "Get Image Size"
-  },
-  "19": {
-    "inputs": {
-      "images": [
-        "16",
-        0
-      ]
-    },
-    "class_type": "PreviewImage"
-  },
-  "20": {
-    "inputs": {
-      "images": [
-        "16",
-        1
-      ]
-    },
-    "class_type": "PreviewImage"
-  },
-  "21": {
-    "inputs": {
-      "images": [
-        "16",
-        2
-      ]
-    },
-    "class_type": "PreviewImage"
-  },
   "22": {
     "inputs": {
       "image": [
@@ -74,7 +17,7 @@
   "23": {
     "inputs": {
       "image": [
-        "28",
+        "32",
         0
       ]
     },
@@ -84,54 +27,13 @@
     "inputs": {
       "device": "GPU",
       "tomesd_value": 0.6,
-      "ip_adapter": "enable",
+      "ip_adapter": "disable",
       "reference_only": "disable",
       "ip_adapter_model": "ip-adapter_sd15.bin",
       "model_name": "Juggernaut",
       "controlnet_model": "cn_inpaint"
     },
     "class_type": "LCMLoraLoader_inpaint"
-  },
-  "28": {
-    "inputs": {
-      "seed": 834173561198935,
-      "text": "",
-      "steps": 4,
-      "width": [
-        "18",
-        0
-      ],
-      "height": [
-        "18",
-        1
-      ],
-      "cfg": 1.5,
-      "reference_style_fidelity": 0.1,
-      "batch": 1,
-      "strength": 0.45,
-      "prompt_weighting": "disable",
-      "controlnet_weight": 1,
-      "reference_only": "disable",
-      "ip_adapter": "enable",
-      "ipadapter_scale": 0.25,
-      "mask": [
-        "16",
-        1
-      ],
-      "image": [
-        "16",
-        0
-      ],
-      "reference_image": [
-        "17",
-        0
-      ],
-      "pipe": [
-        "26",
-        0
-      ]
-    },
-    "class_type": "LCMLora_inpaint"
   },
   "29": {
     "inputs": {
@@ -142,5 +44,76 @@
       ]
     },
     "class_type": "SaveImage_Canvas"
+  },
+  "30": {
+    "inputs": {
+      "mode": "resize",
+      "supersample": "true",
+      "resampling": "lanczos",
+      "rescale_factor": 2,
+      "image": [
+        "16",
+        2
+      ],
+      "resize_width": [
+        "31",
+        0
+      ],
+      "resize_height": [
+        "31",
+        1
+      ]
+    },
+    "class_type": "ImageResize"
+  },
+  "31": {
+    "inputs": {
+      "image": [
+        "16",
+        0
+      ]
+    },
+    "class_type": "ImageDims"
+  },
+  "32": {
+    "inputs": {
+      "seed": 0,
+      "text": "",
+      "steps": 4,
+      "cfg": 1.5,
+      "reference_style_fidelity": 0.1,
+      "batch": 1,
+      "strength": 0.5,
+      "prompt_weighting": "disable",
+      "controlnet_weight": 1,
+      "reference_only": "disable",
+      "ip_adapter": "disable",
+      "ipadapter_scale": 0.25,
+      "width": [
+        "31",
+        0
+      ],
+      "height": [
+        "31",
+        1
+      ],
+      "mask": [
+        "16",
+        1
+      ],
+      "image": [
+        "16",
+        0
+      ],
+      "reference_image": [
+        "30",
+        0
+      ],
+      "pipe": [
+        "26",
+        0
+      ]
+    },
+    "class_type": "LCMLora_inpaintV2"
   }
 }

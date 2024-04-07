@@ -126,16 +126,6 @@
     },
     "class_type": "stitch"
   },
-  "16": {
-    "inputs": {
-      "filename_prefix": "ComfyUI",
-      "images": [
-        "15",
-        0
-      ]
-    },
-    "class_type": "SaveImage_LCM"
-  },
   "17": {
     "inputs": {
       "ipadapter_file": "ip-adapter_sd15.bin"
@@ -199,5 +189,15 @@
       ]
     },
     "class_type": "ImageToMask"
+  },
+  "22": {
+    "inputs": {
+      "filename_prefix": "ComfyUI",
+      "images": [
+        "15",
+        0
+      ]
+    },
+    "class_type": "SaveImage_Canvas"
   }
 }

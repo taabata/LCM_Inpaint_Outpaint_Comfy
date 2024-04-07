@@ -1,0 +1,266 @@
+{
+  "3": {
+    "inputs": {},
+    "class_type": "BRIA_RMBG_ModelLoader_Zho"
+  },
+  "5": {
+    "inputs": {
+      "force_resize_width": 0,
+      "force_resize_height": 0,
+      "image": [
+        "30",
+        0
+      ],
+      "mask": [
+        "28",
+        0
+      ]
+    },
+    "class_type": "Cut By Mask"
+  },
+  "8": {
+    "inputs": {
+      "channel": "red",
+      "image": [
+        "22",
+        0
+      ]
+    },
+    "class_type": "ImageToMask"
+  },
+  "10": {
+    "inputs": {
+      "expand": 40,
+      "tapered_corners": true,
+      "mask": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "GrowMask"
+  },
+  "11": {
+    "inputs": {
+      "width": 2108,
+      "height": 2108,
+      "batch_size": 1,
+      "color": 0
+    },
+    "class_type": "EmptyImage"
+  },
+  "12": {
+    "inputs": {
+      "top": 40,
+      "left": 40,
+      "right": 2088,
+      "bottom": 2088,
+      "crop_blending": 0,
+      "crop_sharpening": 0,
+      "image": [
+        "11",
+        0
+      ],
+      "crop_image": [
+        "35",
+        0
+      ]
+    },
+    "class_type": "Image Paste Crop by Location"
+  },
+  "15": {
+    "inputs": {
+      "images": [
+        "12",
+        0
+      ]
+    },
+    "class_type": "PreviewImage"
+  },
+  "17": {
+    "inputs": {
+      "rmbgmodel": [
+        "3",
+        0
+      ],
+      "image": [
+        "12",
+        0
+      ]
+    },
+    "class_type": "BRIA_RMBG_Zho"
+  },
+  "18": {
+    "inputs": {
+      "images": [
+        "17",
+        0
+      ]
+    },
+    "class_type": "PreviewImage"
+  },
+  "20": {
+    "inputs": {
+      "mask": [
+        "17",
+        1
+      ]
+    },
+    "class_type": "MaskToImage"
+  },
+  "21": {
+    "inputs": {
+      "images": [
+        "20",
+        0
+      ]
+    },
+    "class_type": "PreviewImage"
+  },
+  "22": {
+    "inputs": {
+      "bin_threshold": 100,
+      "resolution": 2048,
+      "image": [
+        "20",
+        0
+      ]
+    },
+    "class_type": "BinaryPreprocessor"
+  },
+  "23": {
+    "inputs": {
+      "sigma": 10,
+      "masks": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "Mask Smooth Region"
+  },
+  "25": {
+    "inputs": {
+      "images": [
+        "22",
+        0
+      ]
+    },
+    "class_type": "PreviewImage"
+  },
+  "26": {
+    "inputs": {
+      "images": [
+        "27",
+        0
+      ]
+    },
+    "class_type": "PreviewImage"
+  },
+  "27": {
+    "inputs": {
+      "mask": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "MaskToImage"
+  },
+  "28": {
+    "inputs": {
+      "mask": [
+        "23",
+        0
+      ]
+    },
+    "class_type": "MaskToImage"
+  },
+  "29": {
+    "inputs": {
+      "images": [
+        "28",
+        0
+      ]
+    },
+    "class_type": "PreviewImage"
+  },
+  "30": {
+    "inputs": {
+      "top": 20,
+      "left": 20,
+      "right": 2068,
+      "bottom": 2068,
+      "crop_blending": 0,
+      "crop_sharpening": 0,
+      "image": [
+        "28",
+        0
+      ],
+      "crop_image": [
+        "17",
+        0
+      ]
+    },
+    "class_type": "Image Paste Crop by Location"
+  },
+  "31": {
+    "inputs": {
+      "images": [
+        "30",
+        0
+      ]
+    },
+    "class_type": "PreviewImage"
+  },
+  "32": {
+    "inputs": {
+      "images": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "PreviewImage"
+  },
+  "34": {
+    "inputs": {
+      "model_name": "realesr-general-x4v3.pth"
+    },
+    "class_type": "UpscaleModelLoader"
+  },
+  "35": {
+    "inputs": {
+      "upscale_model": [
+        "34",
+        0
+      ],
+      "image": [
+        "37",
+        0
+      ]
+    },
+    "class_type": "ImageUpscaleWithModel"
+  },
+  "37": {
+    "inputs": {
+      "seed": 0
+    },
+    "class_type": "OutpaintCanvasTool"
+  },
+  "38": {
+    "inputs": {
+      "filename_prefix": "ComfyUI",
+      "images": [
+        "39",
+        0
+      ]
+    },
+    "class_type": "SaveImage_Canvas"
+  },
+  "39": {
+    "inputs": {
+      "image": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "ComfyNodesToSaveCanvas"
+  }
+}
