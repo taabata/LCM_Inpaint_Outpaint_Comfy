@@ -39,6 +39,15 @@ import types
 from comfy.cli_args import args
 
 
+######Copied from WAS_Node_Suite
+# Tensor to PIL
+def tensor2pil(image):
+    return Image.fromarray(np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8))
+    
+# PIL to Tensor
+def pil2tensor(image):
+    return torch.from_numpy(np.array(image).astype(np.float32) / 255.0).unsqueeze(0)
+#######
 
 
 #os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:192"
