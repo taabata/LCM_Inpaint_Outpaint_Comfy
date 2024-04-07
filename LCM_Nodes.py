@@ -2037,20 +2037,25 @@ class OutpaintCanvasTool:
     RETURN_TYPES = ("IMAGE","IMAGE","IMAGE")
     FUNCTION = "canvasopen"
     def canvasopen(self,seed):
-        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/image.png")
-        bg = Image.open(path)
+        req = request.Request("http://localhost:5000/getSharedData")
+        req.add_header("Content-Type","application/json")
+        response = request.urlopen(req).read().decode('utf-8')
+        savedata = json.loads(response)["savedata"]
+        imgs = json.loads(response)["imgs"]
+        #path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/image.png")
+        bg = Image.fromarray(np.array(json.loads(imgs["image"]),dtype="uint8"))
         i = ImageOps.exif_transpose(bg)
         image = i.convert("RGB")
         image = np.array(image).astype(np.float32) / 255.0
         bg = torch.from_numpy(image)[None,]
-        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/mask.png")
-        bg2 = Image.open(path)
+        #path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/mask.png")
+        bg2 = Image.fromarray(np.array(json.loads(imgs["mask"]),dtype="uint8"))
         i = ImageOps.exif_transpose(bg2)
         image = i.convert("RGB")
         image = np.array(image).astype(np.float32) / 255.0
         bg2 = torch.from_numpy(image)[None,]
-        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/reference.png")
-        ref = Image.open(path)
+        #path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/reference.png")
+        ref = Image.fromarray(np.array(json.loads(imgs["reference"]),dtype="uint8"))
         i = ImageOps.exif_transpose(ref)
         image = i.convert("RGB")
         image = np.array(image).astype(np.float32) / 255.0
@@ -2074,15 +2079,21 @@ class stitch:
         img = image[0].numpy()
         img = img*255.0
         image = Image.fromarray(np.uint8(img)).convert("RGBA")
-        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/data.json")
+        '''path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/data.json")
         with open(path,"r") as json_file:
-            savedata = json.load(json_file)["savedata"]
-        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/out.png")
-        bg = Image.open(path).convert("RGBA")
-        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/mask.png")
-        msksmall = Image.open(path).convert("L")
-        path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/image.png")
-        cropped = Image.open(path).convert("RGBA")
+            savedata = json.load(json_file)["savedata"]'''
+        req = request.Request("http://localhost:5000/getSharedData")
+        req.add_header("Content-Type","application/json")
+        response = request.urlopen(req).read().decode('utf-8')
+        savedata = json.loads(response)["savedata"]
+        imgs = json.loads(response)["imgs"]
+        #img = Image.fromarray(np.array(json.loads(imgs["out"]),dtype="uint8"))
+        #path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/out.png")
+        bg = Image.fromarray(np.array(json.loads(imgs["out"]),dtype="uint8")).convert("RGBA")
+        #path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/mask.png")
+        msksmall = Image.fromarray(np.array(json.loads(imgs["mask"]),dtype="uint8")).convert("L")
+        #path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/image.png")
+        cropped = Image.fromarray(np.array(json.loads(imgs["image"]),dtype="uint8")).convert("RGBA")
         width = int(savedata["additionaldims"]["right"]) + int(savedata["additionaldims"]["left"]) + bg.size[0]
         height = int(savedata["additionaldims"]["top"]) + int(savedata["additionaldims"]["bottom"]) + bg.size[1]
         new = Image.new("RGBA",(width,height),(0,0,0,0))
@@ -3295,7 +3306,7 @@ class SaveImage_Canvas:
 
             file = f"{filename}_{counter:05}_.png"
             img.save(os.path.join(full_output_folder, file), pnginfo=metadata, compress_level=4)
-            data = {
+            '''data = {
                 "lastimage":str(os.path.join(full_output_folder, file)),
                 "done":"y"
             }
@@ -3304,7 +3315,17 @@ class SaveImage_Canvas:
             savepath = Path(savepath)
             with open(savepath, "w") as outfile:
                 print(savepath)
-                outfile.write(json_object)
+                outfile.write(json_object)'''
+            p = {
+                "data":{
+                    "flag":True,
+                    "genimg":str(os.path.join(full_output_folder, file))
+                }
+            }
+            data = json.dumps(p).encode('utf-8')
+            req = request.Request("http://localhost:5000/getGenStatus",data=data)
+            req.add_header("Content-Type","application/json")
+            request.urlopen(req)
             
             
             results.append({
@@ -3315,6 +3336,7 @@ class SaveImage_Canvas:
             counter += 1
             
         return { "ui": { "images": results } }
+
 
 ######Copied from WAS_Node_Suite
 class ImageResize:
