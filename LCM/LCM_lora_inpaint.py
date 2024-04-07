@@ -46,7 +46,8 @@ from diffusers.models.attention import BasicTransformerBlock
 from diffusers import StableDiffusionPipeline
 from diffusers.models.unet_2d_blocks import CrossAttnDownBlock2D, CrossAttnUpBlock2D, DownBlock2D, UpBlock2D
 from diffusers.pipelines.stable_diffusion.pipeline_stable_diffusion import rescale_noise_cfg
-
+import io, base64, json
+from urllib import request
 
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
 
@@ -2011,12 +2012,31 @@ class LCM_inpaint_final(
                 # call the callback, if provided
                 if i == len(timesteps) - 1 or ((i + 1) > num_warmup_steps and (i + 1) % self.scheduler.order == 0):
                     progress_bar.update()
-                    image = self.vae2.decode(latents / self.vae2.config.scaling_factor, return_dict=False, generator=generator)[0]
-                    do_denormalize = [True] * image.shape[0]
-                    image = self.image_processor.postprocess(image, output_type=output_type, do_denormalize=do_denormalize)
-                    image = image[0]
-                    par = os.path.abspath(os.path.join(os.path.join(os.path.realpath(__file__), os.pardir), os.pardir))
-                    image.save(f"{par}/CanvasToolLone/taesd.png")
+                    try:
+                        image = self.vae2.decode(latents / self.vae2.config.scaling_factor, return_dict=False, generator=generator)[0]
+                        do_denormalize = [True] * image.shape[0]
+                        image = self.image_processor.postprocess(image, output_type=output_type, do_denormalize=do_denormalize)
+                        image = image[0]
+                        width = image.size[0]
+                        height = image.size[1]
+                        buf = io.BytesIO()
+                        image.save(buf, format='PNG')
+                        byte_im = buf.getvalue()
+                        byte_im = base64.b64encode(byte_im).decode('utf-8')
+                        byte_im = f"data:image/png;base64,{byte_im}"
+                        p = {
+                            "data":{
+                                        "img":byte_im,
+                                        "width":image.size[0],
+                                        "height":image.size[1]
+                                    }
+                        }
+                        data = json.dumps(p).encode('utf-8')
+                        req =  request.Request("http://localhost:5000/settaesd", data=data)
+                        req.add_header("Content-Type", "application/json")
+                        request.urlopen(req)
+                    except:
+                        pass
                     if callback is not None and i % callback_steps == 0:
                         step_idx = i // getattr(self.scheduler, "order", 1)
                         callback(step_idx, t, latents)

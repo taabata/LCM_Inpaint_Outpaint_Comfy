@@ -39,6 +39,8 @@ from diffusers.utils.torch_utils import randn_tensor, is_compiled_module
 
 
 import PIL.Image
+import base64, io, json
+from urllib import request
 
 
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
@@ -1096,8 +1098,24 @@ class LatentConsistencyModelPipeline_refinpaintcn(DiffusionPipeline):
                 do_denormalize = [True] * image.shape[0]
                 image = self.image_processor.postprocess(image, output_type=output_type, do_denormalize=do_denormalize)
                 image = image[0]
-                par = os.path.abspath(os.path.join(os.path.join(os.path.realpath(__file__), os.pardir), os.pardir))
-                image.save(f"{par}/CanvasToolLone/taesd.png")
+                width = image.size[0]
+                height = image.size[1]
+                buf = io.BytesIO()
+                image.save(buf, format='PNG')
+                byte_im = buf.getvalue()
+                byte_im = base64.b64encode(byte_im).decode('utf-8')
+                byte_im = f"data:image/png;base64,{byte_im}"
+                p = {
+                    "data":{
+                                "img":byte_im,
+                                "width":image.size[0],
+                                "height":image.size[1]
+                            }
+                }
+                data = json.dumps(p).encode('utf-8')
+                req =  request.Request("http://localhost:5000/settaesd", data=data)
+                req.add_header("Content-Type", "application/json")
+                request.urlopen(req)
 
         denoised = denoised.to(prompt_embeds.dtype)
         if hasattr(self, "final_offload_hook") and self.final_offload_hook is not None:
