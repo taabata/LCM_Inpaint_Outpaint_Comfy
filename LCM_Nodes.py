@@ -27,6 +27,7 @@ import os
 from pathlib import Path
 import torch
 from PIL import Image
+from urllib import request
 import tomesd
 import random
 from compel import Compel
