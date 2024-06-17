@@ -1,0 +1,15 @@
+[project]
+name = "lcm_inpaint_outpaint_comfy"
+description = ""
+version = "1.0.0"
+license = "LICENSE"
+dependencies = ["diffusers", "tomesd", "compel", "icecream", "Flask"]
+
+[project.urls]
+Repository = "https://github.com/taabata/LCM_Inpaint_Outpaint_Comfy"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "LCM_Inpaint_Outpaint_Comfy"
+Icon = ""
