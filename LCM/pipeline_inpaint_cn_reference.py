@@ -30,7 +30,7 @@ from diffusers.pipelines.stable_diffusion import StableDiffusionPipelineOutput
 from diffusers.pipelines.stable_diffusion.safety_checker import StableDiffusionSafetyChecker
 from diffusers.utils import BaseOutput
 from diffusers.models.attention import BasicTransformerBlock
-from diffusers.models.unet_2d_blocks import CrossAttnDownBlock2D, CrossAttnUpBlock2D, DownBlock2D, UpBlock2D
+from diffusers.models.unets.unet_2d_blocks import CrossAttnDownBlock2D, CrossAttnUpBlock2D, DownBlock2D, UpBlock2D
 from diffusers.pipelines.stable_diffusion.pipeline_stable_diffusion import rescale_noise_cfg
 from diffusers.pipelines.controlnet.multicontrolnet import MultiControlNetModel
 
