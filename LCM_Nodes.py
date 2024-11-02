@@ -3381,7 +3381,6 @@ class ImageResize:
         return (scaled_images, )
 
     def apply_resize_image(self, image: Image.Image, mode='scale', supersample='true', factor: int = 2, width: int = 1024, height: int = 1024, resample='bicubic'):
-
         # Get the current width and height of the image
         current_width, current_height = image.size
     
@@ -3400,20 +3399,24 @@ class ImageResize:
             'lanczos': 1
         }
     
-        # Debug print statement
-        print(f"Resampling method: {resample}")
+        # Debug print statement to trace the value of resampling
+        print(f"Resampling method received: {resample}")
     
-        # Validate the resample method
+        # Ensure 'resample' is lowercased for matching
+        resample = resample.lower()
+    
+        # Validate and handle unexpected values
         if resample not in resample_filters:
-            raise ValueError(f"Invalid resampling method: {resample}. Valid options are {list(resample_filters.keys())}")
+            print(f"Warning: Invalid resampling method '{resample}'. Defaulting to 'bicubic'.")
+            resample = 'bicubic'
     
-        # Apply supersample
+        # Apply supersample if specified
         if supersample == 'true':
             image = image.resize((new_width * 8, new_height * 8), resample=Image.Resampling(resample_filters[resample]))
     
         # Resize the image using the given resampling filter
         resized_image = image.resize((new_width, new_height), resample=Image.Resampling(resample_filters[resample]))
-        
+    
         return resized_image
 
 
