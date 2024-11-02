@@ -3372,6 +3372,14 @@ class ImageResize:
 
     CATEGORY = "image"
 
+    def image_rescale(self, image, mode="rescale", supersample='true', resampling="lanczos", rescale_factor=2, resize_width=1024, resize_height=1024):
+        scaled_images = []
+        for img in image:
+            scaled_images.append(pil2tensor(self.apply_resize_image(tensor2pil(img), mode, supersample, rescale_factor, resize_width, resize_height, resampling)))
+        scaled_images = torch.cat(scaled_images, dim=0)
+            
+        return (scaled_images, )
+
     def apply_resize_image(self, image: Image.Image, mode='scale', supersample='true', factor: int = 2, width: int = 1024, height: int = 1024, resample='bicubic'):
         # Get the current width and height of the image
         current_width, current_height = image.size
