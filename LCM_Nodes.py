@@ -3372,14 +3372,6 @@ class ImageResize:
 
     CATEGORY = "image"
 
-    def image_rescale(self, image, mode="rescale", supersample='true', resampling="lanczos", rescale_factor=2, resize_width=1024, resize_height=1024):
-        scaled_images = []
-        for img in image:
-            scaled_images.append(pil2tensor(self.apply_resize_image(tensor2pil(img), mode, supersample, rescale_factor, resize_width, resize_height, resampling)))
-        scaled_images = torch.cat(scaled_images, dim=0)
-            
-        return (scaled_images, )
-
     def apply_resize_image(self, image: Image.Image, mode='scale', supersample='true', factor: int = 2, width: int = 1024, height: int = 1024, resample='bicubic'):
         # Get the current width and height of the image
         current_width, current_height = image.size
@@ -3402,8 +3394,13 @@ class ImageResize:
         # Debug print statement to trace the value of resampling
         print(f"Resampling method received: {resample}")
     
+        # Ensure resample is a string for safe processing
+        if isinstance(resample, int):
+            resample = str(resample)
+    
         # Ensure 'resample' is lowercased for matching
-        resample = resample.lower()
+        if isinstance(resample, str):
+            resample = resample.lower()
     
         # Validate and handle unexpected values
         if resample not in resample_filters:
@@ -3416,7 +3413,7 @@ class ImageResize:
     
         # Resize the image using the given resampling filter
         resized_image = image.resize((new_width, new_height), resample=Image.Resampling(resample_filters[resample]))
-    
+        
         return resized_image
 
 
