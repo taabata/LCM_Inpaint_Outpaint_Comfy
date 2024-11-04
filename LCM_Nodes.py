@@ -1926,8 +1926,7 @@ class ImageOutputToComfyNodes:
                     {"image": ("IMAGE",)},
                 }
 
-    CATEGORY = "image"
-
+    CATEGORY = "ComfyCanvas/nodes"
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "load_image"
     def load_image(self, image):
@@ -1943,7 +1942,7 @@ class ComfyNodesToSaveCanvas:
                     {"image": ("IMAGE",)},
                 }
 
-    CATEGORY = "image"
+    CATEGORY = "ComfyCanvas/nodes"
 
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "load_image"
@@ -2044,34 +2043,30 @@ class OutpaintCanvasTool:
                     }
                 }
 
-    RETURN_TYPES = ("IMAGE","IMAGE","IMAGE")
+    RETURN_TYPES = ("IMAGE","IMAGE","IMAGE","STRING")
     FUNCTION = "canvasopen"
+    CATEGORY = "ComfyCanvas/nodes"
     def canvasopen(self,seed):
         req = request.Request("http://localhost:5000/getSharedData")
         req.add_header("Content-Type","application/json")
         response = request.urlopen(req).read().decode('utf-8')
-        savedata = json.loads(response)["savedata"]
         imgs = json.loads(response)["imgs"]
-        #path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/image.png")
         bg = Image.fromarray(np.array(json.loads(imgs["image"]),dtype="uint8"))
         i = ImageOps.exif_transpose(bg)
         image = i.convert("RGB")
         image = np.array(image).astype(np.float32) / 255.0
         bg = torch.from_numpy(image)[None,]
-        #path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/mask.png")
         bg2 = Image.fromarray(np.array(json.loads(imgs["mask"]),dtype="uint8"))
         i = ImageOps.exif_transpose(bg2)
         image = i.convert("RGB")
         image = np.array(image).astype(np.float32) / 255.0
         bg2 = torch.from_numpy(image)[None,]
-        #path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/reference.png")
         ref = Image.fromarray(np.array(json.loads(imgs["reference"]),dtype="uint8"))
         i = ImageOps.exif_transpose(ref)
         image = i.convert("RGB")
         image = np.array(image).astype(np.float32) / 255.0
-        ref = torch.from_numpy(image)[None,]
-        
-        return (bg,bg2,ref)
+        ref = torch.from_numpy(image)[None,]        
+        return (bg,bg2,ref,"/home/mohammad/reference.png")
 
 class stitch:
     @classmethod
@@ -2085,6 +2080,7 @@ class stitch:
 
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "canvasopen"
+    CATEGORY = "ComfyCanvas/nodes"
     def canvasopen(self,image):
         img = image[0].numpy()
         img = img*255.0
@@ -2139,6 +2135,7 @@ class LCMLoraLoader_inpaint:
                         files.append(i)
             except:
                 pass
+        files.append("")
         return {
             "required": {
                 "device": (["GPU", "CPU"],),
@@ -3298,7 +3295,7 @@ class SaveImage_Canvas:
 
     OUTPUT_NODE = True
 
-    CATEGORY = "image"
+    CATEGORY = "ComfyCanvas/nodes"
 
     def save_images(self, images, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None):
         filename_prefix += self.prefix_append
