@@ -33,7 +33,6 @@ import random
 from compel import Compel
 import tomesd
 from .IPA.ip_adapter import IPAdapter, IPAdapterPlus
-from icecream import ic
 import utils
 import types
 from comfy.cli_args import args
