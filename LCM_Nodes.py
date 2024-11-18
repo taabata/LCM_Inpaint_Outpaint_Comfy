@@ -2046,7 +2046,7 @@ class OutpaintCanvasTool:
     FUNCTION = "canvasopen"
     CATEGORY = "ComfyCanvas/nodes"
     def canvasopen(self,seed):
-        req = request.Request("http://localhost:5000/getSharedData")
+        req = request.Request(f"http://{os.environ['LISTEN']}:{os.environ['CANVASPORT']}/getSharedData")
         req.add_header("Content-Type","application/json")
         response = request.urlopen(req).read().decode('utf-8')
         imgs = json.loads(response)["imgs"]
@@ -2084,10 +2084,7 @@ class stitch:
         img = image[0].numpy()
         img = img*255.0
         image = Image.fromarray(np.uint8(img)).convert("RGBA")
-        '''path = Path(folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/data.json")
-        with open(path,"r") as json_file:
-            savedata = json.load(json_file)["savedata"]'''
-        req = request.Request("http://localhost:5000/getSharedData")
+        req = request.Request(f"http://{os.environ['LISTEN']}:{os.environ['CANVASPORT']}/getSharedData")
         req.add_header("Content-Type","application/json")
         response = request.urlopen(req).read().decode('utf-8')
         savedata = json.loads(response)["savedata"]
@@ -3312,16 +3309,6 @@ class SaveImage_Canvas:
 
             file = f"{filename}_{counter:05}_.png"
             img.save(os.path.join(full_output_folder, file), pnginfo=metadata, compress_level=4)
-            '''data = {
-                "lastimage":str(os.path.join(full_output_folder, file)),
-                "done":"y"
-            }
-            json_object = json.dumps(data, indent=4)
-            savepath = folder_paths.get_folder_paths("custom_nodes")[0]+"/LCM_Inpaint_Outpaint_Comfy/CanvasToolLone/lastimage.json"
-            savepath = Path(savepath)
-            with open(savepath, "w") as outfile:
-                print(savepath)
-                outfile.write(json_object)'''
             p = {
                 "data":{
                     "flag":True,
@@ -3329,7 +3316,7 @@ class SaveImage_Canvas:
                 }
             }
             data = json.dumps(p).encode('utf-8')
-            req = request.Request("http://localhost:5000/getGenStatus",data=data)
+            req = request.Request(f"http://{os.environ['LISTEN']}:{os.environ['CANVASPORT']}/getGenStatus",data=data)
             req.add_header("Content-Type","application/json")
             request.urlopen(req)
             
@@ -3342,8 +3329,7 @@ class SaveImage_Canvas:
             counter += 1
             
         return { "ui": { "images": results } }
-
-
+        
 ######Copied from WAS_Node_Suite
 class ImageResize:
     def __init__(self):
