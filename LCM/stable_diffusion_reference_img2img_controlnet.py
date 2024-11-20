@@ -43,7 +43,7 @@ from diffusers.pipelines.controlnet.multicontrolnet import MultiControlNetModel
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from diffusers import StableDiffusionPipeline
 from diffusers.models.attention import BasicTransformerBlock
-from diffusers.models.unet_2d_blocks import CrossAttnDownBlock2D, CrossAttnUpBlock2D, DownBlock2D, UpBlock2D
+from diffusers.models.unets.unet_2d_blocks import CrossAttnDownBlock2D, CrossAttnUpBlock2D, DownBlock2D, UpBlock2D
 from diffusers.pipelines.stable_diffusion.pipeline_stable_diffusion import rescale_noise_cfg
 import io, base64, json
 from urllib import request

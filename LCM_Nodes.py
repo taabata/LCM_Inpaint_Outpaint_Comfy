@@ -3363,19 +3363,16 @@ class ImageResize:
         return (scaled_images, )
 
     def apply_resize_image(self, image: Image.Image, mode='scale', supersample='true', factor: int = 2, width: int = 1024, height: int = 1024, resample='bicubic'):
-
         # Get the current width and height of the image
         current_width, current_height = image.size
-
+    
         # Calculate the new width and height based on the given mode and parameters
         if mode == 'rescale':
-            new_width, new_height = int(
-                current_width * factor), int(current_height * factor)
+            new_width, new_height = int(current_width * factor), int(current_height * factor)
         else:
             new_width = width if width % 8 == 0 else width + (8 - width % 8)
-            new_height = height if height % 8 == 0 else height + \
-                (8 - height % 8)
-
+            new_height = height if height % 8 == 0 else height + (8 - height % 8)
+    
         # Define a dictionary of resampling filters
         resample_filters = {
             'nearest': 0,
@@ -3383,11 +3380,27 @@ class ImageResize:
             'bicubic': 3,
             'lanczos': 1
         }
-        
-        # Apply supersample
+    
+        # Debug print statement to trace the value of resampling
+        print(f"Resampling method received: {resample}")
+    
+        # Ensure resample is a string for safe processing
+        if isinstance(resample, int):
+            resample = str(resample)
+    
+        # Ensure 'resample' is lowercased for matching
+        if isinstance(resample, str):
+            resample = resample.lower()
+    
+        # Validate and handle unexpected values
+        if resample not in resample_filters:
+            print(f"Warning: Invalid resampling method '{resample}'. Defaulting to 'bicubic'.")
+            resample = 'bicubic'
+    
+        # Apply supersample if specified
         if supersample == 'true':
             image = image.resize((new_width * 8, new_height * 8), resample=Image.Resampling(resample_filters[resample]))
-
+    
         # Resize the image using the given resampling filter
         resized_image = image.resize((new_width, new_height), resample=Image.Resampling(resample_filters[resample]))
         
